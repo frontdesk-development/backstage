@@ -40,7 +40,6 @@ import {
   auth0AuthApiRef,
   storageApiRef,
   WebStorage,
-  ApiHolder,
 } from '@backstage/core';
 
 import {
