@@ -40,12 +40,15 @@ import {
   auth0AuthApiRef,
   storageApiRef,
   WebStorage,
+  ApiHolder,
 } from '@backstage/core';
 
 import {
   lighthouseApiRef,
   LighthouseRestApi,
 } from '@backstage/plugin-lighthouse';
+
+import { CloudBuildApi, cloudBuildApiRef } from '@backstage/plugin-cloudbuild';
 
 import { techRadarApiRef, TechRadar } from '@backstage/plugin-tech-radar';
 
@@ -66,7 +69,10 @@ import {
 } from '@backstage/plugin-github-actions';
 import { jenkinsApiRef, JenkinsApi } from '@backstage/plugin-jenkins';
 
-import { TravisCIApi, travisCIApiRef } from '@roadiehq/backstage-plugin-travis-ci';
+import {
+  TravisCIApi,
+  travisCIApiRef,
+} from '@roadiehq/backstage-plugin-travis-ci';
 
 export const apis = (config: ConfigApi) => {
   // eslint-disable-next-line no-console
@@ -75,6 +81,8 @@ export const apis = (config: ConfigApi) => {
   const backendUrl = config.getString('backend.baseUrl');
 
   const builder = ApiRegistry.builder();
+
+  builder.add(cloudBuildApiRef, new CloudBuildApi());
 
   const alertApi = builder.add(alertApiRef, new AlertApiForwarder());
   const errorApi = builder.add(
@@ -138,7 +146,7 @@ export const apis = (config: ConfigApi) => {
       oauthRequestApi,
     }),
   );
-  
+
   builder.add(
     auth0AuthApiRef,
     Auth0Auth.create({
