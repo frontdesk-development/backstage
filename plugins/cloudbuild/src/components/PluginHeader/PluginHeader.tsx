@@ -48,7 +48,7 @@ export const PluginHeader: FC<Props> = ({ title = 'CloudBuild' }) => {
       )}
       <SupportButton>
         This plugin allows you to view and interact with your builds within the
-        Circle CI environment.
+        Google Cloud Build environment.
       </SupportButton>
     </ContentHeader>
   );
