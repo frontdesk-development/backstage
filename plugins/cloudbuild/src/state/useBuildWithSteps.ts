@@ -16,51 +16,52 @@
 import { errorApiRef, useApi } from '@backstage/core';
 import { useCallback } from 'react';
 import { useAsyncRetry } from 'react-use';
-import { cloudBuildApiRef, GitType } from '../api/index';
 import { useAsyncPolling } from './useAsyncPolling';
 import { useSettings } from './useSettings';
 
 const INTERVAL_AMOUNT = 1500;
 export function useBuildWithSteps(buildId: number) {
   const [{ token, repo, owner }] = useSettings();
-  const api = useApi(cloudBuildApiRef);
-  const errorApi = useApi(errorApiRef);
+  // const api = useApi(cloudBuildApiRef);
+  // const errorApi = useApi(errorApiRef);
 
   const getBuildWithSteps = useCallback(async () => {
     if (owner === '' || repo === '' || token === '') {
       return Promise.reject('No credentials provided');
     }
+    console.log('getBuildWithSteps()');
 
-    try {
-      const options = {
-        token: token,
-        vcs: {
-          owner: owner,
-          repo: repo,
-          type: GitType.GITHUB,
-        },
-      };
-      const build = await api.getBuild(buildId, options);
-      return Promise.resolve(build);
-    } catch (e) {
-      errorApi.post(e);
-      return Promise.reject(e);
-    }
+    // try {
+    //   const options = {
+    //     token: token,
+    //     vcs: {
+    //       owner: owner,
+    //       repo: repo,
+    //       type: GitType.GITHUB,
+    //     },
+    //   };
+    //   const build = await api.getBuild(buildId, options);
+    //   return Promise.resolve(build);
+    // } catch (e) {
+    //   errorApi.post(e);
+    //   return Promise.reject(e);
+    // }
   }, [token, owner, repo, buildId, api, errorApi]);
 
   const restartBuild = async () => {
-    try {
-      await api.retry(buildId, {
-        token: token,
-        vcs: {
-          owner: owner,
-          repo: repo,
-          type: GitType.GITHUB,
-        },
-      });
-    } catch (e) {
-      errorApi.post(e);
-    }
+    console.log('restartBuild');
+    // try {
+    //   await api.retry(buildId, {
+    //     token: token,
+    //     vcs: {
+    //       owner: owner,
+    //       repo: repo,
+    //       type: GitType.GITHUB,
+    //     },
+    //   });
+    // } catch (e) {
+    //   errorApi.post(e);
+    // }
   };
 
   const { loading, value, retry } = useAsyncRetry(() => getBuildWithSteps(), [

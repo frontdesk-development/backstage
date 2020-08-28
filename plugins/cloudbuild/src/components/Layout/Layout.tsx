@@ -19,7 +19,7 @@ import { Header, Page, pageTheme, HeaderLabel } from '@backstage/core';
 export const Layout: React.FC = ({ children }) => {
   return (
     <Page theme={pageTheme.tool}>
-      <Header title="CloudBuild" subtitle="See recent builds and their status">
+      <Header title="Cloud Build" subtitle="See recent builds and their status">
         <HeaderLabel label="Owner" value="Spotify" />
         <HeaderLabel label="Lifecycle" value="Alpha" />
       </Header>

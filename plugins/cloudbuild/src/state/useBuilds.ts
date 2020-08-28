@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 import { errorApiRef, useApi } from '@backstage/core';
-import { BuildSummary, GitType } from 'cloudbuild-api';
 import { useCallback, useEffect, useState } from 'react';
 import { useAsyncRetry } from 'react-use';
 import { cloudBuildApiRef } from '../api/index';
@@ -41,7 +40,7 @@ const makeReadableStatus = (status: string | undefined) => {
 };
 
 export const transform = (
-  buildsData: BuildSummary[],
+  // TODO: remove buildsData: BuildSummary[],
   restartBuild: { (buildId: number): Promise<void> },
 ): CITableBuildInfo[] => {
   return buildsData.map(buildData => {
@@ -83,40 +82,43 @@ export function useBuilds() {
       if (owner === '' || repo === '' || token === '') {
         return Promise.reject('No credentials provided');
       }
+      console.log('Get builds');
+      return [];
 
-      try {
-        return await api.getBuilds(
-          { limit, offset },
-          {
-            token: token,
-            vcs: {
-              owner: owner,
-              repo: repo,
-              type: GitType.GITHUB,
-            },
-          },
-        );
-      } catch (e) {
-        errorApi.post(e);
-        return Promise.reject(e);
-      }
+      // try {
+      //   return await api.getBuilds(
+      //     { limit, offset },
+      //     {
+      //       token: token,
+      //       vcs: {
+      //         owner: owner,
+      //         repo: repo,
+      //         type: GitType.GITHUB,
+      //       },
+      //     },
+      //   );
+      // } catch (e) {
+      //   errorApi.post(e);
+      //   return Promise.reject(e);
+      // }
     },
     [repo, token, owner, api, errorApi],
   );
 
   const restartBuild = async (buildId: number) => {
-    try {
-      await api.retry(buildId, {
-        token: token,
-        vcs: {
-          owner: owner,
-          repo: repo,
-          type: GitType.GITHUB,
-        },
-      });
-    } catch (e) {
-      errorApi.post(e);
-    }
+    console.log('restart build');
+    // try {
+    //   await api.retry(buildId, {
+    //     token: token,
+    //     vcs: {
+    //       owner: owner,
+    //       repo: repo,
+    //       type: GitType.GITHUB,
+    //     },
+    //   });
+    // } catch (e) {
+    //   errorApi.post(e);
+    // }
   };
 
   useEffect(() => {

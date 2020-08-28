@@ -14,21 +14,11 @@
  * limitations under the License.
  */
 
-import {
-  CloudBuildOptions,
-  getMe,
-  getBuildSummaries,
-  getFullBuild,
-  postBuildActions,
-  BuildAction,
-  BuildWithSteps,
-  BuildStepAction,
-  BuildSummary,
-  GitType,
-} from 'cloudbuild-api';
+// Imports the Google Cloud client library
+const { CloudBuildClient } = require('@google-cloud/cloudbuild');
+
 import { createApiRef } from '@backstage/core';
 
-export { GitType };
 export type { BuildWithSteps, BuildStepAction, BuildSummary };
 
 export const cloudBuildApiRef = createApiRef<CloudBuildApi>({
@@ -39,36 +29,55 @@ export const cloudBuildApiRef = createApiRef<CloudBuildApi>({
 export class CloudBuildApi {
   apiUrl: string;
   constructor(apiUrl: string = '/cloudbuild/api') {
+    console.log('constructor called');
     this.apiUrl = apiUrl;
   }
 
   async retry(buildNumber: number, options: CloudBuildOptions) {
-    return postBuildActions(options.token, buildNumber, BuildAction.RETRY, {
-      circleHost: this.apiUrl,
-      ...options.vcs,
-    });
+    console.log('retry called');
+    // return postBuildActions(options.token, buildNumber, BuildAction.RETRY, {
+    //   circleHost: this.apiUrl,
+    //   ...options.vcs,
+    // });
   }
 
   async getBuilds(
     { limit = 10, offset = 0 }: { limit: number; offset: number },
     options: CloudBuildOptions,
   ) {
-    return getBuildSummaries(options.token, {
-      options: {
-        limit,
-        offset,
-      },
-      vcs: {},
-      circleHost: this.apiUrl,
-      ...options,
-    });
+    console.log('getBuilds called');
+
+    // Creates a client
+    const cb = new CloudBuildClient();
+
+    // What project should we list triggers for?
+    let projectId = 'trv-io-sre-frontdesk-edge';
+    const request = {
+      projectId,
+    };
+
+    const [result] = await cb.listBuildTriggers(request);
+    console.info(JSON.stringify(result, null, 2));
+    return result;
+
+    // return getBuildSummaries(options.token, {
+    //   options: {
+    //     limit,
+    //     offset,
+    //   },
+    //   vcs: {},
+    //   circleHost: this.apiUrl,
+    //   ...options,
+    // });
   }
 
   async getUser(options: CloudBuildOptions) {
+    console.log('getUser called');
     return getMe(options.token, { circleHost: this.apiUrl, ...options });
   }
 
   async getBuild(buildNumber: number, options: CloudBuildOptions) {
+    console.log('getBuild called');
     return getFullBuild(options.token, buildNumber, {
       circleHost: this.apiUrl,
       ...options.vcs,
