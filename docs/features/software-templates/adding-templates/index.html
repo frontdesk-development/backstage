@@ -62,7 +62,7 @@
                 };
               }
             });
-        </script></nav></div><div class="container mainContainer docsContainer"><div class="wrapper"><div class="post"><header class="postHeader"><a class="edit-page-link button" href="https://github.com/spotify/backstage/tree/master/docs/features/software-templates/adding-templates.md" target="_blank" rel="noreferrer noopener">Edit</a><h1 id="__docusaurus" class="postHeaderTitle">Adding your own Templates</h1></header><article><div><span><p>Templates are stored in the <strong>Service Catalog</strong> under a kind <code>Template</code>. The
+        </script></nav></div><div class="container mainContainer docsContainer"><div class="wrapper"><div class="post"><header class="postHeader"><a class="edit-page-link button" href="https://github.com/spotify/backstage/edit/master/docs/features/software-templates/adding-templates.md" target="_blank" rel="noreferrer noopener">Edit</a><h1 id="__docusaurus" class="postHeaderTitle">Adding your own Templates</h1></header><article><div><span><p>Templates are stored in the <strong>Service Catalog</strong> under a kind <code>Template</code>. The
 minimum that the a template skeleton needs is a <code>template.yaml</code> but it would be
 good to also have some files in there that can be templated in.</p>
 <p>A simple <code>template.yaml</code> definition might look something like this:</p>
@@ -110,7 +110,7 @@ for use by the scaffolder.</p>
 <p>Currently the catalog supports loading definitions from GitHub + Local Files. To
 load from other places, not only will there need to be another preparer, but the
 support to load the location will also need to be added to the Catalog.</p>
-<p>For loading from a file the following command should work when the backend is
+<p>For loading from a file, the following command should work when the backend is
 running:</p>
 <pre><code class="hljs css language-sh">curl \
   --location \
@@ -118,7 +118,7 @@ running:</p>
   --header <span class="hljs-string">'Content-Type: application/json'</span> \
   --data-raw <span class="hljs-string">"{\"type\": \"file\", \"target\": \"<span class="hljs-variable">${YOUR PATH HERE}</span>/template.yaml\"}"</span>
 </code></pre>
-<p>If loading from a git location, you can run the following</p>
+<p>If loading from a Git location, you can run the following</p>
 <pre><code class="hljs css language-sh">curl \
   --location \
   --request POST <span class="hljs-string">'localhost:7000/catalog/locations'</span> \
@@ -128,7 +128,7 @@ running:</p>
 <p>This should then have added the catalog, and also should now be listed under the
 create page at <a href="http://localhost:3000/create">http://localhost:3000/create</a>.</p>
 <p>Alternatively, if you want to get setup with some mock templates that are
-already provided for you, you can run the following to load those templates:</p>
+already provided, run the following to load those templates:</p>
 <pre><code class="hljs">yarn lerna <span class="hljs-keyword">run</span><span class="bash"> mock-data</span>
 </code></pre>
 <p>The <code>type</code> field which is chosen in the request to add the <code>template.yaml</code> to

@@ -62,11 +62,11 @@
                 };
               }
             });
-        </script></nav></div><div class="container mainContainer docsContainer"><div class="wrapper"><div class="post"><header class="postHeader"><a class="edit-page-link button" href="https://github.com/spotify/backstage/tree/master/docs/features/software-templates/extending/index.md" target="_blank" rel="noreferrer noopener">Edit</a><h1 id="__docusaurus" class="postHeaderTitle">Extending the Scaffolder</h1></header><article><div><span><p>Welcome. Take a seat. You're at the Scaffolder Documentation.</p>
-<p>So - You wanna create stuff inside your company from some prebaked templates?
+        </script></nav></div><div class="container mainContainer docsContainer"><div class="wrapper"><div class="post"><header class="postHeader"><a class="edit-page-link button" href="https://github.com/spotify/backstage/edit/master/docs/features/software-templates/extending/index.md" target="_blank" rel="noreferrer noopener">Edit</a><h1 id="__docusaurus" class="postHeaderTitle">Extending the Scaffolder</h1></header><article><div><span><p>Welcome. Take a seat. You're at the Scaffolder Documentation.</p>
+<p>So, you want to create stuff inside your company from some prebaked templates?
 You're at the right place.</p>
-<p>This guide is gonna take you through how the Scaffolder in Backstage works.
-We'll dive into some jargon and run through whats going on in the backend to be
+<p>This guide is going to take you through how the Scaffolder in Backstage works.
+We'll dive into some jargon and run through what's going on in the backend to be
 able to create these templates. There's also more guides that you might find
 useful at the bottom of this document. At it's core, theres 3 simple stages.</p>
 <ol>
@@ -82,8 +82,8 @@ scaffolder that you will need to know:</p>
 <li>Publish</li>
 </ol>
 <p>Each of these steps can be configured for your own use case, but we provide some
-sensible defaults too.</p>
-<p>Lets dive a little deeper into these phases.</p>
+sensible defaults, too.</p>
+<p>Let's dive a little deeper into these phases.</p>
 <h3><a class="anchor" aria-hidden="true" id="glossary-and-jargon"></a><a href="#glossary-and-jargon" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Glossary and Jargon</h3>
 <p><strong>Preparer</strong> - The preparer is responsible for fetching the skeleton code and
 placing it into a directory and then will return that directory. It is
@@ -91,8 +91,8 @@ registered with the <code>Preparers</code> with a particular type, which is then
 the router to pick the correct <code>Preparer</code> to run for the <code>Template</code> entity.</p>
 <p><strong>Templater</strong> - The templater is responsible for actually running the chosen
 templater on top of the previously returned temporary directory from the
-<strong>Preprarer</strong>. We advise making these docker containers as it can keep all
-dependencies, for example Cookiecutter, self contained and not a dependency on
+<strong>Preprarer</strong>. We advise making these Docker containers as it can keep all
+dependencies--for example Cookiecutter--self contained and not a dependency on
 the host machine.</p>
 <p><strong>Publisher</strong> - The publisher is responsible for taking the finished directory,
 and publishing it to a remote registry. This could be a Git repository or
@@ -100,10 +100,10 @@ something similar. Right now, the scaffolder only supports one publishing method
 for the entire lifecycle, but it could be configured from the frontend and
 passed through to the scaffolder backend.</p>
 <h3><a class="anchor" aria-hidden="true" id="how-it-works"></a><a href="#how-it-works" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>How it works</h3>
-<p>The main of the heavy lifting is done in the
+<p>Most of the heavy lifting is done in the
 <a href="https://github.com/spotify/backstage/blob/master/plugins/scaffolder-backend/src/service/router.ts#L93">router.ts</a>
 file in the <code>scaffolder-backend</code> plugin.</p>
-<p>There are 2 routes defined in the router. <code>POST /v1/jobs</code> and
+<p>There are two routes defined in the router: <code>POST /v1/jobs</code> and
 <code>GET /v1/job/:jobId</code></p>
 <p>To create a scaffolding job, a JSON object containing the
 <a href="/docs/features/software-catalog/descriptor-format#kind-template">Template Entity</a> +
@@ -122,7 +122,7 @@ additional templating values must be posted as the post body.</p>
 </code></pre>
 <p>The values should represent something that is valid with the <code>schema</code> part of
 the <a href="/docs/features/software-catalog/descriptor-format#kind-template">Template Entity</a></p>
-<p>Once that has been posted, a job will be setup with different stages. And the
+<p>Once that has been posted, a job will be setup with different stages, and the
 job processor will complete each stage before moving onto the next stage, whilst
 collecting logs and mutating the running job.</p>
 <p>Here's some futher reading that you might find useful:</p>

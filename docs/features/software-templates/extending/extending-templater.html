@@ -62,17 +62,17 @@
                 };
               }
             });
-        </script></nav></div><div class="container mainContainer docsContainer"><div class="wrapper"><div class="post"><header class="postHeader"><a class="edit-page-link button" href="https://github.com/spotify/backstage/tree/master/docs/features/software-templates/extending/create-your-own-templater.md" target="_blank" rel="noreferrer noopener">Edit</a><h1 id="__docusaurus" class="postHeaderTitle">Creating your own Templater</h1></header><article><div><span><p>Templaters are responsible for taking the directory path for the skeleton
+        </script></nav></div><div class="container mainContainer docsContainer"><div class="wrapper"><div class="post"><header class="postHeader"><a class="edit-page-link button" href="https://github.com/spotify/backstage/edit/master/docs/features/software-templates/extending/create-your-own-templater.md" target="_blank" rel="noreferrer noopener">Edit</a><h1 id="__docusaurus" class="postHeaderTitle">Creating your own Templater</h1></header><article><div><span><p>Templaters are responsible for taking the directory path for the skeleton
 returned by the preparers, and then executing the templating command on top of
 the file and returning the completed template path. This may or may not be the
 same directory as the input directory.</p>
-<p>They also recieve additional values from the frontend, which can be used to
+<p>They also receive additional values from the frontend, which can be used to
 interpolate into the skeleton files.</p>
 <p>Currently we provide the following templaters:</p>
 <ul>
 <li><code>cookiecutter</code></li>
 </ul>
-<p>This templater is added the <code>TemplaterBuilder</code> and then passed into the
+<p>This templater is added to the <code>TemplaterBuilder</code> and then passed into the
 <code>createRouter</code> function of the <code>@spotify/plugin-scaffolder-backend</code></p>
 <p>An full example backend can be found
 <a href="https://github.com/spotify/backstage/blob/d91c10f654475a60829fa33a5c81018e517a319a/packages/backend/src/plugins/scaffolder.ts">here</a>,
@@ -99,7 +99,7 @@ but it looks something like the following</p>
 <p>This <code>TemplaterKey</code> is used to select the correct templater from the
 <code>spec.templater</code> in the
 <a href="/docs/features/software-catalog/descriptor-format#kind-template">Template Entity</a>.</p>
-<p>If you wish to add a new templater you'll need to register it with the
+<p>If you wish to add a new templater, you'll need to register it with the
 <code>TemplaterBuilder</code>.</p>
 <h3><a class="anchor" aria-hidden="true" id="creating-your-own-templater-to-add-to-the-templaterbuilder"></a><a href="#creating-your-own-templater-to-add-to-the-templaterbuilder" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Creating your own Templater to add to the <code>TemplaterBuilder</code></h3>
 <p>All templaters need to implement the <code>TemplaterBase</code> type.</p>
@@ -128,10 +128,10 @@ which is defined here under spec.schema`. More info can be found here
 <li><code>dockerClient</code> - a <a href="https://github.com/apocas/dockerode">dockerode</a> client to
 be able to run docker containers.</li>
 </ul>
-<p><em>note</em> currently the templaters that we provide are basically docker action
+<p><em>note</em> Currently the templaters that we provide are basically Docker action
 containers that are run on top of the skeleton folder. This keeps dependencies
 to a minimal for running backstage scaffolder, but you don't /have/ to use
-docker. You could create your own templater that spins up an EC2 instance and
+Docker. You could create your own templater that spins up an EC2 instance and
 downloads the folder and does everything using an AMI if you want. It's entirely
 up to you!</p>
 <p>Now it's up to you to implement the <code>run</code> function, and then return a
@@ -176,7 +176,7 @@ with a new <code>spec.templater</code> value, you'll need to register that with 
         <span class="hljs-attr">type:</span> <span class="hljs-string">string</span>
         <span class="hljs-attr">description:</span> <span class="hljs-string">Description</span> <span class="hljs-string">of</span> <span class="hljs-string">the</span> <span class="hljs-string">component</span>
 </code></pre>
-<p>You see that the <code>spec.templater</code> is set as <code>handlebars</code>, you'll need to
+<p>You see that the <code>spec.templater</code> is set as <code>handlebars</code>, so you'll need to
 register this with the <code>TemplaterBuilder</code> like so:</p>
 <pre><code class="hljs css language-ts"><span class="hljs-keyword">const</span> templaters = <span class="hljs-keyword">new</span> Templaters();
 templaters.register(<span class="hljs-string">'handlebars'</span>, <span class="hljs-keyword">new</span> HandlebarsTemplater());
