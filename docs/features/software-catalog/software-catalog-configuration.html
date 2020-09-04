@@ -20,13 +20,13 @@ catalog locations API. To remove the locations, you have to remove them from the
 configuration.</p>
 <h2><a class="anchor" aria-hidden="true" id="catalog-rules"></a><a href="#catalog-rules" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Catalog Rules</h2>
 <p>By default the catalog will only allow ingestion of entities with the kind
-<code>Component</code> and <code>API</code>. In order to allow entities of other kinds to be added,
-you need to add rules to the catalog. Rules are added either in a separate
-<code>catalog.rules</code> key, or added to statically configured locations.</p>
+<code>Component</code>, <code>API</code> and <code>Location</code>. In order to allow entities of other kinds to
+be added, you need to add rules to the catalog. Rules are added either in a
+separate <code>catalog.rules</code> key, or added to statically configured locations.</p>
 <p>For example, given the following configuration:</p>
 <pre><code class="hljs css language-yaml"><span class="hljs-attr">catalog:</span>
   <span class="hljs-attr">rules:</span>
-    <span class="hljs-bullet">-</span> <span class="hljs-attr">allow:</span> <span class="hljs-string">[Component,</span> <span class="hljs-string">API,</span> <span class="hljs-string">Template]</span>
+    <span class="hljs-bullet">-</span> <span class="hljs-attr">allow:</span> <span class="hljs-string">[Component,</span> <span class="hljs-string">API,</span> <span class="hljs-string">Location,</span> <span class="hljs-string">Template]</span>
 
   <span class="hljs-attr">locations:</span>
     <span class="hljs-bullet">-</span> <span class="hljs-attr">type:</span> <span class="hljs-string">github</span>
@@ -34,12 +34,12 @@ you need to add rules to the catalog. Rules are added either in a separate
       <span class="hljs-attr">rules:</span>
         <span class="hljs-bullet">-</span> <span class="hljs-attr">allow:</span> <span class="hljs-string">[Group]</span>
 </code></pre>
-<p>We are able to add entities of kind <code>Component</code>, <code>API</code>, or <code>Template</code> from any
-location, and <code>Group</code> entities from the <code>org-data.yaml</code>, which will also be read
-as statically configured location.</p>
+<p>We are able to add entities of kind <code>Component</code>, <code>API</code>, <code>Location</code>, or
+<code>Template</code> from any location, and <code>Group</code> entities from the <code>org-data.yaml</code>,
+which will also be read as statically configured location.</p>
 <p>Note that if the <code>catalog.rules</code> key is present it will replace the default
-value, meaning that you need to add rules for <code>Component</code> and <code>API</code> kinds if you
-want those to be allowed.</p>
+value, meaning that you need to add rules for the default kinds if you want
+those to still be allowed.</p>
 <p>The following configuration will reject any kind of entities from being added to
 the catalog:</p>
 <pre><code class="hljs css language-yaml"><span class="hljs-attr">catalog:</span>
