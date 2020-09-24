@@ -89,7 +89,7 @@ project run: <code>yarn create-plugin</code></li>
 <li>When the process finishes, let's start the backend:
 <code>yarn --cwd packages/backend start</code></li>
 <li>If you see errors starting, refer to
-<a href="https://github.com/johnson-jesse/simple-backstage-app/blob/master/README.md#the-auth-configuration">Auth Configuration</a>
+<a href="https://backstage.io/docs/tutorials/quickstart-app-auth#the-auth-configuration">Auth Configuration</a>
 for more information on environment variables.</li>
 <li>And now the frontend, from a new terminal window and the root of your
 project: <code>yarn start</code></li>
@@ -159,73 +159,18 @@ const profile = identityApi.get<span class="hljs-constructor">Profile()</span>;
 <p>If everything is saved, you should see your name, id, and email on the
 github-playground page. Our data accessed is synchronous. So we just grab and
 go.</p>
+<p><a href="https://github.com/spotify/backstage/tree/master/contrib">https://github.com/spotify/backstage/tree/master/contrib</a></p>
 <ol start="6">
 <li>Here is the entire file for reference
-<details><summary>Complete ExampleComponent.tsx</summary></li>
+<a href="https://github.com/spotify/backstage/tree/master/contrib/docs/tutorials/quickstart-app-plugin/ExampleComponent.md">ExampleComponent.tsx</a></li>
 </ol>
-<p>
-<pre><code class="hljs css language-tsx"><span class="hljs-keyword">import</span> React, { FC } <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>;
-<span class="hljs-keyword">import</span> { Typography, Grid } <span class="hljs-keyword">from</span> <span class="hljs-string">'@material-ui/core'</span>;
-<span class="hljs-keyword">import</span> {
-  InfoCard,
-  Header,
-  Page,
-  pageTheme,
-  Content,
-  ContentHeader,
-  HeaderLabel,
-  SupportButton,
-  identityApiRef,
-} <span class="hljs-keyword">from</span> <span class="hljs-string">'@backstage/core'</span>;
-<span class="hljs-keyword">import</span> { useApi } <span class="hljs-keyword">from</span> <span class="hljs-string">'@backstage/core-api'</span>;
-<span class="hljs-keyword">import</span> ExampleFetchComponent <span class="hljs-keyword">from</span> <span class="hljs-string">'../ExampleFetchComponent'</span>;
-
-<span class="hljs-keyword">const</span> ExampleComponent: FC&lt;{}&gt; = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
-  <span class="hljs-keyword">const</span> identityApi = useApi(identityApiRef);
-  <span class="hljs-keyword">const</span> userId = identityApi.getUserId();
-  <span class="hljs-keyword">const</span> profile = identityApi.getProfile();
-
-  <span class="hljs-keyword">return</span> (
-    <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">Page</span> <span class="hljs-attr">theme</span>=<span class="hljs-string">{pageTheme.tool}</span>&gt;</span>
-      <span class="hljs-tag">&lt;<span class="hljs-name">Header</span>
-        <span class="hljs-attr">title</span>=<span class="hljs-string">"Welcome to github-playground!"</span>
-        <span class="hljs-attr">subtitle</span>=<span class="hljs-string">"Optional subtitle"</span>
-      &gt;</span>
-        <span class="hljs-tag">&lt;<span class="hljs-name">HeaderLabel</span> <span class="hljs-attr">label</span>=<span class="hljs-string">"Owner"</span> <span class="hljs-attr">value</span>=<span class="hljs-string">"Team X"</span> /&gt;</span>
-        <span class="hljs-tag">&lt;<span class="hljs-name">HeaderLabel</span> <span class="hljs-attr">label</span>=<span class="hljs-string">"Lifecycle"</span> <span class="hljs-attr">value</span>=<span class="hljs-string">"Alpha"</span> /&gt;</span>
-      <span class="hljs-tag">&lt;/<span class="hljs-name">Header</span>&gt;</span>
-      <span class="hljs-tag">&lt;<span class="hljs-name">Content</span>&gt;</span>
-        <span class="hljs-tag">&lt;<span class="hljs-name">ContentHeader</span> <span class="hljs-attr">title</span>=<span class="hljs-string">"Plugin title"</span>&gt;</span>
-          <span class="hljs-tag">&lt;<span class="hljs-name">SupportButton</span>&gt;</span>A description of your plugin goes here.<span class="hljs-tag">&lt;/<span class="hljs-name">SupportButton</span>&gt;</span>
-        <span class="hljs-tag">&lt;/<span class="hljs-name">ContentHeader</span>&gt;</span>
-        <span class="hljs-tag">&lt;<span class="hljs-name">Grid</span> <span class="hljs-attr">container</span> <span class="hljs-attr">spacing</span>=<span class="hljs-string">{3}</span> <span class="hljs-attr">direction</span>=<span class="hljs-string">"column"</span>&gt;</span>
-          <span class="hljs-tag">&lt;<span class="hljs-name">Grid</span> <span class="hljs-attr">item</span>&gt;</span>
-            <span class="hljs-tag">&lt;<span class="hljs-name">InfoCard</span> <span class="hljs-attr">title</span>=<span class="hljs-string">{userId}</span>&gt;</span>
-              <span class="hljs-tag">&lt;<span class="hljs-name">Typography</span> <span class="hljs-attr">variant</span>=<span class="hljs-string">"body1"</span>&gt;</span>
-                {`${profile.displayName} | ${profile.email}`}
-              <span class="hljs-tag">&lt;/<span class="hljs-name">Typography</span>&gt;</span>
-            <span class="hljs-tag">&lt;/<span class="hljs-name">InfoCard</span>&gt;</span>
-          <span class="hljs-tag">&lt;/<span class="hljs-name">Grid</span>&gt;</span>
-          <span class="hljs-tag">&lt;<span class="hljs-name">Grid</span> <span class="hljs-attr">item</span>&gt;</span>
-            <span class="hljs-tag">&lt;<span class="hljs-name">ExampleFetchComponent</span> /&gt;</span>
-          <span class="hljs-tag">&lt;/<span class="hljs-name">Grid</span>&gt;</span>
-        <span class="hljs-tag">&lt;/<span class="hljs-name">Grid</span>&gt;</span>
-      <span class="hljs-tag">&lt;/<span class="hljs-name">Content</span>&gt;</span>
-    <span class="hljs-tag">&lt;/<span class="hljs-name">Page</span>&gt;</span></span>
-  );
-};
-
-<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> ExampleComponent;
-</code></pre>
-</p>
-</details>
 <h1><a class="anchor" aria-hidden="true" id="the-wipe"></a><a href="#the-wipe" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>The Wipe</h1>
 <p>The last file we will touch is ExampleFetchComponent. Because of the number of
 changes, let's start by wiping this component clean.</p>
 <ol>
 <li>Start by opening
 <code>root: plugins &gt; github-playground &gt; src &gt; components &gt; ExampleFetchComponent &gt; ExampleFetchComponent.tsx</code></li>
-<li>Replace everyting in the file with the following:</li>
+<li>Replace everything in the file with the following:</li>
 </ol>
 <pre><code class="hljs css language-tsx"><span class="hljs-keyword">import</span> React, { FC } <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>;
 <span class="hljs-keyword">import</span> { useAsync } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-use'</span>;
@@ -354,8 +299,8 @@ obtained in an asynchronous manner.</li>
 }, []);
 </code></pre>
 <ol start="4">
-<li>The resolved data is conventiently destructured with value containing our
-Viewer type. loading as a boolean, self explainatory. And error which is
+<li>The resolved data is conveniently destructured with <code>value</code> containing our
+Viewer type. <code>loading</code> as a boolean, self explanatory. And <code>error</code> which is
 present only if necessary. So let's use those as the first 3 of 4 multi
 return statements.</li>
 <li>Add the <em>if return</em> blocks below our async block</li>
@@ -381,121 +326,10 @@ return statements.</li>
 <li>After saving that, and given we don't have any errors, you should see a table
 with basic information on your repositories.</li>
 <li>Here is the entire file for reference
-<details><summary>Complete ExampleFetchComponent.tsx</summary></li>
-</ol>
-  <p>
-<pre><code class="hljs css language-tsx"><span class="hljs-keyword">import</span> React, { FC } <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>;
-<span class="hljs-keyword">import</span> { useAsync } <span class="hljs-keyword">from</span> <span class="hljs-string">'react-use'</span>;
-<span class="hljs-keyword">import</span> Alert <span class="hljs-keyword">from</span> <span class="hljs-string">'@material-ui/lab/Alert'</span>;
-<span class="hljs-keyword">import</span> {
-  Table,
-  TableColumn,
-  Progress,
-  githubAuthApiRef,
-} <span class="hljs-keyword">from</span> <span class="hljs-string">'@backstage/core'</span>;
-<span class="hljs-keyword">import</span> { useApi } <span class="hljs-keyword">from</span> <span class="hljs-string">'@backstage/core-api'</span>;
-<span class="hljs-keyword">import</span> { graphql } <span class="hljs-keyword">from</span> <span class="hljs-string">'@octokit/graphql'</span>;
-
-<span class="hljs-keyword">const</span> query = <span class="hljs-string">`{
-viewer {
-  repositories(first: 100) {
-    totalCount
-    nodes {
-      name
-      createdAt
-      description
-      diskUsage
-      isFork
-    }
-    pageInfo {
-      endCursor
-      hasNextPage
-    }
-  }
-}
-}`</span>;
-
-type Node = {
-  <span class="hljs-attr">name</span>: string;
-  createdAt: string;
-  description: string;
-  diskUsage: number;
-  isFork: boolean;
-};
-
-type Viewer = {
-  <span class="hljs-attr">repositories</span>: {
-    <span class="hljs-attr">totalCount</span>: number;
-    nodes: Node[];
-    pageInfo: {
-      <span class="hljs-attr">endCursor</span>: string;
-      hasNextPage: boolean;
-    };
-  };
-};
-
-type DenseTableProps = {
-  <span class="hljs-attr">viewer</span>: Viewer;
-};
-
-<span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> DenseTable: FC&lt;DenseTableProps&gt; = <span class="hljs-function">(<span class="hljs-params">{ viewer }</span>) =&gt;</span> {
-  <span class="hljs-keyword">const</span> columns: TableColumn[] = [
-    { <span class="hljs-attr">title</span>: <span class="hljs-string">'Name'</span>, <span class="hljs-attr">field</span>: <span class="hljs-string">'name'</span> },
-    { <span class="hljs-attr">title</span>: <span class="hljs-string">'Created'</span>, <span class="hljs-attr">field</span>: <span class="hljs-string">'createdAt'</span> },
-    { <span class="hljs-attr">title</span>: <span class="hljs-string">'Description'</span>, <span class="hljs-attr">field</span>: <span class="hljs-string">'description'</span> },
-    { <span class="hljs-attr">title</span>: <span class="hljs-string">'Disk Usage'</span>, <span class="hljs-attr">field</span>: <span class="hljs-string">'diskUsage'</span> },
-    { <span class="hljs-attr">title</span>: <span class="hljs-string">'Fork'</span>, <span class="hljs-attr">field</span>: <span class="hljs-string">'isFork'</span> },
-  ];
-
-  <span class="hljs-keyword">return</span> (
-    <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">Table</span>
-      <span class="hljs-attr">title</span>=<span class="hljs-string">"List Of User's Repositories"</span>
-      <span class="hljs-attr">options</span>=<span class="hljs-string">{{</span> <span class="hljs-attr">search:</span> <span class="hljs-attr">false</span>, <span class="hljs-attr">paging:</span> <span class="hljs-attr">false</span> }}
-      <span class="hljs-attr">columns</span>=<span class="hljs-string">{columns}</span>
-      <span class="hljs-attr">data</span>=<span class="hljs-string">{viewer.repositories.nodes}</span>
-    /&gt;</span></span>
-  );
-};
-
-<span class="hljs-keyword">const</span> ExampleFetchComponent: FC&lt;{}&gt; = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
-  <span class="hljs-keyword">const</span> auth = useApi(githubAuthApiRef);
-
-  <span class="hljs-keyword">const</span> { value, loading, error } = useAsync(<span class="hljs-keyword">async</span> (): <span class="hljs-built_in">Promise</span>&lt;any&gt; =&gt; {
-    <span class="hljs-keyword">const</span> token = <span class="hljs-keyword">await</span> auth.getAccessToken();
-
-    <span class="hljs-keyword">const</span> gqlEndpoint = graphql.defaults({
-      <span class="hljs-comment">// Uncomment baseUrl if using enterprise</span>
-      <span class="hljs-comment">// baseUrl: 'https://github.MY-BIZ.com/api',</span>
-      <span class="hljs-attr">headers</span>: {
-        <span class="hljs-attr">authorization</span>: <span class="hljs-string">`token <span class="hljs-subst">${token}</span>`</span>,
-      },
-    });
-    <span class="hljs-keyword">const</span> { viewer } = <span class="hljs-keyword">await</span> gqlEndpoint(query);
-    <span class="hljs-keyword">return</span> viewer;
-  }, []);
-
-  <span class="hljs-keyword">if</span> (loading) <span class="hljs-keyword">return</span> <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">Progress</span> /&gt;</span></span>;
-  <span class="hljs-keyword">if</span> (error) <span class="hljs-keyword">return</span> <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">Alert</span> <span class="hljs-attr">severity</span>=<span class="hljs-string">"error"</span>&gt;</span>{error.message}<span class="hljs-tag">&lt;/<span class="hljs-name">Alert</span>&gt;</span></span>;
-  <span class="hljs-keyword">if</span> (value &amp;&amp; value.repositories) <span class="hljs-keyword">return</span> <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">DenseTable</span> <span class="hljs-attr">viewer</span>=<span class="hljs-string">{value}</span> /&gt;</span></span>;
-
-  <span class="hljs-keyword">return</span> (
-    <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">Table</span>
-      <span class="hljs-attr">title</span>=<span class="hljs-string">"List Of User's Repositories"</span>
-      <span class="hljs-attr">options</span>=<span class="hljs-string">{{</span> <span class="hljs-attr">search:</span> <span class="hljs-attr">false</span>, <span class="hljs-attr">paging:</span> <span class="hljs-attr">false</span> }}
-      <span class="hljs-attr">columns</span>=<span class="hljs-string">{[]}</span>
-      <span class="hljs-attr">data</span>=<span class="hljs-string">{[]}</span>
-    /&gt;</span></span>
-  );
-};
-
-<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> ExampleFetchComponent;
-</code></pre>
-  </p>
-  </details>
-<ol start="10">
-<li>We finished! If there are no errors, you should see your own GitHub
-repoistory information displayed in a basic table. If you run into issues,
-you can compare the repo that backs this documdnt,
+<a href="https://github.com/spotify/backstage/tree/master/contrib/docs/tutorials/quickstart-app-plugin/ExampleFetchComponent.md">ExampleFetchComponent.tsx</a></li>
+<li>We finished! You should see your own GitHub repository's information
+displayed in a basic table. If you run into issues, you can compare the repo
+that backs this document,
 <a href="https://github.com/johnson-jesse/simple-backstage-app-plugin">simple-backstage-app-plugin</a></li>
 </ol>
 <h1><a class="anchor" aria-hidden="true" id="where-to-go-from-here"></a><a href="#where-to-go-from-here" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Where to go from here</h1>

@@ -130,7 +130,7 @@ following contents to get you up and running quickly.</p>
   GitlabPublisher,
   CreateReactAppTemplater,
   Templaters,
-  RepoVisilityOptions,
+  RepoVisibilityOptions,
 } <span class="hljs-keyword">from</span> <span class="hljs-string">'@backstage/plugin-scaffolder-backend'</span>;
 <span class="hljs-keyword">import</span> { Octokit } <span class="hljs-keyword">from</span> <span class="hljs-string">'@octokit/rest'</span>;
 <span class="hljs-keyword">import</span> { Gitlab } <span class="hljs-keyword">from</span> <span class="hljs-string">'@gitbeaker/node'</span>;
@@ -162,7 +162,7 @@ following contents to get you up and running quickly.</p>
   <span class="hljs-keyword">const</span> githubToken = config.getString(<span class="hljs-string">'scaffolder.github.token'</span>);
   <span class="hljs-keyword">const</span> repoVisibility = config.getString(
     <span class="hljs-string">'scaffolder.github.visibility'</span>,
-  ) <span class="hljs-keyword">as</span> RepoVisilityOptions;
+  ) <span class="hljs-keyword">as</span> RepoVisibilityOptions;
 
   <span class="hljs-keyword">const</span> githubClient = <span class="hljs-keyword">new</span> Octokit({ auth: githubToken });
   <span class="hljs-keyword">const</span> githubPublisher = <span class="hljs-keyword">new</span> GithubPublisher({

@@ -4,7 +4,7 @@
         <title>Backstage Blog</title>
         <link>https://backstage.io/blog</link>
         <description>The best place to stay up-to-date with the latest Backstage news and events.</description>
-        <lastBuildDate>Tue, 08 Sep 2020 06:00:00 GMT</lastBuildDate>
+        <lastBuildDate>Wed, 23 Sep 2020 06:00:00 GMT</lastBuildDate>
         <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
         <generator>https://github.com/jpmonette/feed</generator>
         <image>
@@ -13,6 +13,15 @@
             <link>https://backstage.io/blog</link>
         </image>
         <copyright>Copyright © 2020 Spotify AB</copyright>
+        <item>
+            <title><![CDATA[Backstage has been accepted into the CNCF Sandbox]]></title>
+            <link>https://backstage.io/blog/2020/09/23/backstage-cncf-sandbox.html</link>
+            <guid>https://backstage.io/blog/2020/09/23/backstage-cncf-sandbox.html</guid>
+            <pubDate>Wed, 23 Sep 2020 06:00:00 GMT</pubDate>
+            <description><![CDATA[<p><strong>TL;DR</strong> The Cloud Native Computing Foundation (CNCF) announced that Backstage can begin incubating as an early stage project in the <a href="https://www.cncf.io/sandbox-projects/">CNCF Sandbox</a>. Released open source in March, the platform is built around an advanced service catalog and is designed to streamline software development from end to end.</p>
+<p><img src="/blog/assets/cncf-sandbox/cncf.png" alt="cncf"></p>
+]]></description>
+        </item>
         <item>
             <title><![CDATA[Announcing TechDocs: Spotify’s docs-like-code plugin for Backstage]]></title>
             <link>https://backstage.io/blog/2020/09/08/announcing-tech-docs.html</link>
