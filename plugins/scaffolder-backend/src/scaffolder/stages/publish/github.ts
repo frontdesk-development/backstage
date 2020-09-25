@@ -21,26 +21,20 @@ import { JsonValue } from '@backstage/config';
 import { RequiredTemplateValues } from '../templater';
 import { Repository, Remote, Signature, Cred } from 'nodegit';
 
-export type RepoVisilityOptions = 'private' | 'internal' | 'public';
+export type RepoVisibilityOptions = 'private' | 'internal' | 'public';
 
 interface GithubPublisherParams {
   client: Octokit;
   token: string;
-  repoVisibility: RepoVisilityOptions;
+  repoVisibility: RepoVisibilityOptions;
 }
 
 export class GithubPublisher implements PublisherBase {
   private client: Octokit;
-  private token: string;
-  private repoVisibility: RepoVisilityOptions;
+  private repoVisibility: RepoVisibilityOptions;
 
-  constructor({
-    client,
-    token,
-    repoVisibility = 'internal',
-  }: GithubPublisherParams) {
+  constructor({ client, repoVisibility = 'internal' }: GithubPublisherParams) {
     this.client = client;
-    this.token = token;
     this.repoVisibility = repoVisibility;
   }
 
@@ -54,6 +48,7 @@ export class GithubPublisher implements PublisherBase {
     token: string;
   }): Promise<{ remoteUrl: string }> {
     const remoteUrl = await this.createRemote(values, token);
+
     await this.pushToRemote(directory, remoteUrl, token);
 
     return { remoteUrl };
@@ -63,34 +58,33 @@ export class GithubPublisher implements PublisherBase {
     values: RequiredTemplateValues & Record<string, JsonValue>,
     token: string,
   ) {
+    const githubClientPublish = new Octokit({ auth: token });
     const [owner, name] = values.storePath.split('/');
     const description = values.description as string;
 
-    const user = await this.client.users.getByUsername({ username: owner });
+    const user = await githubClientPublish.users.getByUsername({
+      username: owner,
+    });
     const repoCreationPromise =
       user.data.type === 'Organization'
-        ? this.client.repos.createInOrg({
+        ? githubClientPublish.repos.createInOrg({
+            // this.client.repos.createInOrg({
             name,
             org: owner,
             headers: {
-              authorization: `Bearer ${token}`,
               Accept: `application/vnd.github.nebula-preview+json`,
             },
-            visibility: 'internal',
-            description,
+            visibility: this.repoVisibility,
+            description: description,
           })
-        : this.client.repos.createForAuthenticatedUser({
-            name,
-            private: this.repoVisibility === 'private',
-            description,
-          });
+        : this.client.repos.createForAuthenticatedUser({ name });
 
     const { data } = await repoCreationPromise;
 
     const access = values.access as string;
     if (access?.startsWith(`${owner}/`)) {
       const [, team] = access.split('/');
-      await this.client.teams.addOrUpdateRepoPermissionsInOrg({
+      await githubClientPublish.teams.addOrUpdateRepoPermissionsInOrg({
         org: owner,
         team_slug: team,
         owner,
@@ -99,7 +93,7 @@ export class GithubPublisher implements PublisherBase {
       });
       // no need to add access if it's the person who own's the personal account
     } else if (access && access !== owner) {
-      await this.client.repos.addCollaborator({
+      await githubClientPublish.repos.addCollaborator({
         owner,
         repo: name,
         username: access,
@@ -115,7 +109,6 @@ export class GithubPublisher implements PublisherBase {
     remote: string,
     token: string,
   ): Promise<void> {
-    console.log('this.Token: ', this.token);
     const repo = await Repository.init(directory, 0);
     const index = await repo.refreshIndex();
     await index.addAll();
@@ -133,7 +126,7 @@ export class GithubPublisher implements PublisherBase {
     await remoteRepo.push(['refs/heads/master:refs/heads/master'], {
       callbacks: {
         credentials: () => {
-          return Cred.userpassPlaintextNew(token, 'x-oauth-basic');
+          return Cred.userpassPlaintextNew(token as string, 'x-oauth-basic');
         },
       },
     });

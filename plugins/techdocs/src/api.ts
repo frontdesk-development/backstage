@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { createApiRef } from '@backstage/core';
+import { createApiRef, OAuthApi } from '@backstage/core';
 
 import { ParsedEntityId } from './types';
 
@@ -24,11 +24,7 @@ export const techdocsStorageApiRef = createApiRef<TechDocsStorageApi>({
 });
 
 export interface TechDocsStorage {
-  getEntityDocs(
-    entityId: ParsedEntityId,
-    path: string,
-    token: string,
-  ): Promise<string>;
+  getEntityDocs(entityId: ParsedEntityId, path: string): Promise<string>;
   getBaseUrl(
     oldBaseUrl: string,
     entityId: ParsedEntityId,
@@ -38,12 +34,20 @@ export interface TechDocsStorage {
 
 export class TechDocsStorageApi implements TechDocsStorage {
   public apiOrigin: string;
+  private readonly githubAuthApi: OAuthApi;
 
-  constructor({ apiOrigin }: { apiOrigin: string }) {
+  constructor({
+    apiOrigin,
+    githubAuthApi,
+  }: {
+    apiOrigin: string;
+    githubAuthApi: OAuthApi;
+  }) {
     this.apiOrigin = apiOrigin;
+    this.githubAuthApi = githubAuthApi;
   }
 
-  async getEntityDocs(entityId: ParsedEntityId, path: string, token: string) {
+  async getEntityDocs(entityId: ParsedEntityId, path: string) {
     const { kind, namespace, name } = entityId;
 
     const url = `${this.apiOrigin}/${kind}/${
@@ -54,7 +58,7 @@ export class TechDocsStorageApi implements TechDocsStorage {
       `${url.endsWith('/') ? url : `${url}/`}index.html`,
       {
         headers: new Headers({
-          Authorization: token,
+          Authorization: await this.getToken(),
         }),
       },
     );
@@ -79,5 +83,13 @@ export class TechDocsStorageApi implements TechDocsStorage {
         namespace ? namespace : 'default'
       }/${name}/${path}`,
     ).toString();
+  }
+
+  async getToken(): Promise<string> {
+    // NOTE(freben): There's a .read-only variant of this scope that we could
+    // use for readonly operations, but that means we would ask the user for a
+    // second auth during creation and I decided to keep the wider scope for
+    // all ops for now
+    return this.githubAuthApi.getAccessToken('repo');
   }
 }

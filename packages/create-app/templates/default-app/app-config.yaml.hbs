@@ -44,8 +44,8 @@ proxy:
     changeOrigin: true
 
 techdocs:
-  storageUrl: http://localhost:7000/techdocs/static/docs
-  requestUrl: http://localhost:7000/techdocs/docs
+  storageUrl: http://localhost:7000/api/techdocs/static/docs
+  requestUrl: http://localhost:7000/api/techdocs/docs
   generators:
     techdocs: 'docker'
 
@@ -67,10 +67,6 @@ catalog:
     - allow: [Component, API, Group, Template, Location]
   processors:
     github:
-      privateToken:
-        $secret:
-          env: GITHUB_PRIVATE_TOKEN
-    githubApi:
       providers:
         - target: https://github.com
           token:

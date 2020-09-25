@@ -19,13 +19,9 @@ import { useParams } from 'react-router-dom';
 
 import { TechDocsPageWrapper } from './TechDocsPageWrapper';
 import { Reader } from './Reader';
-import { githubAuthApiRef } from '@backstage/core-api';
-import { useApi } from '@backstage/core';
 
 export const TechDocsPage = () => {
   const { entityId } = useParams();
-  const githubAuthApi = useApi(githubAuthApiRef);
-  const tokenPromise = githubAuthApi.getAccessToken('repo');
 
   const [kind, namespace, name] = entityId.split(':');
 
@@ -37,7 +33,6 @@ export const TechDocsPage = () => {
           namespace,
           name,
         }}
-        tokenPromise={tokenPromise}
       />
     </TechDocsPageWrapper>
   );

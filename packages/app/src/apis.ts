@@ -16,11 +16,8 @@
 
 import {
   errorApiRef,
-  discoveryApiRef,
-  UrlPatternDiscovery,
   githubAuthApiRef,
   createApiFactory,
-  configApiRef,
 } from '@backstage/core';
 
 import {
@@ -36,18 +33,8 @@ import {
   GithubPullRequestsClient,
   githubPullRequestsApiRef,
 } from '@backstage/plugin-github-prs';
-import { GCPClient, GCPApiRef } from '@backstage/plugin-gcp-projects';
 
 export const apis = [
-  // TODO(Rugvip): migrate to use /api
-  createApiFactory({
-    api: discoveryApiRef,
-    deps: { configApi: configApiRef },
-    factory: ({ configApi }) =>
-      UrlPatternDiscovery.compile(
-        `${configApi.getString('backend.baseUrl')}/{{ pluginId }}`,
-      ),
-  }),
   createApiFactory({
     api: graphQlBrowseApiRef,
     deps: { errorApi: errorApiRef, githubAuthApi: githubAuthApiRef },
@@ -70,5 +57,4 @@ export const apis = [
   // TODO: move to plugins
   createApiFactory(travisCIApiRef, new TravisCIApi()),
   createApiFactory(githubPullRequestsApiRef, new GithubPullRequestsClient()),
-  createApiFactory(GCPApiRef, new GCPClient()),
 ];
