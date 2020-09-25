@@ -26,7 +26,10 @@ import {
   PublisherBase,
   LocalPublish,
 } from '../techdocs';
-import { resolvePackagePath } from '@backstage/backend-common';
+import {
+  PluginEndpointDiscovery,
+  resolvePackagePath,
+} from '@backstage/backend-common';
 import { Entity } from '@backstage/catalog-model';
 import { DocsBuilder } from './helpers';
 
@@ -35,6 +38,7 @@ type RouterOptions = {
   generators: GeneratorBuilder;
   publisher: PublisherBase;
   logger: Logger;
+  discovery: PluginEndpointDiscovery;
   database?: Knex; // TODO: Make database required when we're implementing database stuff.
   config: Config;
   dockerClient: Docker;
@@ -52,11 +56,11 @@ export async function createRouter({
   config,
   dockerClient,
   logger,
+  discovery,
 }: RouterOptions): Promise<express.Router> {
   const router = Router();
 
   router.get('/docs/:kind/:namespace/:name/*', async (req, res) => {
-    const baseUrl = config.getString('backend.baseUrl');
     const storageUrl = config.getString('techdocs.storageUrl');
 
     if (typeof req.headers.authorization === 'undefined') {
@@ -66,11 +70,16 @@ export async function createRouter({
     const token = req.headers.authorization || '';
     const { kind, namespace, name } = req.params;
 
-    const entity = (await (
-      await fetch(
-        `${baseUrl}/api/catalog/entities/by-name/${kind}/${namespace}/${name}`,
-      )
-    ).json()) as Entity;
+    const catalogUrl = await discovery.getBaseUrl('catalog');
+    const triple = [kind, namespace, name].map(encodeURIComponent).join('/');
+
+    const catalogRes = await fetch(`${catalogUrl}/entities/by-name/${triple}`);
+    if (!catalogRes.ok) {
+      catalogRes.body.pipe(res.status(catalogRes.status));
+      return;
+    }
+
+    const entity: Entity = await catalogRes.json();
 
     const docsBuilder = new DocsBuilder({
       preparers,
@@ -86,7 +95,7 @@ export async function createRouter({
       await docsBuilder.build(token);
     }
 
-    return res.redirect(`${storageUrl}${req.path.replace('/docs', '')}`);
+    res.redirect(`${storageUrl}${req.path.replace('/docs', '')}`);
   });
 
   if (publisher instanceof LocalPublish) {
