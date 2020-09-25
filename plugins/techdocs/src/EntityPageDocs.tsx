@@ -20,7 +20,6 @@ import { Reader } from './reader';
 
 export const EntityPageDocs = ({
   entity,
-  tokenPromise,
 }: {
   entity: Entity;
   tokenPromise: Promise<string>;
@@ -32,7 +31,6 @@ export const EntityPageDocs = ({
         namespace: entity.metadata.namespace,
         name: entity.metadata.name,
       }}
-      tokenPromise={tokenPromise}
     />
   );
 };

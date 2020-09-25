@@ -21,17 +21,17 @@ import { JsonValue } from '@backstage/config';
 import { RequiredTemplateValues } from '../templater';
 import { Repository, Remote, Signature, Cred } from 'nodegit';
 
-export type RepoVisilityOptions = 'private' | 'internal' | 'public';
+export type RepoVisibilityOptions = 'private' | 'internal' | 'public';
 
 interface GithubPublisherParams {
   client: Octokit;
   token: string;
-  repoVisibility: RepoVisilityOptions;
+  repoVisibility: RepoVisibilityOptions;
 }
 
 export class GithubPublisher implements PublisherBase {
   private client: Octokit;
-  private repoVisibility: RepoVisilityOptions;
+  private repoVisibility: RepoVisibilityOptions;
 
   constructor({ client, repoVisibility = 'internal' }: GithubPublisherParams) {
     this.client = client;
@@ -48,7 +48,7 @@ export class GithubPublisher implements PublisherBase {
     token: string;
   }): Promise<{ remoteUrl: string }> {
     const remoteUrl = await this.createRemote(values, token);
-    console.log('Push to remote token: ', token);
+
     await this.pushToRemote(directory, remoteUrl, token);
 
     return { remoteUrl };
@@ -58,62 +58,46 @@ export class GithubPublisher implements PublisherBase {
     values: RequiredTemplateValues & Record<string, JsonValue>,
     token: string,
   ) {
-    console.log('Inside createRemote... Token: ', token);
+    const githubClientPublish = new Octokit({ auth: token });
     const [owner, name] = values.storePath.split('/');
-    console.log('Owner: ', owner, ' Name: ', name);
     const description = values.description as string;
-    console.log('Description: ', description);
 
-    const user = await this.client.users.getByUsername({
+    const user = await githubClientPublish.users.getByUsername({
       username: owner,
-      headers: { authorization: `Bearer ${token}` },
     });
-    console.log('User data type => ', user);
-
     const repoCreationPromise =
       user.data.type === 'Organization'
-        ? this.client.repos.createInOrg({
+        ? githubClientPublish.repos.createInOrg({
+            // this.client.repos.createInOrg({
             name,
             org: owner,
             headers: {
-              authorization: `Bearer ${token}`,
               Accept: `application/vnd.github.nebula-preview+json`,
             },
-            visibility: 'internal',
-            description,
+            visibility: this.repoVisibility,
+            description: description,
           })
-        : this.client.repos.createForAuthenticatedUser({
-            name,
-            private: this.repoVisibility === 'private',
-            description,
-          });
+        : this.client.repos.createForAuthenticatedUser({ name });
 
     const { data } = await repoCreationPromise;
-    console.log('repocreation promise data => ', data);
 
     const access = values.access as string;
     if (access?.startsWith(`${owner}/`)) {
       const [, team] = access.split('/');
-      await this.client.teams.addOrUpdateRepoPermissionsInOrg({
+      await githubClientPublish.teams.addOrUpdateRepoPermissionsInOrg({
         org: owner,
         team_slug: team,
         owner,
         repo: name,
         permission: 'admin',
-        headers: {
-          authorization: `Bearer ${token}`,
-        },
       });
       // no need to add access if it's the person who own's the personal account
     } else if (access && access !== owner) {
-      await this.client.repos.addCollaborator({
+      await githubClientPublish.repos.addCollaborator({
         owner,
         repo: name,
         username: access,
         permission: 'admin',
-        headers: {
-          authorization: `Bearer ${token}`,
-        },
       });
     }
 
