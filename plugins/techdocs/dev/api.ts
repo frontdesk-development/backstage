@@ -25,7 +25,7 @@ export class TechDocsDevStorageApi implements TechDocsStorage {
     this.apiOrigin = apiOrigin;
   }
 
-  async getEntityDocs(entityId: ParsedEntityId, path: string, token: string) {
+  async getEntityDocs(entityId: ParsedEntityId, path: string) {
     const { name } = entityId;
 
     const url = `${this.apiOrigin}/${name}/${path}`;
@@ -34,7 +34,7 @@ export class TechDocsDevStorageApi implements TechDocsStorage {
       `${url.endsWith('/') ? url : `${url}/`}index.html`,
       {
         headers: new Headers({
-          Authorization: token,
+          Authorization: 'token',
         }),
       },
     );
