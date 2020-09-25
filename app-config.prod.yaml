@@ -127,3 +127,7 @@ scaffolder:
         env: GITHUB_ACCESS_TOKEN
     visibility: internal # or 'public' or 'private'
 
+kubernetes:
+  clusterLocatorMethod: 'configMultiTenant'
+  clusters: []
+
