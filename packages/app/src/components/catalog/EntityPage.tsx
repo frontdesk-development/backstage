@@ -56,8 +56,8 @@ const CICDSwitcher = ({ entity }: { entity: Entity }) => {
     case isCloudbuildAvailable(entity) && isGitHubActionsAvailable(entity):
       return (
         <>
-          <GitHubActionsRouter entity={entity} />;
-          <CloudbuildRouter entity={entity} />;
+          <GitHubActionsRouter entity={entity} />
+          <CloudbuildRouter entity={entity} />
         </>
       );
     case isJenkinsAvailable(entity):

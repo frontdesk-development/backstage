@@ -1,0 +1,133 @@
+app:
+  title: Frontdesk 
+  baseUrl: http://frontdesk.sre-frontdesk.stage.europe-west4.tools.trv.cloud
+
+backend:
+  baseUrl: http://frontdesk.sre-frontdesk.stage.europe-west4.tools.trv.cloud/backend
+  listen:
+    port: 7000
+  cors:
+    origin: http://frontdesk.sre-frontdesk.stage.europe-west4.tools.trv.cloud
+    methods: [GET, POST, PUT, DELETE]
+    credentials: true
+  database:
+    client: pg
+    connection:
+      database:
+        $secret:
+          env: PGDATABASE
+      user: 
+        $secret:
+          env: PGUSER
+      password: 
+        $secret:
+          env: PGPASSWORD
+      host: 
+        $secret:
+          env: PGHOST
+
+proxy:
+  '/circleci/api':
+    target: 'https://circleci.com/api/v1.1'
+    changeOrigin: true
+    pathRewrite:
+      '^/proxy/circleci/api/': '/'
+  '/jenkins/api':
+    target: 'http://localhost:8080'
+    changeOrigin: true
+    headers:
+      Authorization:
+        $secret:
+          env: JENKINS_BASIC_AUTH_HEADER
+    pathRewrite:
+      '^/proxy/jenkins/api/': '/'
+
+organization:
+  name: trivago
+
+techdocs:
+  storageUrl: http://frontdesk.sre-frontdesk.stage.europe-west4.tools.trv.cloud/backend/api/techdocs/static/docs
+  requestUrl: http://frontdesk.sre-frontdesk.stage.europe-west4.tools.trv.cloud/backend/api/techdocs/docs
+  generators:
+    techdocs: 'local'
+
+sentry:
+  organization: trivago
+
+rollbar:
+  organization: trivago
+  accountToken:
+    $secret:
+      env: ROLLBAR_ACCOUNT_TOKEN
+
+newrelic:
+  api:
+    baseUrl: 'https://api.newrelic.com/v2'
+    key: NEW_RELIC_REST_API_KEY
+
+auth:
+  providers:
+    google:
+      development:
+        appOrigin: http://frontdesk.sre-frontdesk.stage.europe-west4.tools.trv.cloud
+        secure: false
+        clientId: 
+          $secret:
+            env: AUTH_GOOGLE_CLIENT_ID
+        clientSecret:
+          $secret:
+            env: AUTH_GOOGLE_CLIENT_SECRET
+    github:
+      development:
+        appOrigin: http://frontdesk.sre-frontdesk.stage.europe-west4.tools.trv.cloud
+        secure: false
+        clientId: 
+          $secret:
+            env: AUTH_GITHUB_CLIENT_ID
+        clientSecret: 
+          $secret:
+            env: AUTH_GITHUB_CLIENT_SECRET
+        enterpriseInstanceUrl:
+          $secret:
+            env: AUTH_GITHUB_ENTERPRISE_INSTANCE_URL
+
+catalog:
+  rules:
+    - allow: [Component, API, Group, Template, Location]
+  processors:
+    githubApi:
+      privateToken:
+        $secret:
+          env: GITHUB_PRIVATE_TOKEN
+  locations:
+    # Backstage Example Templates
+    - type: github
+      target: https://github.com/spotify/backstage/blob/master/plugins/scaffolder-backend/sample-templates/react-ssr-template/template.yaml
+    - type: github
+      target: https://github.com/spotify/backstage/blob/master/plugins/scaffolder-backend/sample-templates/springboot-grpc-template/template.yaml
+    - type: github
+      target: https://github.com/spotify/backstage/blob/master/plugins/scaffolder-backend/sample-templates/create-react-app/template.yaml
+    - type: github
+      target: https://github.com/spotify/cookiecutter-golang/blob/master/template.yaml
+    - type: github
+      target: https://github.com/frontdesk-development/cookiecutter-argocd/blob/master/template.yaml
+    - type: github
+      target: https://github.com/trivago/cookiecutter-terraform/blob/master/template.yaml
+
+lighthouse:
+  baseUrl: http://frontdesk.sre-frontdesk.stage.europe-west4.tools.trv.cloud/lighthouse-be
+
+grafana:
+  baseUrl: http://monitoring.trivago.trv
+
+scaffolder:
+  github:
+    token:
+      $secret:
+        env: GITHUB_ACCESS_TOKEN
+    visibility: internal # or 'public' or 'private'
+
+kubernetes:
+  clusterLocatorMethod: 'configMultiTenant'
+  clusters: []
+

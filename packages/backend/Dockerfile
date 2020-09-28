@@ -1,4 +1,4 @@
-FROM gcr.io/trv-io-sre-frontdesk-edge/frontdesk-backend-base:latest 
+FROM gcr.io/trv-io-frontdesk-stage/frontdesk-backend-base:latest 
 
 WORKDIR /usr/src/app
 

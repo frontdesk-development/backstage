@@ -33,7 +33,7 @@ import { useAsync } from 'react-use';
 import { catalogApiRef, EntityCompoundName } from '@backstage/plugin-catalog';
 import { useApi } from '@backstage/core';
 
-export const GRAFANA_ANNOTATION = 'argocd/endpoint';
+export const GRAFANA_ANNOTATION = 'grafana/graf-top';
 
 export const useProjectName = (name: EntityCompoundName) => {
   const catalogApi = useApi(catalogApiRef);
