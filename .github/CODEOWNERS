@@ -11,6 +11,7 @@
 /packages/techdocs-cli               @spotify/techdocs-core
 /packages/techdocs-container         @spotify/techdocs-core
 /plugins/argocd                      @trivago/ebarrios
+/plugins/cloudbuild                  @trivago/ebarrios
 /plugins/gcp-projects                @ebarrios
 /plugins/github-prs                  @ebarrios
 /plugins/grafana                     @trivago/ebarrios

@@ -19,6 +19,10 @@ import {
   Router as GitHubActionsRouter,
 } from '@backstage/plugin-github-actions';
 import {
+  Router as CloudbuildRouter,
+  isPluginApplicableToEntity as isCloudbuildAvailable,
+} from '@backstage/plugin-cloudbuild';
+import {
   isPluginApplicableToEntity as isJenkinsAvailable,
   LatestRunCard as JenkinsLatestRunCard,
   Router as JenkinsRouter,
@@ -49,12 +53,21 @@ const CICDSwitcher = ({ entity }: { entity: Entity }) => {
   // This component is just an example of how you can implement your company's logic in entity page.
   // You can for example enforce that all components of type 'service' should use GitHubActions
   switch (true) {
+    case isCloudbuildAvailable(entity) && isGitHubActionsAvailable(entity):
+      return (
+        <>
+          <GitHubActionsRouter entity={entity} />;
+          <CloudbuildRouter entity={entity} />;
+        </>
+      );
     case isJenkinsAvailable(entity):
       return <JenkinsRouter entity={entity} />;
     case isGitHubActionsAvailable(entity):
       return <GitHubActionsRouter entity={entity} />;
     case isCircleCIAvailable(entity):
       return <CircleCIRouter entity={entity} />;
+    case isCloudbuildAvailable(entity):
+      return <CloudbuildRouter entity={entity} />;
     default:
       return (
         <WarningPanel title="CI/CD switcher:">
