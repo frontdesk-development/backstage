@@ -33,8 +33,29 @@ import {
   TextField,
   FormControlLabel,
   Switch,
+  Typography,
 } from '@material-ui/core';
 import React, { useState } from 'react';
+
+const FirstTemplate = () => {
+  const text = `module "group_io-sre-frontdesk" {
+        source       = "../../modules/group"
+        name         = "io-sre-frontdesk"
+        display_name = "IO SRE Frontdesk Project"
+        members = [
+          "example.member",
+        ]
+      }`;
+  return <Typography paragraph>{text}</Typography>;
+};
+
+const SecondTemplate = () => {
+  return <div>Something</div>;
+};
+
+const ThirdTemplate = () => {
+  return <div>Something</div>;
+};
 
 export const Project = () => {
   const [projectName, setProjectName] = useState('');
@@ -303,6 +324,19 @@ export const Project = () => {
             >
               Create
             </Button>
+          </InfoCard>
+        </Grid>
+        <Grid item xs={6} md={6}>
+          <InfoCard title="groups.tf">
+            <FirstTemplate />
+          </InfoCard>
+          <br />
+          <InfoCard title="projects.tf">
+            <SecondTemplate />
+          </InfoCard>
+          <br />
+          <InfoCard title="networks.tf">
+            <ThirdTemplate />
           </InfoCard>
         </Grid>
       </Grid>
