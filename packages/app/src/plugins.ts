@@ -37,3 +37,4 @@ export { plugin as Argocd } from '@backstage/plugin-argocd';
 export { plugin as Grafana } from '@backstage/plugin-grafana';
 export { plugin as Kubernetes } from '@backstage/plugin-kubernetes';
 export { plugin as Cloudbuild } from '@backstage/plugin-cloudbuild';
+export { plugin as CostInsights } from '@backstage/plugin-cost-insights';

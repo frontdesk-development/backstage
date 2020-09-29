@@ -17,23 +17,43 @@
 import React, { useEffect, useState } from 'react';
 import { Grid } from '@material-ui/core';
 import {
+  CardTab,
   Content,
-  InfoCard,
   Page,
   pageTheme,
   Progress,
+  TabbedCard,
   useApi,
 } from '@backstage/core';
 import { Entity } from '@backstage/catalog-model';
 import { kubernetesApiRef } from '../../api/types';
 import {
+  ClusterObjects,
   FetchResponse,
   ObjectsByServiceIdResponse,
 } from '@backstage/plugin-kubernetes-backend';
 import { DeploymentTables } from '../DeploymentTables';
 import { DeploymentTriple } from '../../types/types';
+import {
+  ExtensionsV1beta1Ingress,
+  V1ConfigMap,
+  V1HorizontalPodAutoscaler,
+  V1Service,
+} from '@kubernetes/client-node';
+import { Services } from '../Services';
+import { ConfigMaps } from '../ConfigMaps';
+import { Ingresses } from '../Ingresses';
+import { HorizontalPodAutoscalers } from '../HorizontalPodAutoscalers';
 
-const findDeployments = (fetchResponse: FetchResponse[]): DeploymentTriple => {
+interface GroupedResponses extends DeploymentTriple {
+  services: V1Service[];
+  configMaps: V1ConfigMap[];
+  horizontalPodAutoscalers: V1HorizontalPodAutoscaler[];
+  ingresses: ExtensionsV1beta1Ingress[];
+}
+
+// TODO this could probably be a lodash groupBy
+const groupResponses = (fetchResponse: FetchResponse[]) => {
   return fetchResponse.reduce(
     (prev, next) => {
       switch (next.type) {
@@ -46,6 +66,18 @@ const findDeployments = (fetchResponse: FetchResponse[]): DeploymentTriple => {
         case 'replicasets':
           prev.replicaSets.push(...next.resources);
           break;
+        case 'services':
+          prev.services.push(...next.resources);
+          break;
+        case 'configmaps':
+          prev.configMaps.push(...next.resources);
+          break;
+        case 'horizontalpodautoscalers':
+          prev.horizontalPodAutoscalers.push(...next.resources);
+          break;
+        case 'ingresses':
+          prev.ingresses.push(...next.resources);
+          break;
         default:
       }
       return prev;
@@ -54,7 +86,11 @@ const findDeployments = (fetchResponse: FetchResponse[]): DeploymentTriple => {
       pods: [],
       replicaSets: [],
       deployments: [],
-    } as DeploymentTriple,
+      services: [],
+      configMaps: [],
+      horizontalPodAutoscalers: [],
+      ingresses: [],
+    } as GroupedResponses,
   );
 };
 
@@ -89,15 +125,67 @@ export const KubernetesContent = ({ entity }: KubernetesContentProps) => {
           {error !== undefined && <div>{error}</div>}
           {kubernetesObjects?.items.map((item, i) => (
             <Grid item key={i}>
-              <InfoCard title={item.cluster.name} subheader="Cluster">
-                <DeploymentTables
-                  deploymentTriple={findDeployments(item.resources)}
-                />
-              </InfoCard>
+              <Cluster clusterObjects={item} />
             </Grid>
           ))}
         </Grid>
       </Content>
     </Page>
+  );
+};
+
+type ClusterProps = {
+  clusterObjects: ClusterObjects;
+  children?: React.ReactNode;
+};
+
+const Cluster = ({ clusterObjects }: ClusterProps) => {
+  const [selectedTab, setSelectedTab] = useState<string | number>('one');
+
+  const handleChange = (_ev: any, newSelectedTab: string | number) =>
+    setSelectedTab(newSelectedTab);
+
+  const groupedResponses = groupResponses(clusterObjects.resources);
+
+  const configMaps = groupedResponses.configMaps;
+  const hpas = groupedResponses.horizontalPodAutoscalers;
+  const ingresses = groupedResponses.ingresses;
+
+  return (
+    <>
+      <TabbedCard
+        value={selectedTab}
+        onChange={handleChange}
+        title={clusterObjects.cluster.name}
+      >
+        <CardTab value="one" label="Deployments">
+          <DeploymentTables
+            deploymentTriple={{
+              deployments: groupedResponses.deployments,
+              replicaSets: groupedResponses.replicaSets,
+              pods: groupedResponses.pods,
+            }}
+          />
+        </CardTab>
+        <CardTab value="two" label="Services">
+          <Services services={groupedResponses.services} />
+        </CardTab>
+        {configMaps && (
+          <CardTab value="three" label="Config Maps">
+            <ConfigMaps configMaps={configMaps} />
+          </CardTab>
+        )}
+        {hpas && (
+          <CardTab value="four" label="Horizontal Pod Autoscalers">
+            <HorizontalPodAutoscalers hpas={hpas} />
+          </CardTab>
+        )}
+        {ingresses && (
+          <CardTab value="five" label="Ingresses">
+            <Ingresses ingresses={ingresses} />
+          </CardTab>
+        )}
+      </TabbedCard>
+    </>
   );
 };
