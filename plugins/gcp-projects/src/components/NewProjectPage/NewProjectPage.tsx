@@ -83,7 +83,7 @@ ${showMembersArray}
     ]
   }`;
 
-  const projectsTf = `module "project_${projectName}" {
+  let projectsTf = `module "project_${projectName}" {
     source      = "../../modules/project"
     name        = "${projectName}"
     group_email = "${projectEmail}"
@@ -91,11 +91,19 @@ ${showMembersArray}
     folder      = module.folder.name
     tier        = "${projectTier}"
     shared_vpc_enabled = ${vpcEnable}
+`;
+
+  if (vpcEnable) {
+    projectsTf = `${projectsTf}
     shared_vpc_subnets = [
       "${subnetRegion}/${subnetName}",
     ]
     auto_create_network = ${autoCreateNet}
   }`;
+  } else {
+    projectsTf = `${projectsTf}
+  }`;
+  }
 
   const networkTf = `   {
     subnet_name           = "${subnetName}"
