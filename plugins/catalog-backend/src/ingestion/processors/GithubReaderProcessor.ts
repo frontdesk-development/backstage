@@ -125,8 +125,7 @@ export function getApiUrl(target: string, provider: ProviderConfig): URL {
       !owner ||
       !name ||
       !ref ||
-      (filepathtype !== 'blob' && filepathtype !== 'raw') ||
-      !filepath?.match(/\.ya?ml$/)
+      (filepathtype !== 'blob' && filepathtype !== 'raw')
     ) {
       throw new Error('Wrong URL or invalid file path');
     }
@@ -151,8 +150,7 @@ export function getRawUrl(target: string, provider: ProviderConfig): URL {
       !owner ||
       !name ||
       !ref ||
-      (filepathtype !== 'blob' && filepathtype !== 'raw') ||
-      !filepath?.match(/\.ya?ml$/)
+      (filepathtype !== 'blob' && filepathtype !== 'raw')
     ) {
       throw new Error('Wrong URL or invalid file path');
     }
