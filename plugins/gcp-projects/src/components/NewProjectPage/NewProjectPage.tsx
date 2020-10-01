@@ -96,7 +96,7 @@ ${showMembersArray}
   if (vpcEnable) {
     projectsTf = `${projectsTf}
     shared_vpc_subnets = [
-      "${subnetRegion}/${subnetName}",
+    c  "${subnetRegion}/${subnetName}",
     ]
     auto_create_network = ${autoCreateNet}
   }`;
@@ -251,67 +251,87 @@ ${showMembersArray}
                   labelPlacement="end"
                   onClick={handleVpcEnableClick}
                 />
-                {vpcEnable && (
-                  <>
-                    <TextField
-                      variant="outlined"
-                      name="vpcSubnet"
-                      label="VPC Subnet"
-                      helperText="The VPC subnet for the new project."
-                      inputProps={{ 'aria-label': 'VPC Subnet' }}
-                      onChange={e => setVpcSubnet(e.target.value)}
-                      value={vpcSubnet}
-                      fullWidth
-                    />
-                    <FormControlLabel
-                      id="autoNetwork"
-                      name="autoNetwork"
-                      control={<Switch color="primary" name="switch" />}
-                      label="Auto create Network"
-                      labelPlacement="end"
-                      onClick={handleAutoCreateNetworkClick}
-                    />
-                    <TextField
-                      variant="outlined"
-                      name="subnetName"
-                      label="Subnet Name"
-                      helperText="The subnet name for the new project."
-                      inputProps={{ 'aria-label': 'Subnet Name' }}
-                      onChange={e => setSubnetName(e.target.value)}
-                      value={subnetName}
-                      fullWidth
-                    />
-                    <TextField
-                      variant="outlined"
-                      name="subnetRange"
-                      label="Subnet IP Range"
-                      helperText="The subnet IP range for the new project."
-                      inputProps={{ 'aria-label': 'Subnet IP Range' }}
-                      onChange={e => setSubnetRange(e.target.value)}
-                      value={subnetRange}
-                      fullWidth
-                    />
-                    <TextField
-                      variant="outlined"
-                      name="subnetRegion"
-                      label="Subnet Region"
-                      helperText="The subnet Region for the new project."
-                      inputProps={{ 'aria-label': 'Subnet Region' }}
-                      onChange={e => setSubnetRegion(e.target.value)}
-                      value={subnetRegion}
-                      fullWidth
-                    />
-                    <FormControlLabel
-                      id="subnetPrivateAccess"
-                      name="subnetPrivateAccess"
-                      control={<Switch color="primary" name="switch" />}
-                      label="Subnet private access"
-                      labelPlacement="end"
-                      onClick={handleSubnetPrivateAccessClick}
-                    />
-                  </>
-                )}
               </SimpleStepperStep>
+              {vpcEnable && (
+                <SimpleStepperStep title="VPC Subnet">
+                  <TextField
+                    variant="outlined"
+                    name="vpcSubnet"
+                    label="VPC Subnet"
+                    helperText="The VPC subnet for the new project."
+                    inputProps={{ 'aria-label': 'VPC Subnet' }}
+                    onChange={e => setVpcSubnet(e.target.value)}
+                    value={vpcSubnet}
+                    fullWidth
+                  />
+                </SimpleStepperStep>
+              )}
+              {vpcEnable && (
+                <SimpleStepperStep title="Auto Network">
+                  <FormControlLabel
+                    id="autoNetwork"
+                    name="autoNetwork"
+                    control={<Switch color="primary" name="switch" />}
+                    label="Auto create Network"
+                    labelPlacement="end"
+                    onClick={handleAutoCreateNetworkClick}
+                  />
+                </SimpleStepperStep>
+              )}
+              {vpcEnable && (
+                <SimpleStepperStep title="Subnet Name">
+                  <TextField
+                    variant="outlined"
+                    name="subnetName"
+                    label="Subnet Name"
+                    helperText="The subnet name for the new project."
+                    inputProps={{ 'aria-label': 'Subnet Name' }}
+                    onChange={e => setSubnetName(e.target.value)}
+                    value={subnetName}
+                    fullWidth
+                  />
+                </SimpleStepperStep>
+              )}
+              {vpcEnable && (
+                <SimpleStepperStep title="Subnet IP range">
+                  <TextField
+                    variant="outlined"
+                    name="subnetRange"
+                    label="Subnet IP Range"
+                    helperText="The subnet IP range for the new project."
+                    inputProps={{ 'aria-label': 'Subnet IP Range' }}
+                    onChange={e => setSubnetRange(e.target.value)}
+                    value={subnetRange}
+                    fullWidth
+                  />
+                </SimpleStepperStep>
+              )}
+              {vpcEnable && (
+                <SimpleStepperStep title="Subnet region">
+                  <TextField
+                    variant="outlined"
+                    name="subnetRegion"
+                    label="Subnet Region"
+                    helperText="The subnet Region for the new project."
+                    inputProps={{ 'aria-label': 'Subnet Region' }}
+                    onChange={e => setSubnetRegion(e.target.value)}
+                    value={subnetRegion}
+                    fullWidth
+                  />
+                </SimpleStepperStep>
+              )}
+              {vpcEnable && (
+                <SimpleStepperStep title="Subnet private Access">
+                  <FormControlLabel
+                    id="subnetPrivateAccess"
+                    name="subnetPrivateAccess"
+                    control={<Switch color="primary" name="switch" />}
+                    label="Subnet private access"
+                    labelPlacement="end"
+                    onClick={handleSubnetPrivateAccessClick}
+                  />
+                </SimpleStepperStep>
+              )}
               <SimpleStepperStep title="Group Name">
                 <TextField
                   variant="outlined"
