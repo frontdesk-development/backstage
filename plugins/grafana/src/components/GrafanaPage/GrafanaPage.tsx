@@ -44,21 +44,13 @@ export const GrafanaIframe = ({ entity }: { entity?: Entity }) => {
             Go To Grafana
           </Button>
         </ContentHeader>
-        <InfoCard>
-          <Grid container spacing={3} direction="column">
-            <Grid item>
-              <iframe
-                title="grafana"
-                src={
-                  entity?.metadata.annotations?.['grafana/grafana/dashboard']
-                }
-                height={innerHeight}
-                width="100%"
-                frameBorder="1"
-              />
-            </Grid>
-          </Grid>
-        </InfoCard>
+        <iframe
+          title="grafana"
+          src={entity?.metadata.annotations?.['grafana/grafana/dashboard']}
+          height="100%"
+          width="100%"
+          frameBorder="1"
+        />
       </>
     );
   }
