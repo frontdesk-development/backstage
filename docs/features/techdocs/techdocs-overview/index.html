@@ -88,8 +88,8 @@ V.3</em>)</p></li>
 <tbody>
 <tr><td><a href="https://github.com/spotify/backstage/milestone/15">TechDocs V.0 ✅</a></td><td>Read docs in Backstage - Enable anyone to get a reader experience working in Backstage. <a href="#techdocs-v0">See V.0 Use Cases.</a></td></tr>
 <tr><td><a href="https://github.com/spotify/backstage/milestone/16">TechDocs V.1 ✅</a></td><td>TechDocs end to end (alpha) - Alpha of TechDocs that you can use end to end - and contribute to. <a href="#techdocs-v1">See V.1 Use Cases.</a></td></tr>
-<tr><td><a href="https://github.com/spotify/backstage/milestone/17">TechDocs V.2 🔮⌛</a></td><td>Platform stability and compatibility improvements. <a href="#techdocs-v2">See V.2 Use Cases.</a></td></tr>
-<tr><td>TechDocs V.3 🔮⌛</td><td>Widget Architecture - TechDocs widget architecture available, so the community can create their own customized features.</td></tr>
+<tr><td><a href="https://github.com/spotify/backstage/milestone/22">TechDocs V.2 🔮⌛</a></td><td>Easy adoption of TechDocs (whatever environment you have) <a href="#techdocs-v2">See V.2 Use Cases.</a></td></tr>
+<tr><td><a href="https://github.com/spotify/backstage/milestone/17">TechDocs V.3 🔮⌛</a></td><td>Build a widget (plugin) framework so that contributors can easily contribute features to TechDocs - that others can use. <a href="#techdocs-v3">See V.3 Use Cases.</a></td></tr>
 </tbody>
 </table>
 <!-- TODO: Add link to milestone for v3 -->
@@ -104,27 +104,38 @@ uploaded by the TechDocs core team.</li>
 <ul>
 <li>As a user I can run TechDocs locally and read documentation.</li>
 <li>As a user I can create a docs folder in my entity project and add a reference
-in the entity configuration file (of the owning entity) to my documentation.
-<ul>
-<li>Backstage will automatically build my documentation and serve it in
-TechDocs.</li>
+in the entity configuration file (of the owning entity) to my documentation.</li>
+<li>Backstage will automatically build my documentation and serve it in TechDocs.</li>
 <li>Documentation will be displayed under the docs tab in the service catalog.</li>
-</ul></li>
 <li>As a user I can create a docs only repository that will be standalone from any
 other service.</li>
 <li>As a user I can choose my own storage solution for the documentation (as
 example GCS/AWS/Azure etc)</li>
 <li>As a user I can define my own API to interface my own documentation solution.</li>
 </ul>
-<h4><a class="anchor" aria-hidden="true" id="techdocs-v2"></a><a href="#techdocs-v2" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>TechDocs V.2</h4>
-<p>Platform stability and compatibility improvements</p>
+<p>Extra platform stability and compatibility improvements:</p>
 <ul>
 <li>As a user I can define the metadata generated for my documentation.</li>
 <li>As a user I will be able to browse metadata from within my documentation in
 Backstage.</li>
 </ul>
+<h4><a class="anchor" aria-hidden="true" id="techdocs-v2"></a><a href="#techdocs-v2" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>TechDocs V.2</h4>
+<p>We have a TechDocs that works end-to-end. The next step is to make it super easy
+for companies to adopt. This involves (something like) the following work items.</p>
+<ul>
+<li>“Solidify” work and “Mkdocs stabilization” work that has come out of our Q3
+end-to-end work.</li>
+<li>Improve/simplify the get up and running process.</li>
+<li>Introduce doc template Software Templates.</li>
+<li>Enable companies to choose their own storage (S3 for example).</li>
+<li>Enable companies to choose their own source code hosting provider (GitHub,
+GitLab, and so).</li>
+<li>Share how to plug in TechDocs to your own CI.</li>
+</ul>
 <h4><a class="anchor" aria-hidden="true" id="techdocs-v3"></a><a href="#techdocs-v3" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>TechDocs V.3</h4>
-<p>more to come...</p>
+<p>Build a widget (plugin) framework so that contributors can easily contribute
+features to TechDocs - that others can use. And, also, so that we can easily
+migrate Spotify's existing TechDocs features to open source.</p>
 <h2><a class="anchor" aria-hidden="true" id="structure"></a><a href="#structure" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Structure</h2>
 <ul>
 <li><a href="/docs/features/techdocs/getting-started">Getting Started</a></li>
