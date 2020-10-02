@@ -19,8 +19,7 @@ import path from 'path';
 import parseGitUrl from 'git-url-parse';
 import NodeGit, { Clone, Repository, Cred } from 'nodegit';
 import fs from 'fs-extra';
-// @ts-ignore
-import defaultBranch from 'default-branch';
+import { getDefaultBranch } from './default-branch';
 import { Entity } from '@backstage/catalog-model';
 import { InputError } from '@backstage/backend-common';
 import { RemoteProtocol } from './techdocs/stages/prepare/types';
@@ -76,6 +75,7 @@ export const getLocationForEntity = (
 
   switch (type) {
     case 'github':
+    case 'gitlab':
       return { type, target };
     case 'dir':
       if (path.isAbsolute(target)) return { type, target };
@@ -89,7 +89,7 @@ export const getLocationForEntity = (
   }
 };
 
-export const getGitHubRepositoryTempFolder = async (
+export const getGitRepositoryTempFolder = async (
   repositoryUrl: string,
   branch?: string,
   privateToken?: string,
@@ -102,7 +102,7 @@ export const getGitHubRepositoryTempFolder = async (
   parsedGitLocation.git_suffix = false;
 
   if (!parsedGitLocation.ref) {
-    parsedGitLocation.ref = await defaultBranch(
+    parsedGitLocation.ref = await getDefaultBranch(
       parsedGitLocation.toString('https'),
     );
   }
@@ -118,7 +118,7 @@ export const getGitHubRepositoryTempFolder = async (
   );
 };
 
-export const checkoutGithubRepository = async (
+export const checkoutGitRepository = async (
   repoUrl: string,
   logger: Logger,
   branch?: string,
@@ -127,7 +127,7 @@ export const checkoutGithubRepository = async (
   const parsedGitLocation = parseGitUrl(repoUrl);
 
   parsedGitLocation.token = privateToken || '';
-  const repositoryTmpPath = await getGitHubRepositoryTempFolder(
+  const repositoryTmpPath = await getGitRepositoryTempFolder(
     repoUrl,
     branch,
     privateToken,
@@ -196,7 +196,7 @@ export const getLastCommitTimestamp = async (
   logger: Logger,
   privateToken?: string,
 ): Promise<number> => {
-  const repositoryLocation = await checkoutGithubRepository(
+  const repositoryLocation = await checkoutGitRepository(
     repositoryUrl,
     logger,
     branch,

@@ -114,16 +114,11 @@ export class DocsBuilder {
     );
     const { type, target } = getLocationForEntity(this.entity);
 
-    // Should probably be broken out and handled per type later. Doing this for now since we only support github age checks
-    if (type === 'github') {
-      const lastCommit = await getLastCommitTimestamp(
-        target,
-        this.entity.metadata.annotations?.['github.com/project-slug-branch'] ||
-          'master',
-        this.logger,
-        token,
-      );
-
+    // Unless docs are stored locally
+    const nonAgeCheckTypes = ['dir', 'file'];
+    if (!nonAgeCheckTypes.includes(type)) {
+      const branch = this.entity.metadata.annotations?.['github.com/project-slug-branch'] || 'master';
+      const lastCommit = await getLastCommitTimestamp(target, branch, this.logger, token);
       const storageTimeStamp = buildMetadataStorage.getTimestamp();
 
       // Check if documentation source is newer than what we have
