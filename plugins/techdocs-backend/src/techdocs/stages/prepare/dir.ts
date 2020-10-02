@@ -18,7 +18,7 @@ import { Entity } from '@backstage/catalog-model';
 import path from 'path';
 import {
   parseReferenceAnnotation,
-  checkoutGithubRepository,
+  checkoutGitRepository,
 } from '../../../helpers';
 import { InputError } from '@backstage/backend-common';
 import parseGitUrl from 'git-url-parse';
@@ -41,19 +41,17 @@ export class DirectoryPreparer implements PreparerBase {
       `[TechDocs] Building docs for entity with type 'dir' and managed-by-location '${type}'`,
     );
     switch (type) {
-      case 'github': {
+      case 'github':
+      case 'gitlab': {
         const parsedGitLocation = parseGitUrl(target);
-        const repoLocation = await checkoutGithubRepository(
-          target,
-          this.logger,
-          entity.metadata.annotations?.['github.com/project-slug-branch'],
-          token,
-        );
+        const branch = entity.metadata.annotations?.['github.com/project-slug-branch'] || 'master';
+        const repoLocation = await checkoutGitRepository(target, this.logger, branch, token);
 
         return path.dirname(
           path.join(repoLocation, parsedGitLocation.filepath),
         );
       }
+
       case 'file':
         return path.dirname(target);
       default:
