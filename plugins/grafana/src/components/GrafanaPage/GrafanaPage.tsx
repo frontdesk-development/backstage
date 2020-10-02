@@ -32,8 +32,36 @@ import { Entity } from '@backstage/catalog-model';
 
 export const GrafanaIframe = ({ entity }: { entity?: Entity }) => {
   const config = useApi(configApiRef);
-  const grafanaUrl = config.getString('grafana.baseUrl');
+  let grafanaUrl = config.getString('grafana.baseUrl');
   const middleHeight = innerHeight / 2;
+
+  if (entity?.metadata?.annotations?.['grafana/dashboard'] !== undefined) {
+    grafanaUrl = entity?.metadata?.annotations?.['grafana/dashboard'] || '';
+    return (
+      <>
+        <ContentHeader title="">
+          <Button variant="contained" color="primary" href={grafanaUrl}>
+            Go To Grafana
+          </Button>
+        </ContentHeader>
+        <InfoCard>
+          <Grid container spacing={3} direction="column">
+            <Grid item>
+              <iframe
+                title="grafana"
+                src={
+                  entity?.metadata.annotations?.['grafana/grafana/dashboard']
+                }
+                height={innerHeight}
+                width="100%"
+                frameBorder="1"
+              />
+            </Grid>
+          </Grid>
+        </InfoCard>
+      </>
+    );
+  }
 
   return (
     <>
