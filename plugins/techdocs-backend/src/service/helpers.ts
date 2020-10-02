@@ -112,29 +112,17 @@ export class DocsBuilder {
     const buildMetadataStorage = new BuildMetadataStorage(
       this.entity.metadata.uid,
     );
-    const { type, target } = getLocationForEntity(this.entity);
+    const { target } = getLocationForEntity(this.entity);
+    const branch = this.entity.metadata.annotations?.['github.com/project-slug-branch'] || 'master';
+    const lastCommit = await getLastCommitTimestamp(target, branch, this.logger, token);
+    const storageTimeStamp = buildMetadataStorage.getTimestamp();
 
-    // Should probably be broken out and handled per type later. Doing this for now since we only support github age checks
-    if (type === 'github') {
-      const lastCommit = await getLastCommitTimestamp(
-        target,
-        this.entity.metadata.annotations?.['github.com/project-slug-branch'] ||
-          'master',
-        this.logger,
-        token,
+    // Check if documentation source is newer than what we have
+    if (storageTimeStamp && storageTimeStamp >= lastCommit) {
+      this.logger.debug(
+        `[TechDocs] Docs for entity ${getEntityId(this.entity)} is up to date.`,
       );
-
-      const storageTimeStamp = buildMetadataStorage.getTimestamp();
-
-      // Check if documentation source is newer than what we have
-      if (storageTimeStamp && storageTimeStamp >= lastCommit) {
-        this.logger.debug(
-          `[TechDocs] Docs for entity ${getEntityId(
-            this.entity,
-          )} is up to date.`,
-        );
-        return true;
-      }
+      return true;
     }
 
     this.logger.debug(
