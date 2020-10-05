@@ -46,10 +46,10 @@ export const GrafanaIframe = ({ entity }: { entity?: Entity }) => {
         </ContentHeader>
         <iframe
           title="grafana"
-          src={entity?.metadata.annotations?.['grafana/grafana/dashboard']}
+          src={entity?.metadata.annotations?.['grafana/dashboard']}
           height="100%"
           width="100%"
-          frameBorder="1"
+          frameBorder="0"
         />
       </>
     );
