@@ -19,7 +19,8 @@ import {
   googleAuthApiRef,
   useApi,
 } from '@backstage/core-api';
-import Star from '@material-ui/icons/Star';
+import GoogleIcon from '@material-ui/icons/AcUnit';
+import GithubIcon from '@material-ui/icons/AcUnit';
 import React from 'react';
 import { ProviderSettingsItem } from './Settings';
 
@@ -34,14 +35,14 @@ export const DefaultProviderSettings = () => {
         <ProviderSettingsItem
           title="Google"
           apiRef={googleAuthApiRef}
-          icon={Star}
+          icon={GoogleIcon}
         />
       )}
       {providers.includes('github') && (
         <ProviderSettingsItem
           title="Github"
           apiRef={githubAuthApiRef}
-          icon={Star}
+          icon={GithubIcon}
         />
       )}
     </>
