@@ -38,14 +38,21 @@ export class GithubPreparer implements PreparerBase {
       entity,
     );
 
-    const branch = entity.metadata.annotations?.['github.com/project-slug-branch'] || 'master';
+    const branch =
+      entity.metadata.annotations?.['github.com/project-slug-branch'] ||
+      'master';
 
     if (type !== 'github') {
       throw new InputError(`Wrong target type: ${type}, should be 'github'`);
     }
 
     try {
-      const repoPath = await checkoutGitRepository(target, this.logger, branch, token);
+      const repoPath = await checkoutGitRepository(
+        target,
+        this.logger,
+        branch,
+        token,
+      );
 
       const parsedGitLocation = parseGitUrl(target);
       return path.join(repoPath, parsedGitLocation.filepath);

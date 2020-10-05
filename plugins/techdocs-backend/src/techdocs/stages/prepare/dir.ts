@@ -44,8 +44,15 @@ export class DirectoryPreparer implements PreparerBase {
       case 'github':
       case 'gitlab': {
         const parsedGitLocation = parseGitUrl(target);
-        const branch = entity.metadata.annotations?.['github.com/project-slug-branch'] || 'master';
-        const repoLocation = await checkoutGitRepository(target, this.logger, branch, token);
+        const branch =
+          entity.metadata.annotations?.['github.com/project-slug-branch'] ||
+          'master';
+        const repoLocation = await checkoutGitRepository(
+          target,
+          this.logger,
+          branch,
+          token,
+        );
 
         return path.dirname(
           path.join(repoLocation, parsedGitLocation.filepath),
