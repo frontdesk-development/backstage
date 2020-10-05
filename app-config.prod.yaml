@@ -1,5 +1,5 @@
 app:
-  title: Frontdesk 
+  title: Frontdesk
   baseUrl: http://frontdesk.trivago.cloud
 
 backend:
@@ -16,13 +16,13 @@ backend:
       database:
         $secret:
           env: PGDATABASE
-      user: 
+      user:
         $secret:
           env: PGUSER
-      password: 
+      password:
         $secret:
           env: PGPASSWORD
-      host: 
+      host:
         $secret:
           env: PGHOST
 
@@ -71,7 +71,7 @@ auth:
       development:
         appOrigin: http://frontdesk.trivago.cloud
         secure: false
-        clientId: 
+        clientId:
           $secret:
             env: AUTH_GOOGLE_CLIENT_ID
         clientSecret:
@@ -81,10 +81,10 @@ auth:
       development:
         appOrigin: http://frontdesk.trivago.cloud
         secure: false
-        clientId: 
+        clientId:
           $secret:
             env: AUTH_GITHUB_CLIENT_ID
-        clientSecret: 
+        clientSecret:
           $secret:
             env: AUTH_GITHUB_CLIENT_SECRET
         enterpriseInstanceUrl:
@@ -130,4 +130,3 @@ scaffolder:
 kubernetes:
   clusterLocatorMethod: 'configMultiTenant'
   clusters: []
-

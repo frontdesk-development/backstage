@@ -65,7 +65,7 @@ lighthouse:
 
 grafana:
   baseUrl: http://monitoring.trivago.trv
-  
+
 kubernetes:
   clusterLocatorMethod: 'configMultiTenant'
   clusters: []
