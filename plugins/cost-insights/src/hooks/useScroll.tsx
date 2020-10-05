@@ -22,7 +22,7 @@ import React, {
   useEffect,
   useRef,
 } from 'react';
-import { CSSProperties } from '@material-ui/styles';
+// import { CSSProperties } from '@material-ui/styles';
 import { Maybe } from '../types';
 
 export type ScrollTo = Maybe<string>;
@@ -53,8 +53,8 @@ export const ScrollContext = React.createContext<
 
 export const ScrollAnchor = ({
   id,
-  top,
-  left,
+  // top,
+  // left,
   behavior,
   block,
   inline,
@@ -68,13 +68,13 @@ export const ScrollAnchor = ({
 
   const { scrollTo, setScrollTo } = context;
 
-  const styles: CSSProperties = {
-    position: 'absolute',
-    height: 0,
-    width: 0,
-    top: top || 0,
-    left: left || 0,
-  };
+  // const styles: CSSProperties = {
+  //   position: 'absolute',
+  //   height: 0,
+  //   width: 0,
+  //   top: top || 0,
+  //   left: left || 0,
+  // };
 
   useEffect(() => {
     function scrollIntoView() {
@@ -93,7 +93,8 @@ export const ScrollAnchor = ({
     scrollIntoView();
   }, [scrollTo, setScrollTo, id, behavior, block, inline]);
 
-  return <div ref={divRef} style={styles} data-testid={`scroll-test-${id}`} />;
+  // return <div ref={divRef} style={styles} data-testid={`scroll-test-${id}`} />;
+  return <div ref={divRef} data-testid={`scroll-test-${id}`} />;
 };
 
 export const ScrollProvider = ({ children }: ScrollProviderProps) => {
