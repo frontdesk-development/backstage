@@ -19,8 +19,8 @@ import {
   googleAuthApiRef,
   useApi,
 } from '@backstage/core-api';
-import GoogleIcon from '@material-ui/icons/AcUnit';
-import GithubIcon from '@material-ui/icons/AcUnit';
+import GoogleIcon from '@material-ui/icons/CloudCircle';
+import GithubIcon from '@material-ui/icons/GitHub';
 import React from 'react';
 import { ProviderSettingsItem } from './Settings';
 
