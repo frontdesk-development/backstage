@@ -47,7 +47,7 @@ organization:
 
 techdocs:
   storageUrl: http://frontdesk.trivago.cloud/backend/api/techdocs/static/docs
-  requestUrl: http://frontdesk.trivago.cloud/backend/api/techdocs/docs
+  requestUrl: http://frontdesk.trivago.cloud/backend/api/techdocs
   generators:
     techdocs: 'local'
 
