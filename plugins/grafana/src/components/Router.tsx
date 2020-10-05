@@ -18,12 +18,12 @@ import { Entity } from '@backstage/catalog-model';
 import { Routes, Route } from 'react-router';
 import { rootRouteRef } from '../plugin';
 import { GrafanaIframe } from './GrafanaPage';
-import { GRAFANA_ANNOTATION } from './useProjectName';
+import { GRAFANA_ANNOTATION, GRAFANA_ANNOTATION2 } from './useProjectName';
 import { WarningPanel } from '@backstage/core';
 
 const isPluginApplicableToEntity = (entity: Entity) =>
-  Boolean(entity.metadata.annotations?.[GRAFANA_ANNOTATION]) &&
-  entity.metadata.annotations?.[GRAFANA_ANNOTATION] !== '';
+  Boolean(entity.metadata.annotations?.[GRAFANA_ANNOTATION]) ||
+  Boolean(entity.metadata.annotations?.[GRAFANA_ANNOTATION2]);
 
 export const Router = ({ entity }: { entity: Entity }) =>
   // TODO(shmidt-i): move warning to a separate standardized component
