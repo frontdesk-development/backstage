@@ -77,6 +77,7 @@ export class AppIdentity implements IdentityApi {
       throw new Error('Invalid sign-in result, profile not set');
     }
     this.hasIdentity = true;
+    console.log("Signin Result: ",result);
     this.userId = result.userId;
     this.profile = result.profile;
     this.idTokenFunc = result.getIdToken;
