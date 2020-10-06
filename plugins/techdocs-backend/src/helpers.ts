@@ -125,6 +125,7 @@ export const checkoutGitRepository = async (
   privateToken?: string,
 ): Promise<string> => {
   const parsedGitLocation = parseGitUrl(repoUrl);
+  logger.info("############ parsedGitLocation:",parsedGitLocation);
 
   parsedGitLocation.token = privateToken || '';
   const repositoryTmpPath = await getGitRepositoryTempFolder(
@@ -134,7 +135,9 @@ export const checkoutGitRepository = async (
   );
 
   // TODO: Should propably not be hardcoded names of env variables, but seems too hard to access config down here
-  const user = process.env.GITHUB_PRIVATE_TOKEN_USER || '';
+  // const user = process.env.GITHUB_PRIVATE_TOKEN_USER || '';
+  const user = parsedGitLocation.user;
+  logger.info("############ parsedGitLocation.token",parsedGitLocation.token);
   let token = process.env.GITHUB_PRIVATE_TOKEN || '';
   if (privateToken !== '') {
     token = privateToken || '';
