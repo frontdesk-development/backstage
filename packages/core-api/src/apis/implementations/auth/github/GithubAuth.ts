@@ -16,7 +16,10 @@
 
 import GithubIcon from '@material-ui/icons/AcUnit';
 import { DefaultAuthConnector } from '../../../../lib/AuthConnector';
-import { RefreshingAuthSessionManager } from '../../../../lib/AuthSessionManager';
+import {
+  RefreshingAuthSessionManager,
+  AuthSessionStore,
+} from '../../../../lib/AuthSessionManager';
 import { GithubSession } from './types';
 import {
   OAuthApi,
@@ -35,7 +38,7 @@ import { SessionManager } from '../../../../lib/AuthSessionManager/types';
 import { Observable } from '../../../../types';
 
 type Options = {
-  sessionManager: SessionManager<GithubSession>;
+  authSessionStore: AuthSessionStore<GithubSession>;
 };
 
 type CreateOptions = {
@@ -102,13 +105,19 @@ class GithubAuth implements OAuthApi, SessionApi {
       },
     });
 
-    return new GithubAuth({ sessionManager });
+    const authSessionStore = new AuthSessionStore<GithubSession>({
+      manager: sessionManager,
+      storageKey: 'githubSession',
+      sessionScopes: (session: GithubSession) => session.providerInfo.scopes,
+    });
+
+    return new GithubAuth({ authSessionStore });
   }
 
   private readonly sessionManager: SessionManager<GithubSession>;
 
   constructor(options: Options) {
-    this.sessionManager = options.sessionManager;
+    this.sessionManager = options.authSessionStore;
   }
 
   async signIn() {
