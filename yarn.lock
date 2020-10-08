@@ -5206,6 +5206,11 @@
   resolved "https://registry.npmjs.org/@types/node/-/node-10.17.35.tgz#58058f29b870e6ae57b20e4f6e928f02b7129f56"
   integrity sha512-gXx7jAWpMddu0f7a+L+txMplp3FnHl53OhQIF9puXKq3hDGY/GjH+MF04oWnV/adPSCrbtHumDCFwzq2VhltWA==
 
+"@types/node@^12.0.0":
+  version "12.12.64"
+  resolved "https://registry.npmjs.org/@types/node/-/node-12.12.64.tgz#e3b336dc4c6ba52c6b59e3bd69a100347c20b1c0"
+  integrity sha512-UV1/ZJMC+HcP902wWdpC43cAcGu0IQk/I5bXjP2aSuCjsk3cE74mDvFrLKga7oDC170ugOAYBwfT4DSQW3akDA==
+
 "@types/node@^12.7.1":
   version "12.12.58"
   resolved "https://registry.npmjs.org/@types/node/-/node-12.12.58.tgz#46dae9b2b9ee5992818c8f7cee01ff4ce03ab44c"
@@ -23873,15 +23878,9 @@ y18n@^4.0.0:
   integrity sha512-r9S/ZyXu/Xu9q1tYlpsLIsa3EeLXXk0VwlxqTcFRfg9EhMW+17kbt9G0NrgCmhGb5vT2hyhJZLfDGx+7+5Uj/w==
 
 y18n@^5.0.1:
-<<<<<<< HEAD
-  version "5.0.1"
-  resolved "https://registry.npmjs.org/y18n/-/y18n-5.0.1.tgz#1ad2a7eddfa8bce7caa2e1f6b5da96c39d99d571"
-  integrity sha512-/jJ831jEs4vGDbYPQp4yGKDYPSCCEQ45uZWJHE1AoYBzqdZi8+LDWas0z4HrmJXmKdpFsTiowSHXdxyFhpmdMg==
-=======
   version "5.0.2"
   resolved "https://registry.npmjs.org/y18n/-/y18n-5.0.2.tgz#48218df5da2731b4403115c39a1af709c873f829"
   integrity sha512-CkwaeZw6dQgqgPGeTWKMXCRmMcBgETFlTml1+ZOO+q7kGst8NREJ+eWwFNPVUQ4QGdAaklbqCZHH6Zuep1RjiA==
->>>>>>> 0b22eb872d79d5b5dae04c193efdee69cdb47a02
 
 yaeti@^0.0.6:
   version "0.0.6"
