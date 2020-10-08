@@ -17,10 +17,12 @@
 import type { Transformer } from './index';
 
 type AddLinkClickListenerOptions = {
+  baseUrl: string;
   onClick: (e: MouseEvent, newUrl: string) => void;
 };
 
 export const addLinkClickListener = ({
+  baseUrl,
   onClick,
 }: AddLinkClickListenerOptions): Transformer => {
   return dom => {
@@ -29,7 +31,7 @@ export const addLinkClickListener = ({
         const target = e.target as HTMLAnchorElement;
         const href = target?.getAttribute('href');
         if (!href) return;
-        if (!href.match(/^https?:\/\//i)) {
+        if (href.startsWith(baseUrl)) {
           e.preventDefault();
           onClick(e, target.getAttribute('href')!);
         }
