@@ -101,6 +101,14 @@ format accepted by
 is also possible to limit the forwarded HTTP methods with the configuration
 <code>allowedMethods</code>, for example <code>allowedMethods: ['GET']</code> to enforce read-only
 access.</p>
+<p>By default, the proxy will only forward safe HTTP request headers to the target.
+Those are based on the headers that are considered safe for CORS and includes
+headers like <code>content-type</code> or <code>last-modified</code>, as well as all headers that are
+set by the proxy. If the proxy should forward other headers like
+<code>authorization</code>, this must be enabled by the <code>allowedHeaders</code> config, for
+example <code>allowedHeaders: ['Authorization']</code>. This should help to not
+accidentally forward confidential headers (<code>cookie</code>, <code>X-Auth-Request-User</code>) to
+third-parties.</p>
 <p>If the value is a string, it is assumed to correspond to:</p>
 <pre><code class="hljs css language-yaml"><span class="hljs-attr">target:</span> <span class="hljs-string">&lt;the</span> <span class="hljs-string">string&gt;</span>
 <span class="hljs-attr">changeOrigin:</span> <span class="hljs-literal">true</span>
