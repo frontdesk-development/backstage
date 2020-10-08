@@ -30,6 +30,7 @@ export const addLinkClickListener = ({
       elem.addEventListener('click', (e: MouseEvent) => {
         const target = e.target as HTMLAnchorElement;
         const href = target?.getAttribute('href');
+
         if (!href) return;
         if (href.startsWith(baseUrl)) {
           e.preventDefault();
