@@ -77,16 +77,6 @@ integrations:
     - host: github.com
       token:
         $env: GITHUB_PRIVATE_TOKEN
-    ### Example for how to add your GitHub Enterprise instance using the API:
-    # - host: ghe.example.net
-    #   apiBaseUrl: https://ghe.example.net/api/v3
-    #   token:
-    #     $env: GHE_PRIVATE_TOKEN
-    ### Example for how to add your GitHub Enterprise instance using raw HTTP fetches (token is optional):
-    # - host: ghe.example.net
-    #   rawBaseUrl: https://ghe.example.net/raw
-    #   token:
-    #     $env: GHE_PRIVATE_TOKEN
   gitlab:
     - host: gitlab.com
       token:
@@ -105,7 +95,6 @@ integrations:
 catalog:
   rules:
     - allow: [Component, API, Group, User, Template, Location]
-<<<<<<< HEAD
   locations:
     # Backstage example components
     - type: github
@@ -125,8 +114,6 @@ catalog:
     # trivago terraform template
     - type: github
       target: https://github.com/trivago/cookiecutter-terraform/blob/master/template.yaml
-=======
->>>>>>> 0b22eb872d79d5b5dae04c193efdee69cdb47a02
 
   processors:
     githubOrg:
@@ -134,49 +121,7 @@ catalog:
         - target: https://github.com
           token:
             $env: GITHUB_PRIVATE_TOKEN
-        #### Example for how to add your GitHub Enterprise instance using the API:
-        # - target: https://ghe.example.net
-        #   apiBaseUrl: https://ghe.example.net/api/v3
-        #   token:
-        #     $env: GHE_PRIVATE_TOKEN
-    ldapOrg:
-      ### Example for how to add your enterprise LDAP server
-      # providers:
-      #   - target: ldaps://ds.example.net
-      #     bind:
-      #       dn: uid=ldap-reader-user,ou=people,ou=example,dc=example,dc=net
-      #       secret: { $secret: { env: LDAP_SECRET } }
-      #     users:
-      #       dn: ou=people,ou=example,dc=example,dc=net
-      #       options:
-      #         filter: (uid=*)
-      #       map:
-      #         description: l
-      #     groups:
-      #       dn: ou=access,ou=groups,ou=example,dc=example,dc=net
-      #       options:
-      #         filter: (&(objectClass=some-group-class)(!(groupType=email)))
 
-<<<<<<< HEAD
-=======
-  locations:
-    # Backstage example components
-    - type: url
-      target: https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/all-components.yaml
-    # Example component for github-actions
-    - type: url
-      target: https://github.com/spotify/backstage/blob/master/plugins/github-actions/examples/sample.yaml
-    # Example component for techdocs
-    - type: url
-      target: https://github.com/spotify/backstage/blob/master/plugins/techdocs-backend/examples/documented-component/documented-component.yaml
-    # Backstage example APIs
-    - type: url
-      target: https://github.com/spotify/backstage/blob/master/packages/catalog-model/examples/all-apis.yaml
-    # Backstage example templates
-    - type: url
-      target: https://github.com/spotify/backstage/blob/master/plugins/scaffolder-backend/sample-templates/all-templates.yaml
-
->>>>>>> 0b22eb872d79d5b5dae04c193efdee69cdb47a02
 scaffolder:
   github:
     token:
