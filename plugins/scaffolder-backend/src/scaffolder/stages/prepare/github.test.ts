@@ -100,8 +100,8 @@ describe('GitHubPreparer', () => {
     );
   });
   it('calls the clone command with the token when provided', async () => {
-    const preparer = new GithubPreparer({ token: 'abc' });
-    await preparer.prepare(mockEntity);
+    const preparer = new GithubPreparer();
+    await preparer.prepare(mockEntity, 'abc');
     expect(mocks.Clone.clone).toHaveBeenNthCalledWith(
       1,
       'https://github.com/benjdlambert/backstage-graphql-template',

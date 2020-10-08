@@ -75,7 +75,7 @@ export default async function createPlugin({
         repoVisibility,
       });
 
-      const githubPreparer = new GithubPreparer({ token: githubToken });
+      const githubPreparer = new GithubPreparer();
 
       preparers.register('github', githubPreparer);
       publishers.register('file', githubPublisher);
