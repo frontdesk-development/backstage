@@ -36,11 +36,10 @@ import {
   SidebarDivider,
   SidebarSearchField,
   SidebarSpace,
-  SidebarUserSettings,
-  DefaultProviderSettings,
 } from '@backstage/core';
 import { NavLink } from 'react-router-dom';
 import { graphiQLRouteRef } from '@backstage/plugin-graphiql';
+import { Settings as SidebarSettings } from '@backstage/plugin-user-settings';
 
 const useSidebarLogoStyles = makeStyles({
   root: {
@@ -105,7 +104,7 @@ const Root: FC<{}> = ({ children }) => (
       <SidebarItem icon={GoogleIcon} to="gcp-projects" text="GCP Projects" />
       <SidebarSpace />
       <SidebarDivider />
-      <SidebarUserSettings providerSettings={<DefaultProviderSettings />} />
+      <SidebarSettings />
     </Sidebar>
     {children}
   </SidebarPage>
