@@ -129,6 +129,7 @@ scaffolder:
 
 kubernetes:
   clusterLocatorMethod: 'configMultiTenant'
+  clusters:
     - url: https://10.245.248.194
       name: tools-prod0-eu-w4
       authProvider: 'google'
