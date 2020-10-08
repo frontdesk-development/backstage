@@ -48,15 +48,19 @@ export class GithubPreparer implements PreparerBase {
       template.spec.path ?? '.',
     );
 
-    await Clone.clone(repositoryCheckoutUrl, tempDir, {
-      fetchOpts: {
-        callbacks: {
-          credentials: () => {
-            return Cred.userpassPlaintextNew(token as string, 'x-oauth-basic');
+    const cloneOptions = token
+      ? {
+          fetchOpts: {
+            callbacks: {
+              credentials() {
+                return Cred.userpassPlaintextNew(token as string, 'x-oauth-basic');
+              },
+            },
           },
-        },
-      },
-    });
+        }
+      : {};
+
+    await Clone.clone(repositoryCheckoutUrl, tempDir, cloneOptions);
 
     return path.resolve(tempDir, templateDirectory);
   }

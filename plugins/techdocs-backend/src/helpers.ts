@@ -135,8 +135,8 @@ export const checkoutGitRepository = async (
 
   // TODO: Should propably not be hardcoded names of env variables, but seems too hard to access config down here
   // const user = process.env.GITHUB_PRIVATE_TOKEN_USER || '';
-  const user = parsedGitLocation.user;
-  let token = process.env.GITHUB_PRIVATE_TOKEN || '';
+  const user = parsedGitLocation.user || '';
+  let token = process.env.GITHUB_TOKEN || '';
   if (privateToken !== '') {
     token = privateToken || '';
   }
