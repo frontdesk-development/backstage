@@ -76,11 +76,12 @@ integrations:
   github:
     - host: github.com
       token:
-        $env: GITHUB_PRIVATE_TOKEN
+        $env: GITHUB_TOKEN
+
   gitlab:
     - host: gitlab.com
       token:
-        $env: GITLAB_PRIVATE_TOKEN
+        $env: GITLAB_TOKEN
   bitbucket:
     - host: bitbucket.org
       username:
@@ -90,7 +91,7 @@ integrations:
   azure:
     - host: dev.azure.com
       token:
-        $env: AZURE_PRIVATE_TOKEN
+        $env: AZURE_TOKEN
 
 catalog:
   rules:
@@ -125,18 +126,18 @@ catalog:
 scaffolder:
   github:
     token:
-      $env: GITHUB_ACCESS_TOKEN
+      $env: GITHUB_TOKEN
     visibility: public # or 'internal' or 'private'
   gitlab:
     api:
       baseUrl: https://gitlab.com
       token:
-        $env: GITLAB_ACCESS_TOKEN
+        $env: GITLAB_TOKEN
   azure:
     baseUrl: https://dev.azure.com/{your-organization}
     api:
       token:
-        $env: AZURE_PRIVATE_TOKEN
+        $env: AZURE_TOKEN
 
 auth:
   providers:

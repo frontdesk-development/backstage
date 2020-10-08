@@ -14,30 +14,4 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { LinearGauge } from './LinearGauge';
-
-const containerStyle = { width: 300 };
-
-export default {
-  title: 'Feedback/LinearGauge',
-  component: LinearGauge,
-};
-
-export const Default = () => (
-  <div style={containerStyle}>
-    <LinearGauge value={0.8} />
-  </div>
-);
-
-export const MediumProgress = () => (
-  <div style={containerStyle}>
-    <LinearGauge value={0.5} />
-  </div>
-);
-
-export const LowProgress = () => (
-  <div style={containerStyle}>
-    <LinearGauge value={0.2} />
-  </div>
-);
+export { createRouter } from './router';
