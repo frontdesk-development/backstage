@@ -25,11 +25,8 @@ export type EntitiesCatalog = {
   entities(filters?: EntityFilters): Promise<Entity[]>;
   entityByUid(uid: string): Promise<Entity | undefined>;
   entityByName(name: EntityName): Promise<Entity | undefined>;
-  addOrUpdateEntity(
-    entity: Entity,
-    locationId?: string,
-    token?: string,
-  ): Promise<Entity>;
+  addOrUpdateEntity(entity: Entity, locationId?: string, token?: string): Promise<Entity>;
+  addEntities(entities: Entity[], locationId?: string): Promise<void>;
   removeEntityByUid(uid: string): Promise<void>;
 };
 

@@ -14,23 +14,18 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { Entity } from '@backstage/catalog-model';
-import { Reader } from './reader';
-
-export const EntityPageDocs = ({
-  entity,
-}: {
-  entity: Entity;
-  tokenPromise: Promise<string>;
-}) => {
-  return (
-    <Reader
-      entityId={{
-        kind: entity.kind,
-        namespace: entity.metadata.namespace ?? 'default',
-        name: entity.metadata.name,
-      }}
-    />
-  );
-};
+/**
+ * Returns a string with the elapsed time since the start of an operation,
+ * with some human friendly precision, e.g. "133ms" or "14.5s".
+ *
+ * @param startTimestamp The timestamp (from process.hrtime()) at the start ot
+ *                       the operation
+ */
+export function durationText(startTimestamp: [number, number]): string {
+  const delta = process.hrtime(startTimestamp);
+  const seconds = delta[0] + delta[1] / 1e9;
+  if (seconds > 1) {
+    return `${seconds.toFixed(1)}s`;
+  }
+  return `${(seconds * 1000).toFixed(0)}ms`;
+}
