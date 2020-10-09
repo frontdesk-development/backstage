@@ -14,23 +14,24 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { Entity } from '@backstage/catalog-model';
-import { Reader } from './reader';
+// @ts-check
 
-export const EntityPageDocs = ({
-  entity,
-}: {
-  entity: Entity;
-  tokenPromise: Promise<string>;
-}) => {
-  return (
-    <Reader
-      entityId={{
-        kind: entity.kind,
-        namespace: entity.metadata.namespace ?? 'default',
-        name: entity.metadata.name,
-      }}
-    />
-  );
+/**
+ * @param {import('knex')} knex
+ */
+exports.up = async function up(knex) {
+  await knex.schema.alterTable('entities_search', table => {
+    table.index(['key'], 'entities_search_key');
+    table.index(['value'], 'entities_search_value');
+  });
+};
+
+/**
+ * @param {import('knex')} knex
+ */
+exports.down = async function down(knex) {
+  await knex.schema.alterTable('entities_search', table => {
+    table.dropIndex('', 'entities_search_key');
+    table.dropIndex('', 'entities_search_value');
+  });
 };

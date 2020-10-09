@@ -32,7 +32,7 @@ describe('TechDocsStorageApi', () => {
     });
 
     expect(storageApi.getBaseUrl('test.js', mockEntity, '')).toEqual(
-      `${DOC_STORAGE_URL}/docs/${mockEntity.kind}/${mockEntity.namespace}/${mockEntity.name}/test.js`,
+      `${DOC_STORAGE_URL}/docs/${mockEntity.namespace}/${mockEntity.kind}/${mockEntity.name}/test.js`,
     );
   });
 
@@ -43,7 +43,7 @@ describe('TechDocsStorageApi', () => {
     });
 
     expect(storageApi.getBaseUrl('test/', mockEntity, '')).toEqual(
-      `${DOC_STORAGE_URL}/docs/${mockEntity.kind}/${mockEntity.namespace}/${mockEntity.name}/test/`,
+      `${DOC_STORAGE_URL}/docs/${mockEntity.namespace}/${mockEntity.kind}/${mockEntity.name}/test/`,
     );
   });
 });

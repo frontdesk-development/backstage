@@ -76,6 +76,7 @@ export const getLocationForEntity = (
   switch (type) {
     case 'github':
     case 'gitlab':
+    case 'azure/api':
       return { type, target };
     case 'dir':
       if (path.isAbsolute(target)) return { type, target };

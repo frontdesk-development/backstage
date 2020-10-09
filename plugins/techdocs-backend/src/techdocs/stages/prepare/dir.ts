@@ -42,7 +42,8 @@ export class DirectoryPreparer implements PreparerBase {
     );
     switch (type) {
       case 'github':
-      case 'gitlab': {
+      case 'gitlab':
+      case 'azure/api': {
         const parsedGitLocation = parseGitUrl(target);
         const branch =
           entity.metadata.annotations?.['github.com/project-slug-branch'] ||
