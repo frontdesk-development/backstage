@@ -252,6 +252,8 @@ export class GithubReaderProcessor implements LocationProcessor {
     optional: boolean,
     emit: LocationProcessorEmit,
   ): Promise<boolean> {
+    console.log('@@@@@@ github reader');
+    console.log('##### location: ', location);
     // The github/api type is for backward compatibility
     if (location.type !== 'github' && location.type !== 'github/api') {
       return false;

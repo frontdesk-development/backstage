@@ -47,6 +47,8 @@ export class GithubOrgReaderProcessor implements LocationProcessor {
     _optional: boolean,
     emit: LocationProcessorEmit,
   ): Promise<boolean> {
+    console.log('@@@@@@ github org');
+    console.log('##### location: ', location);
     if (location.type !== 'github-org') {
       return false;
     }
