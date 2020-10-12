@@ -93,7 +93,7 @@ auth:
 
 catalog:
   rules:
-    - allow: [Component, API, Group, Template, Location]
+    - allow: [Component, API, Group, User, Template, Location]
   processors:
     githubApi:
       privateToken:
