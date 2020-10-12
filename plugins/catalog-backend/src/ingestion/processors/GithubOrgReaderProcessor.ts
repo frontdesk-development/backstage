@@ -62,6 +62,10 @@ export class GithubOrgReaderProcessor implements LocationProcessor {
       );
     }
 
+    if (location.token) {
+      provider.token = location.token;
+    }
+
     const { org } = parseUrl(location.target);
     const client = !provider.token
       ? graphql
