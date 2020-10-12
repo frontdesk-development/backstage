@@ -117,7 +117,7 @@ catalog:
       target: https://github.com/trivago/cookiecutter-terraform/blob/master/template.yaml
 
   processors:
-    githubOrg:
+    github:
       providers:
         - target: https://github.com
           token:

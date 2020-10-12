@@ -47,8 +47,6 @@ export class GithubOrgReaderProcessor implements LocationProcessor {
     _optional: boolean,
     emit: LocationProcessorEmit,
   ): Promise<boolean> {
-    console.log('@@@@@@ github org');
-    console.log('##### location: ', location);
     if (location.type !== 'github-org') {
       return false;
     }
@@ -60,10 +58,6 @@ export class GithubOrgReaderProcessor implements LocationProcessor {
       throw new Error(
         `There is no GitHub Org provider that matches ${location.target}. Please add a configuration entry for it under catalog.processors.githubOrg.providers.`,
       );
-    }
-
-    if (location.token) {
-      provider.token = location.token;
     }
 
     const { org } = parseUrl(location.target);
