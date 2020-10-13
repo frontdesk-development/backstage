@@ -15,29 +15,13 @@
  */
 
 import GithubIcon from '@material-ui/icons/AcUnit';
-import { DefaultAuthConnector } from '../../../../lib/AuthConnector';
-import { RefreshingAuthSessionManager } from '../../../../lib/AuthSessionManager';
-import { GithubSession } from './types';
-import {
-  OAuthApi,
-  SessionApi,
-  SessionState,
-  ProfileInfo,
-  BackstageIdentity,
-  AuthRequestOptions,
-} from '../../../definitions/auth';
+import { githubAuthApiRef } from '../../../definitions/auth';
 import {
   OAuthRequestApi,
   AuthProvider,
   DiscoveryApi,
 } from '../../../definitions';
-import { SessionManager } from '../../../../lib/AuthSessionManager/types';
-import { Observable } from '../../../../types';
-
-type Options = {
-  sessionManager: SessionManager<GithubSession>;
-  scopeTransform: (scopes: string[]) => string[];
-};
+import { OAuth2 } from '../oauth2';
 
 type CreateOptions = {
   discoveryApi: DiscoveryApi;
@@ -45,18 +29,6 @@ type CreateOptions = {
 
   environment?: string;
   provider?: AuthProvider & { id: string };
-  defaultScopes?: string[];
-  scopeTransform?: (scopes: string[]) => string[];
-};
-
-export type GithubAuthResponse = {
-  providerInfo: {
-    accessToken: string;
-    scope: string;
-    expiresInSeconds: number;
-  };
-  profile: ProfileInfo;
-  backstageIdentity: BackstageIdentity;
 };
 
 const DEFAULT_PROVIDER = {
@@ -65,108 +37,25 @@ const DEFAULT_PROVIDER = {
   icon: GithubIcon,
 };
 
-class GithubAuth implements OAuthApi, SessionApi {
+class GithubAuth {
   static create({
     discoveryApi,
+    oauthRequestApi,
     environment = 'development',
     provider = DEFAULT_PROVIDER,
-    oauthRequestApi,
-    defaultScopes = ['read:user'],
-    scopeTransform = x => x,
-  }: CreateOptions) {
-    const connector = new DefaultAuthConnector({
+  }: CreateOptions): typeof githubAuthApiRef.T {
+    return OAuth2.create({
       discoveryApi,
-      environment,
+      oauthRequestApi,
       provider,
-      oauthRequestApi: oauthRequestApi,
-      sessionTransform(res: GithubAuthResponse): GithubSession {
-        return {
-          ...res,
-          providerInfo: {
-            accessToken: res.providerInfo.accessToken,
-            scopes: GithubAuth.normalizeScopes(
-              scopeTransform,
-              res.providerInfo.scope,
-            ),
-            expiresAt: new Date(
-              Date.now() + res.providerInfo.expiresInSeconds * 1000,
-            ),
-          },
-        };
+      environment,
+      defaultScopes: ['user', 'repo'],
+      scopeTransform(scopes: string[]) {
+        return scopes.map(scope => {
+          return `${scope}`;
+        });
       },
     });
-
-    const sessionManager = new RefreshingAuthSessionManager({
-      connector,
-      defaultScopes: new Set(defaultScopes),
-      sessionScopes: (session: GithubSession) => session.providerInfo.scopes,
-      sessionShouldRefresh: (session: GithubSession) => {
-        const expiresInSec =
-          (session.providerInfo.expiresAt.getTime() - Date.now()) / 1000;
-        return expiresInSec < 60 * 5;
-      },
-    });
-
-    return new GithubAuth({ sessionManager, scopeTransform });
-  }
-
-  private readonly sessionManager: SessionManager<GithubSession>;
-  private readonly scopeTransform: (scopes: string[]) => string[];
-
-  constructor(options: Options) {
-    this.sessionManager = options.sessionManager;
-    this.scopeTransform = options.scopeTransform;
-  }
-
-  async signIn() {
-    await this.getAccessToken();
-  }
-
-  async signOut() {
-    await this.sessionManager.removeSession();
-  }
-
-  sessionState$(): Observable<SessionState> {
-    return this.sessionManager.sessionState$();
-  }
-
-  async getAccessToken(scope?: string, options?: AuthRequestOptions) {
-    const normalizedScopes = GithubAuth.normalizeScopes(
-      this.scopeTransform,
-      scope,
-    );
-    const session = await this.sessionManager.getSession({
-      ...options,
-      scopes: normalizedScopes,
-    });
-    return session?.providerInfo.accessToken ?? '';
-  }
-
-  async getBackstageIdentity(
-    options: AuthRequestOptions = {},
-  ): Promise<BackstageIdentity | undefined> {
-    const session = await this.sessionManager.getSession(options);
-    return session?.backstageIdentity;
-  }
-
-  async getProfile(options: AuthRequestOptions = {}) {
-    const session = await this.sessionManager.getSession(options);
-    return session?.profile;
-  }
-
-  private static normalizeScopes(
-    scopeTransform: (scopes: string[]) => string[],
-    scopes?: string | string[],
-  ): Set<string> {
-    if (!scopes) {
-      return new Set();
-    }
-
-    const scopeList = Array.isArray(scopes)
-      ? scopes
-      : scopes.split(/[\s|,]/).filter(Boolean);
-
-    return new Set(scopeTransform(scopeList));
   }
 }
 export default GithubAuth;
