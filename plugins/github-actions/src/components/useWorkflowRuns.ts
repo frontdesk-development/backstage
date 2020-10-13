@@ -43,7 +43,7 @@ export function useWorkflowRuns({
   const { loading, value: runs, retry, error } = useAsyncRetry<
     WorkflowRun[]
   >(async () => {
-    const token = await auth.getAccessToken(['repo']);
+    const token = await auth.getAccessToken();
     return (
       api
         // GitHub API pagination count starts from 1

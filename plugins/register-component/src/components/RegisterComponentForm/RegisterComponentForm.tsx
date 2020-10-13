@@ -68,7 +68,7 @@ export const RegisterComponentForm = ({ onSubmit, submitting }: Props) => {
   const [token, setToken] = useState('');
 
   const handleClick = async () => {
-    const tokenPromise = githubAuthApi.getAccessToken('repo, admin:org');
+    const tokenPromise = githubAuthApi.getAccessToken();
     const tokenWait = await tokenPromise;
     setToken(tokenWait);
   };

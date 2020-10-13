@@ -40,7 +40,7 @@ const ClusterList: FC<{}> = () => {
   const [githubUsername, setGithubUsername] = useState(String);
 
   const { loading, error, value } = useAsync(async () => {
-    const accessToken = await githubAuth.getAccessToken(['repo', 'user']);
+    const accessToken = await githubAuth.getAccessToken();
     if (!githubUsername) {
       const userInfo = await api.fetchUserInfo({ accessToken });
       setGithubUsername(userInfo.login);

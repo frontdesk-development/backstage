@@ -26,7 +26,7 @@ export const useDownloadWorkflowRunLogs = (
   const api = useApi(githubActionsApiRef);
   const auth = useApi(githubAuthApiRef);
   const details = useAsync(async () => {
-    const token = await auth.getAccessToken(['repo']);
+    const token = await auth.getAccessToken();
     return repo && owner
       ? api.downloadJobLogsForWorkflowRun({
           token,

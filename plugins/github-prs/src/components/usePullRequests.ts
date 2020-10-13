@@ -72,7 +72,7 @@ export function usePullRequests({
   const { loading, value: prData, retry, error } = useAsyncRetry<
     PullRequest[]
   >(async () => {
-    const token = await auth.getAccessToken(['repo']);
+    const token = await auth.getAccessToken();
     if (!repo) {
       return [];
     }

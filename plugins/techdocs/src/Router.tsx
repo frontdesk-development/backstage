@@ -43,7 +43,7 @@ export const Router = () => {
 export const EmbeddedDocsRouter = ({ entity }: { entity: Entity }) => {
   const projectId = entity.metadata.annotations?.[TECHDOCS_ANNOTATION];
   const githubAuthApi = useApi(githubAuthApiRef);
-  const tokenPromise = githubAuthApi.getAccessToken('repo');
+  const tokenPromise = githubAuthApi.getAccessToken();
 
   if (!projectId) {
     return (

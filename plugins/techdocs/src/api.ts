@@ -114,6 +114,6 @@ export class TechDocsStorageApi implements TechDocsStorage {
     // use for readonly operations, but that means we would ask the user for a
     // second auth during creation and I decided to keep the wider scope for
     // all ops for now
-    return this.githubAuthApi.getAccessToken('repo');
+    return this.githubAuthApi.getAccessToken();
   }
 }

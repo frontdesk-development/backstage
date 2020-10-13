@@ -16,10 +16,7 @@
 
 import GithubIcon from '@material-ui/icons/AcUnit';
 import { DefaultAuthConnector } from '../../../../lib/AuthConnector';
-import {
-  RefreshingAuthSessionManager,
-  AuthSessionStore,
-} from '../../../../lib/AuthSessionManager';
+import { RefreshingAuthSessionManager } from '../../../../lib/AuthSessionManager';
 import { GithubSession } from './types';
 import {
   OAuthApi,
@@ -38,7 +35,8 @@ import { SessionManager } from '../../../../lib/AuthSessionManager/types';
 import { Observable } from '../../../../types';
 
 type Options = {
-  authSessionStore: AuthSessionStore<GithubSession>;
+  sessionManager: SessionManager<GithubSession>;
+  scopeTransform: (scopes: string[]) => string[];
 };
 
 type CreateOptions = {
@@ -74,6 +72,7 @@ class GithubAuth implements OAuthApi, SessionApi {
     provider = DEFAULT_PROVIDER,
     oauthRequestApi,
     defaultScopes = ['read:user'],
+    scopeTransform = x => x,
   }: CreateOptions) {
     const connector = new DefaultAuthConnector({
       discoveryApi,
@@ -85,7 +84,10 @@ class GithubAuth implements OAuthApi, SessionApi {
           ...res,
           providerInfo: {
             accessToken: res.providerInfo.accessToken,
-            scopes: GithubAuth.normalizeScope(res.providerInfo.scope),
+            scopes: GithubAuth.normalizeScopes(
+              scopeTransform,
+              res.providerInfo.scope,
+            ),
             expiresAt: new Date(
               Date.now() + res.providerInfo.expiresInSeconds * 1000,
             ),
@@ -105,19 +107,15 @@ class GithubAuth implements OAuthApi, SessionApi {
       },
     });
 
-    const authSessionStore = new AuthSessionStore<GithubSession>({
-      manager: sessionManager,
-      storageKey: 'githubSession',
-      sessionScopes: (session: GithubSession) => session.providerInfo.scopes,
-    });
-
-    return new GithubAuth({ authSessionStore });
+    return new GithubAuth({ sessionManager, scopeTransform });
   }
 
   private readonly sessionManager: SessionManager<GithubSession>;
+  private readonly scopeTransform: (scopes: string[]) => string[];
 
   constructor(options: Options) {
-    this.sessionManager = options.authSessionStore;
+    this.sessionManager = options.sessionManager;
+    this.scopeTransform = options.scopeTransform;
   }
 
   async signIn() {
@@ -133,9 +131,13 @@ class GithubAuth implements OAuthApi, SessionApi {
   }
 
   async getAccessToken(scope?: string, options?: AuthRequestOptions) {
+    const normalizedScopes = GithubAuth.normalizeScopes(
+      this.scopeTransform,
+      scope,
+    );
     const session = await this.sessionManager.getSession({
       ...options,
-      scopes: GithubAuth.normalizeScope(scope),
+      scopes: normalizedScopes,
     });
     return session?.providerInfo.accessToken ?? '';
   }
@@ -152,16 +154,19 @@ class GithubAuth implements OAuthApi, SessionApi {
     return session?.profile;
   }
 
-  static normalizeScope(scope?: string): Set<string> {
-    if (!scope) {
+  private static normalizeScopes(
+    scopeTransform: (scopes: string[]) => string[],
+    scopes?: string | string[],
+  ): Set<string> {
+    if (!scopes) {
       return new Set();
     }
 
-    const scopeList = Array.isArray(scope)
-      ? scope
-      : scope.split(/[\s|,]/).filter(Boolean);
+    const scopeList = Array.isArray(scopes)
+      ? scopes
+      : scopes.split(/[\s|,]/).filter(Boolean);
 
-    return new Set(scopeList);
+    return new Set(scopeTransform(scopeList));
   }
 }
 export default GithubAuth;
