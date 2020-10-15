@@ -32,7 +32,7 @@ export type ActionsGetWorkflowResponseData = {
   buildTriggerId: string;
   options: Options;
   logUrl: string;
-  substitutions?: Substitutions;
+  substitutions: Substitutions;
   tags: string[];
   queueTtl: string;
   name: string;
