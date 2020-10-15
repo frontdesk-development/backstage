@@ -21,24 +21,24 @@ export interface ActionsListWorkflowRunsForRepoResponseData {
 export type ActionsGetWorkflowResponseData = {
   id: string;
   status: string;
-  source: Source;
+  source?: Source;
   createTime: string;
   startTime: string;
-  steps: Step[];
+  steps?: Step[];
   timeout: string;
   projectId: string;
   logsBucket: string;
-  sourceProvenance: SourceProvenance;
+  sourceProvenance?: SourceProvenance;
   buildTriggerId: string;
   options: Options;
   logUrl: string;
-  substitutions: Substitutions;
+  substitutions?: Substitutions;
   tags: string[];
   queueTtl: string;
   name: string;
   finishTime: any;
-  results: Results;
-  timing: Timing2;
+  results?: Results;
+  timing?: Timing2;
 };
 
 export interface Step {

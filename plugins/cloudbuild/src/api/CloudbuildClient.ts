@@ -62,6 +62,7 @@ export class CloudbuildClient implements CloudbuildApi {
 
     const builds: ActionsListWorkflowRunsForRepoResponseData = await workflowRuns.json();
 
+    console.log("listWorkflowRuns builds:",builds);
     return builds;
   }
   async getWorkflow({
@@ -106,7 +107,7 @@ export class CloudbuildClient implements CloudbuildApi {
       },
     );
     const build: ActionsGetWorkflowResponseData = await workflow.json();
-
+    console.log("getWorkflowRun build:",build);
     return build;
   }
 
