@@ -168,6 +168,7 @@ export const WorkflowRunsTableView: FC<Props> = ({
 export const WorkflowRunsTable = ({ entity }: { entity: Entity }) => {
   const { value: projectName, loading } = useProjectName(entity);
   const [projectId] = (projectName ?? '/').split('/');
+  console.log("Projectid inside WorkflowRunsTable:", projectId);
 
   const [tableProps, { retry, setPage, setPageSize }] = useWorkflowRuns({
     projectId,
