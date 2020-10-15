@@ -21,6 +21,7 @@ export interface ActionsListWorkflowRunsForRepoResponseData {
 export type ActionsGetWorkflowResponseData = {
   id: string;
   status: string;
+  statusDetail: string;
   source?: Source;
   createTime: string;
   startTime: string;

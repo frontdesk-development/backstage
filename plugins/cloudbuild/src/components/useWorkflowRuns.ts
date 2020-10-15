@@ -42,7 +42,7 @@ export function useWorkflowRuns({ projectId }: { projectId: string }) {
           setTotal(workflowRunsData.builds.length);
           // Transformation here
           return workflowRunsData.builds.map(run => ({
-            message: run.substitutions.REPO_NAME,
+            message: run.substitutions?.REPO_NAME || run.statusDetail,
             id: run.id,
             rerun: async () => {
               try {
@@ -56,10 +56,10 @@ export function useWorkflowRuns({ projectId }: { projectId: string }) {
             },
             substitutions: run.substitutions,
             source: {
-              branchName: run.substitutions.REPO_NAME,
+              branchName: run.substitutions?.REPO_NAME || run.statusDetail,
               commit: {
-                hash: run.substitutions.COMMIT_SHA,
-                url: run.substitutions.REPO_NAME,
+                hash: run.substitutions?.COMMIT_SHA || run.statusDetail,
+                url: run.substitutions?.REPO_NAME || run.statusDetail,
               },
             },
             status: run.status,

@@ -62,19 +62,6 @@ export class CloudbuildClient implements CloudbuildApi {
 
     const builds: ActionsListWorkflowRunsForRepoResponseData = await workflowRuns.json();
 
-    console.log("listWorkflowRuns builds:",builds);
-
-    for (const [index, value] of builds.builds.entries()) {
-      console.log("Index: ", index);
-      console.log("Value.susbs: ", value.substitutions);
-      if (value.substitutions == undefined) {
-        value.substitutions.REPO_NAME = "No Repo Name on substitutions field";
-        value.substitutions.BRANCH_NAME = "No Branch Name on substitutions field";
-        value.substitutions.COMMIT_SHA = "No Commit SHA on substitutions field";
-      }
-      console.log("Value.susbs: ", value.substitutions);
-    }
-
     return builds;
   }
   async getWorkflow({
