@@ -34,7 +34,6 @@ import { Grid } from '@material-ui/core';
 import {
   Header,
   Page,
-  pageTheme,
   Content,
   ContentHeader,
   HeaderLabel,
@@ -44,7 +43,7 @@ import { PullRequestsTable } from '../PullRequestsTable';
 import { PullRequestsStats } from '../PullRequestsStats/PullRequestsStats';
 
 const PullRequestsPage: FC<{}> = () => (
-  <Page theme={pageTheme.tool}>
+  <Page themeId="tool">
     <Header
       title="Welcome to github-pull-requests!"
       subtitle="Optional subtitle"

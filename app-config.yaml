@@ -34,14 +34,8 @@ proxy:
         $env: TRAVISCI_AUTH_TOKEN
       travis-api-version: 3
 
-  '/newrelic/apm/api':
-    target: https://api.newrelic.com/v2
-    headers:
-      X-Api-Key:
-        $env: NEW_RELIC_REST_API_KEY
-
 organization:
-  name: My Company
+  name: Spotify
 
 techdocs:
   storageUrl: http://localhost:7000/api/techdocs/static/docs
@@ -50,12 +44,17 @@ techdocs:
     techdocs: 'docker'
 
 sentry:
-  organization: my-company
+  organization: spotify
 
 rollbar:
-  organization: my-company
+  organization: spotify
   accountToken:
     $env: ROLLBAR_ACCOUNT_TOKEN
+
+newrelic:
+  api:
+    baseUrl: 'https://api.newrelic.com/v2'
+    key: NEW_RELIC_REST_API_KEY
 
 lighthouse:
   baseUrl: http://localhost:3003
@@ -64,9 +63,7 @@ grafana:
   baseUrl: http://monitoring.trivago.trv
 
 kubernetes:
-  serviceLocatorMethod: 'multiTenant'
-  clusterLocatorMethods: 
-    - 'config'
+  clusterLocatorMethod: 'configMultiTenant'
   clusters:
     - url: https://10.245.248.194
       name: tools-prod0-eu-w4

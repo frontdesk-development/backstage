@@ -19,7 +19,6 @@ import { Grid, Button } from '@material-ui/core';
 import {
   Header,
   Page,
-  pageTheme,
   Content,
   ContentHeader,
   HeaderLabel,
@@ -93,7 +92,7 @@ export const GrafanaIframe = ({ entity }: { entity?: Entity }) => {
 };
 
 const GrafanaPage = ({ entity }: { entity?: Entity }) => (
-  <Page theme={pageTheme.tool}>
+  <Page themeId="tool">
     <Header title="Welcome to Grafana!">
       <HeaderLabel label="Owner" value="trivago" />
       <HeaderLabel label="Lifecycle" value="Alpha" />

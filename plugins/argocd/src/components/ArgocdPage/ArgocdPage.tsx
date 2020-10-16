@@ -19,7 +19,6 @@ import { Grid, Button } from '@material-ui/core';
 import {
   Header,
   Page,
-  pageTheme,
   Content,
   ContentHeader,
   HeaderLabel,
@@ -51,7 +50,7 @@ export const ArgocdIframe = ({ entity }: { entity?: Entity }) => {
 };
 
 const ArgocdPage = ({ entity }: { entity?: Entity }) => (
-  <Page theme={pageTheme.tool}>
+  <Page themeId="tool">
     <Header title="Welcome to ArgoCD!">
       <HeaderLabel label="Owner" value="trivago" />
       <HeaderLabel label="Lifecycle" value="Alpha" />
