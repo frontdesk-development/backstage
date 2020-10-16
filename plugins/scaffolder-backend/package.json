@@ -52,7 +52,7 @@
     "@types/git-url-parse": "^9.0.0",
     "@types/nodegit": "0.26.8",
     "@types/supertest": "^2.0.8",
-    "supertest": "^4.0.2",
+    "supertest": "^5.0.0",
     "yaml": "^1.10.0"
   },
   "files": [

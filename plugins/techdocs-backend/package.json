@@ -43,7 +43,7 @@
   "devDependencies": {
     "@backstage/cli": "^0.1.1-alpha.25",
     "@types/node-fetch": "^2.5.7",
-    "supertest": "^4.0.2"
+    "supertest": "^5.0.0"
   },
   "files": [
     "dist"
