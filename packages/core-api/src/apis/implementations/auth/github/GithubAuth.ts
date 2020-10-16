@@ -27,6 +27,7 @@ type CreateOptions = {
   discoveryApi: DiscoveryApi;
   oauthRequestApi: OAuthRequestApi;
 
+  defaultScopes?: string[];
   environment?: string;
   provider?: AuthProvider & { id: string };
 };

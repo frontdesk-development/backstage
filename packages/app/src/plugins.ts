@@ -38,4 +38,5 @@ export { plugin as Grafana } from '@backstage/plugin-grafana';
 export { plugin as Kubernetes } from '@backstage/plugin-kubernetes';
 export { plugin as Cloudbuild } from '@backstage/plugin-cloudbuild';
 export { plugin as CostInsights } from '@backstage/plugin-cost-insights';
+export { plugin as GitHubInsights } from '@roadiehq/backstage-plugin-github-insights';
 export { plugin as UserSettings } from '@backstage/plugin-user-settings';

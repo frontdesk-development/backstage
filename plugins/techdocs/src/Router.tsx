@@ -17,8 +17,7 @@
 import React from 'react';
 import { Entity } from '@backstage/catalog-model';
 import { Route, Routes } from 'react-router-dom';
-import { WarningPanel, useApi } from '@backstage/core';
-
+import { MissingAnnotationEmptyState, useApi } from '@backstage/core';
 import {
   rootRouteRef,
   rootDocsRouteRef,
@@ -46,15 +45,7 @@ export const EmbeddedDocsRouter = ({ entity }: { entity: Entity }) => {
   const tokenPromise = githubAuthApi.getAccessToken();
 
   if (!projectId) {
-    return (
-      <WarningPanel title="Techdocs plugin:">
-        <pre>{TECHDOCS_ANNOTATION}</pre> annotation is missing on the entity.
-        <br />
-        <a href="https://backstage.io/docs/features/techdocs/creating-and-publishing">
-          Getting Started
-        </a>
-      </WarningPanel>
-    );
+    return <MissingAnnotationEmptyState annotation={TECHDOCS_ANNOTATION} />;
   }
 
   return (

@@ -109,9 +109,10 @@ export class CommonDatabase implements Database {
   async addEntities(
     txOpaque: unknown,
     request: DbEntityRequest[],
-  ): Promise<void> {
+  ): Promise<DbEntityResponse[]> {
     const tx = txOpaque as Knex.Transaction<any, any>;
 
+    const result: DbEntityResponse[] = [];
     const entityRows: DbEntitiesRow[] = [];
     const searchRows: DbEntitiesSearchRow[] = [];
 
@@ -134,6 +135,7 @@ export class CommonDatabase implements Database {
         },
       };
 
+      result.push({ entity: newEntity, locationId });
       entityRows.push(this.toEntityRow(locationId, newEntity));
       searchRows.push(...buildEntitySearch(newEntity.metadata.uid, newEntity));
     }
@@ -146,6 +148,8 @@ export class CommonDatabase implements Database {
       )
       .del();
     await tx.batchInsert('entities_search', searchRows, BATCH_SIZE);
+
+    return result;
   }
 
   async updateEntity(
@@ -215,15 +219,16 @@ export class CommonDatabase implements Database {
 
     let entitiesQuery = tx<DbEntitiesRow>('entities');
 
-    for (const filter of filters || []) {
-      const key = filter.key.toLowerCase().replace(/[*]/g, '%');
-      const keyOp = filter.key.includes('*') ? 'like' : '=';
+    for (const [matchKey, matchVal] of Object.entries(filters ?? {})) {
+      const key = matchKey.toLowerCase().replace(/[*]/g, '%');
+      const keyOp = key.includes('%') ? 'like' : '=';
+      const values = Array.isArray(matchVal) ? matchVal : [matchVal];
 
       let matchNulls = false;
       const matchIn: string[] = [];
       const matchLike: string[] = [];
 
-      for (const value of filter.values) {
+      for (const value of values) {
         if (!value) {
           matchNulls = true;
         } else if (value.includes('*')) {
@@ -315,7 +320,7 @@ export class CommonDatabase implements Database {
     return this.toEntityResponse(rows[0]);
   }
 
-  async removeEntity(txOpaque: unknown, uid: string): Promise<void> {
+  async removeEntityByUid(txOpaque: unknown, uid: string): Promise<void> {
     const tx = txOpaque as Knex.Transaction<any, any>;
 
     const result = await tx<DbEntitiesRow>('entities').where({ id: uid }).del();
