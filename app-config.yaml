@@ -65,7 +65,7 @@ grafana:
 
 kubernetes:
   serviceLocatorMethod: 'multiTenant'
-  clusterLocatorMethod: 
+  clusterLocatorMethods: 
     - 'config'
   clusters:
     - url: https://10.245.248.194
