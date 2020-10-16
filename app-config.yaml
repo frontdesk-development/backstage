@@ -63,8 +63,10 @@ grafana:
   baseUrl: http://monitoring.trivago.trv
 
 kubernetes:
-  clusterLocatorMethod: 'configMultiTenant'
-  clusters:
+  serviceLocatorMethod: 'multiTenant'
+  clusterLocatorMethods:
+    - 'config'
+  clusters: 
     - url: https://10.245.248.194
       name: tools-prod0-eu-w4
       authProvider: 'google'
