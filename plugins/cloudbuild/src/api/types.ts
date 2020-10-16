@@ -40,6 +40,23 @@ export type ActionsGetWorkflowResponseData = {
   finishTime: any;
   results?: Results;
   timing?: Timing2;
+  buildTriggerInfo: BuildTrigger;
+};
+
+export type BuildTrigger = {
+  id: string;
+  createTime: string;
+  filename: string;
+  description: string;
+  github: {
+    pullRequest: {
+      branch: string;
+      commentControl: string;
+    };
+    owner: string;
+    name: string;
+  };
+  name: string;
 };
 
 export interface Step {

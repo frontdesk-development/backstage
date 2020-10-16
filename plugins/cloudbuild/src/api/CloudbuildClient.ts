@@ -18,6 +18,7 @@ import { CloudbuildApi } from './CloudbuildApi';
 import {
   ActionsListWorkflowRunsForRepoResponseData,
   ActionsGetWorkflowResponseData,
+  BuildTrigger,
 } from '../api/types';
 import { OAuthApi } from '@backstage/core';
 
@@ -62,7 +63,32 @@ export class CloudbuildClient implements CloudbuildApi {
 
     const builds: ActionsListWorkflowRunsForRepoResponseData = await workflowRuns.json();
 
+    builds.builds.forEach(async build => {
+      const buildTrigger = this.getBuildTrigger({
+        projectId,
+        buildTriggerId: build.buildTriggerId,
+      });
+      build.buildTriggerInfo = await buildTrigger;
+    });
+
     return builds;
+  }
+  async getBuildTrigger({
+    projectId,
+    buildTriggerId,
+  }: {
+    projectId: string;
+    buildTriggerId: string;
+  }): Promise<BuildTrigger> {
+    const buildTriggerRun = await fetch(
+      `https://cloudbuild.googleapis.com/v1/projects/${encodeURIComponent(
+        projectId,
+      )}/triggers/${encodeURIComponent(buildTriggerId)}`,
+    );
+
+    const buildTrigger: BuildTrigger = await buildTriggerRun.json();
+
+    return buildTrigger;
   }
   async getWorkflow({
     projectId,
@@ -106,7 +132,7 @@ export class CloudbuildClient implements CloudbuildApi {
       },
     );
     const build: ActionsGetWorkflowResponseData = await workflow.json();
-    console.log("getWorkflowRun build:",build);
+
     return build;
   }
 
