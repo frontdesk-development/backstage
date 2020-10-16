@@ -66,6 +66,7 @@ export function useWorkflowRuns({ projectId }: { projectId: string }) {
             url: run.logUrl,
             googleUrl: run.logUrl,
             createTime: run.createTime,
+            buildTriggerInfo: run.buildTriggerInfo,
           }));
         },
       );
