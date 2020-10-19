@@ -258,7 +258,7 @@ const WebsiteEntityPage = ({ entity }: { entity: Entity }) => (
       element={<KubernetesRouter entity={entity} />}
     />
     <EntityPageLayout.Content
-      path="/pull-requests/*"
+      path="/pull-requests"
       title="Pull Requests"
       element={<PullRequestsRouter entity={entity} />}
     />
