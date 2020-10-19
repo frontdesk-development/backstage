@@ -1,6 +1,7 @@
 app:
   title: Backstage Example App
   baseUrl: http://localhost:7000
+  googleAnalyticsTrackingId: # UA-000000-0
 
 backend:
   baseUrl: http://localhost:7000
@@ -127,6 +128,7 @@ catalog:
 
 scaffolder:
   github:
+    host: https://github.com
     token:
       $env: GITHUB_TOKEN
     visibility: public # or 'internal' or 'private'
@@ -218,10 +220,11 @@ costInsights:
       name: Big Query
       icon: search
   metrics:
-    dailyCost:
-      name: Your Company's Daily Cost
     DAU:
-      name: Cost Per DAU
+      name: Daily Active Users
+      default: true
+    MSC:
+      name: Monthly Subscribers
 homepage:
   clocks:
     - label: UTC
