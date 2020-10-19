@@ -37,7 +37,6 @@ import {
   Router as CircleCIRouter,
 } from '@backstage/plugin-circleci';
 import { Router as ApiDocsRouter } from '@backstage/plugin-api-docs';
-import { Router as GitHubPullRequestRouter } from '@backstage/plugin-github-prs';
 import { Router as ArgocdRequestRouter } from '@backstage/plugin-argocd';
 import { Router as GrafanaRouter } from '@backstage/plugin-grafana';
 
@@ -180,9 +179,9 @@ const ServiceEntityPage = ({ entity }: { entity: Entity }) => (
       element={<CICDSwitcher entity={entity} />}
     />
     <EntityPageLayout.Content
-      path="/pr/*"
+      path="/pull-requests"
       title="Pull Requests"
-      element={<GitHubPullRequestRouter entity={entity} />}
+      element={<PullRequestsRouter entity={entity} />}
     />
     {entity.metadata?.annotations?.['argocd/endpoint'] && (
       <EntityPageLayout.Content
@@ -217,11 +216,6 @@ const ServiceEntityPage = ({ entity }: { entity: Entity }) => (
       path="/kubernetes/*"
       title="Kubernetes"
       element={<KubernetesRouter entity={entity} />}
-    />
-    <EntityPageLayout.Content
-      path="/pull-requests"
-      title="Pull Requests"
-      element={<PullRequestsRouter entity={entity} />}
     />
     <EntityPageLayout.Content
       path="/code-insights"

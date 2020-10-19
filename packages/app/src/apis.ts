@@ -33,7 +33,7 @@ import {
 import {
   GithubPullRequestsClient,
   githubPullRequestsApiRef,
-} from '@backstage/plugin-github-prs';
+} from '@roadiehq/backstage-plugin-github-pull-requests';
 
 import { costInsightsApiRef } from '@backstage/plugin-cost-insights';
 import { ExampleCostInsightsClient } from './plugins/cost-insights';
