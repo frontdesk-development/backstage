@@ -58,7 +58,7 @@
     "@types/yup": "^0.28.2",
     "jest-fetch-mock": "^3.0.3",
     "msw": "^0.20.5",
-    "supertest": "^4.0.2"
+    "supertest": "^5.0.0"
   },
   "files": [
     "dist",
