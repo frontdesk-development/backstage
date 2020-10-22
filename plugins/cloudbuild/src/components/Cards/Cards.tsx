@@ -28,6 +28,7 @@ import {
 } from '@backstage/core';
 import ExternalLinkIcon from '@material-ui/icons/Launch';
 import { CLOUDBUILD_ANNOTATION } from '../useProjectName';
+import { CLOUDBUILD_ANNOTATION_TRIGGER_NAME } from '../useTriggerId';
 
 const useStyles = makeStyles<Theme>({
   externalLinkIcon: {
@@ -80,9 +81,12 @@ export const LatestWorkflowRunCard = ({
 }) => {
   const errorApi = useApi(errorApiRef);
   const projectId = entity?.metadata.annotations?.[CLOUDBUILD_ANNOTATION] || '';
+  const triggerName =
+    entity?.metadata.annotations?.[CLOUDBUILD_ANNOTATION_TRIGGER_NAME] || '';
 
   const [{ runs, loading, error }] = useWorkflowRuns({
     projectId,
+    triggerName,
   });
   const lastRun = runs?.[0] ?? ({} as WorkflowRun);
   useEffect(() => {
