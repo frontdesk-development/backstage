@@ -71,7 +71,7 @@ export class CloudbuildClient implements CloudbuildApi {
       build.buildTriggerInfo = await buildTrigger;
     });
 
-    while (builds.builds[20].buildTriggerInfo.name === '') {
+    while (builds.builds[20].buildTriggerInfo === undefined) {
       await this.timeout(1000);
     }
 
