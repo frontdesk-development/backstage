@@ -71,7 +71,14 @@ export class CloudbuildClient implements CloudbuildApi {
       build.buildTriggerInfo = await buildTrigger;
     });
 
+    while (builds.builds[20].buildTriggerInfo.name === '') {
+      await this.timeout(1000);
+    }
+
     return builds;
+  }
+  async timeout(delay: number) {
+    return new Promise(res => setTimeout(res, delay));
   }
   async getBuildTrigger({
     projectId,
