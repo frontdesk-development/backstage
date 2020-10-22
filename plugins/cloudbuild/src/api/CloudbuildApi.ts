@@ -18,7 +18,6 @@ import { createApiRef } from '@backstage/core';
 import {
   ActionsListWorkflowRunsForRepoResponseData,
   ActionsGetWorkflowResponseData,
-  BuildTrigger,
 } from '../api/types';
 
 export const cloudbuildApiRef = createApiRef<CloudbuildApi>({
@@ -29,6 +28,7 @@ export const cloudbuildApiRef = createApiRef<CloudbuildApi>({
 export type CloudbuildApi = {
   listWorkflowRuns: (request: {
     projectId: string;
+    triggerId?: string;
   }) => Promise<ActionsListWorkflowRunsForRepoResponseData>;
   getWorkflow: ({
     projectId,
@@ -37,13 +37,6 @@ export type CloudbuildApi = {
     projectId: string;
     id: string;
   }) => Promise<ActionsGetWorkflowResponseData>;
-  getBuildTrigger: ({
-    projectId,
-    buildTriggerId,
-  }: {
-    projectId: string;
-    buildTriggerId: string;
-  }) => Promise<BuildTrigger>;
   getWorkflowRun: ({
     projectId,
     id,
@@ -58,4 +51,11 @@ export type CloudbuildApi = {
     projectId: string;
     runId: string;
   }) => Promise<any>;
+  getTriggerId: ({
+    projectId,
+    triggerName,
+  }: {
+    projectId: string;
+    triggerName: string;
+  }) => Promise<string>;
 };

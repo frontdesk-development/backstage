@@ -20,7 +20,13 @@ import { cloudbuildApiRef } from '../api/CloudbuildApi';
 import { useApi, errorApiRef } from '@backstage/core';
 import { ActionsListWorkflowRunsForRepoResponseData } from '../api/types';
 
-export function useWorkflowRuns({ projectId }: { projectId: string }) {
+export function useWorkflowRuns({
+  projectId,
+  triggerId,
+}: {
+  projectId: string;
+  triggerId?: string;
+}) {
   const api = useApi(cloudbuildApiRef);
   const errorApi = useApi(errorApiRef);
 
@@ -34,6 +40,7 @@ export function useWorkflowRuns({ projectId }: { projectId: string }) {
     return api
       .listWorkflowRuns({
         projectId,
+        triggerId,
       })
       .then(
         (

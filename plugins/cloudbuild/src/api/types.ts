@@ -59,6 +59,10 @@ export type BuildTrigger = {
   name: string;
 };
 
+export type BuildTriggerList = {
+  triggers: BuildTrigger[];
+};
+
 export interface Step {
   name: string;
   args: string[];

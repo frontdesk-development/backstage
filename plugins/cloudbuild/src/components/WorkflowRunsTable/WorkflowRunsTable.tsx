@@ -23,6 +23,7 @@ import { useWorkflowRuns } from '../useWorkflowRuns';
 import { WorkflowRunStatus } from '../WorkflowRunStatus';
 import SyncIcon from '@material-ui/icons/Sync';
 import { useProjectName } from '../useProjectName';
+import { useTriggerId } from '../useTriggerId';
 import { Entity } from '@backstage/catalog-model';
 import { Substitutions, BuildTrigger } from '../../api/types';
 import { buildRouteRef } from '../../plugin';
@@ -72,7 +73,7 @@ const generatedColumns: TableColumn[] = [
         component={RouterLink}
         to={generatePath(buildRouteRef.path, { id: row.id! })}
       >
-        {row.buildTriggerInfo?.github.owner}/{row.buildTriggerInfo?.github.name}
+        {row.substitutions?.REPO_NAME || '-'}
       </Link>
     ),
   },
@@ -153,10 +154,12 @@ export const WorkflowRunsTableView: FC<Props> = ({
 
 export const WorkflowRunsTable = ({ entity }: { entity: Entity }) => {
   const { value: projectName, loading } = useProjectName(entity);
+  const { value: triggerId } = useTriggerId(entity);
   const [projectId] = (projectName ?? '/').split('/');
 
   const [tableProps, { retry, setPage, setPageSize }] = useWorkflowRuns({
     projectId,
+    triggerId,
   });
 
   return (
