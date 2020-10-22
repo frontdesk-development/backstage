@@ -54,7 +54,9 @@ export class CloudbuildClient implements CloudbuildApi {
     const workflowRuns = await fetch(
       `https://cloudbuild.googleapis.com/v1/projects/${encodeURIComponent(
         projectId,
-      )}/builds?trigger_id=(\"${encodeURIComponent(triggerId || '')}\")`,
+      )}/builds?filter=(trigger_id=(\"${encodeURIComponent(
+        triggerId || '',
+      )}\"))`,
       {
         headers: new Headers({
           Accept: '*/*',
