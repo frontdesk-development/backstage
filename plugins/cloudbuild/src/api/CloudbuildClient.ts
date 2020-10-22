@@ -84,6 +84,12 @@ export class CloudbuildClient implements CloudbuildApi {
       `https://cloudbuild.googleapis.com/v1/projects/${encodeURIComponent(
         projectId,
       )}/triggers/${encodeURIComponent(buildTriggerId)}`,
+      {
+        headers: new Headers({
+          Accept: '*/*',
+          Authorization: `Bearer ${await this.getToken()}`,
+        }),
+      },
     );
 
     const buildTrigger: BuildTrigger = await buildTriggerRun.json();
