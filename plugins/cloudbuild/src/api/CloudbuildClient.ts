@@ -79,7 +79,7 @@ export class CloudbuildClient implements CloudbuildApi {
         `https://cloudbuild.googleapis.com/v1/projects/${encodeURIComponent(
           projectId,
         )}/builds?filter=(trigger_id=\"${encodeURIComponent(
-          triggerId || '',
+          triggerId,
         )}\")`,
         {
           headers: new Headers({

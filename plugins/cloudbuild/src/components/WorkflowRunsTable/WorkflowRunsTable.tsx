@@ -64,7 +64,7 @@ const generatedColumns: TableColumn[] = [
     ),
   },
   {
-    title: 'Trigger Name',
+    title: 'Source',
     field: 'source',
     highlight: true,
     width: '200px',
@@ -75,6 +75,16 @@ const generatedColumns: TableColumn[] = [
       >
         {row.buildTriggerInfo?.name}
       </Link>
+    ),
+  },
+  {
+    title: 'Trigger Name',
+    field: 'trigger',
+    width: '150px',
+    render: (row: Partial<WorkflowRun>) => (
+      <Typography variant="body2" noWrap>
+        <p>{row.buildTriggerInfo?.github.owner || '-'}/{row.buildTriggerInfo?.github.name || '-'}</p>
+      </Typography>
     ),
   },
 
