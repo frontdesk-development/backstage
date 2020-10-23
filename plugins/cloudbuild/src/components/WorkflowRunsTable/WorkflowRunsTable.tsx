@@ -73,17 +73,20 @@ const generatedColumns: TableColumn[] = [
         component={RouterLink}
         to={generatePath(buildRouteRef.path, { id: row.id! })}
       >
-        {row.buildTriggerInfo?.name}
+        <p>
+          {row.buildTriggerInfo?.github.owner || '-'}/
+          {row.buildTriggerInfo?.github.name || '-'}
+        </p>
       </Link>
     ),
   },
   {
-    title: 'Trigger Name',
+    title: 'Trigger',
     field: 'trigger',
     width: '150px',
     render: (row: Partial<WorkflowRun>) => (
       <Typography variant="body2" noWrap>
-        <p>{row.buildTriggerInfo?.github.owner || '-'}/{row.buildTriggerInfo?.github.name || '-'}</p>
+        <p>{row.buildTriggerInfo?.name}</p>
       </Typography>
     ),
   },
