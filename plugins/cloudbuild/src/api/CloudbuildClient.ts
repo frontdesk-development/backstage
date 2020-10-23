@@ -73,7 +73,7 @@ export class CloudbuildClient implements CloudbuildApi {
     }
 
     let workflowRuns: Response;
-    if (triggerId !== undefined) {
+    if (triggerId !== undefined || triggerId !== '') {
       workflowRuns = await fetch(
         `https://cloudbuild.googleapis.com/v1/projects/${encodeURIComponent(
           projectId,
