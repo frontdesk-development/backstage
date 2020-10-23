@@ -204,21 +204,25 @@ const ServiceEntityPage = ({ entity }: { entity: Entity }) => (
         element={<SentryRouter entity={entity} />}
       />
     )}
-    <EntityPageLayout.Content
-      path="/api/*"
-      title="API"
-      element={<ApiDocsRouter entity={entity} />}
-    />
+    {entity.spec?.implementsApis && (
+      <EntityPageLayout.Content
+        path="/api/*"
+        title="API"
+        element={<ApiDocsRouter entity={entity} />}
+      />
+    )}
     <EntityPageLayout.Content
       path="/docs/*"
       title="Docs"
       element={<DocsRouter entity={entity} />}
     />
-    <EntityPageLayout.Content
-      path="/kubernetes/*"
-      title="Kubernetes"
-      element={<KubernetesRouter entity={entity} />}
-    />
+    {entity.metadata?.annotations?.['backstage.io/kubernetes-id'] && (
+      <EntityPageLayout.Content
+        path="/kubernetes/*"
+        title="Kubernetes"
+        element={<KubernetesRouter entity={entity} />}
+      />
+    )}
     <EntityPageLayout.Content
       path="/code-insights"
       title="Code Insights"
