@@ -64,7 +64,7 @@ const generatedColumns: TableColumn[] = [
     ),
   },
   {
-    title: 'Source',
+    title: 'Trigger Name',
     field: 'source',
     highlight: true,
     width: '200px',

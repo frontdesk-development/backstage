@@ -72,20 +72,21 @@ export class CloudbuildClient implements CloudbuildApi {
       mapsTrigger.set(trigger.id, trigger);
     }
 
-    let workflowRuns: Response
-    console.log("############## triggerId: ",triggerId);
-    if (triggerId !== undefined){
-    workflowRuns = await fetch(
-      `https://cloudbuild.googleapis.com/v1/projects/${encodeURIComponent(
-        projectId,
-      )}/builds?filter=(trigger_id=\"${encodeURIComponent(triggerId || '')}\")`,
-      {
-        headers: new Headers({
-          Accept: '*/*',
-          Authorization: `Bearer ${await this.getToken()}`,
-        }),
-      },
-    );
+    let workflowRuns: Response;
+    if (triggerId !== undefined) {
+      workflowRuns = await fetch(
+        `https://cloudbuild.googleapis.com/v1/projects/${encodeURIComponent(
+          projectId,
+        )}/builds?filter=(trigger_id=\"${encodeURIComponent(
+          triggerId || '',
+        )}\")`,
+        {
+          headers: new Headers({
+            Accept: '*/*',
+            Authorization: `Bearer ${await this.getToken()}`,
+          }),
+        },
+      );
     } else {
       workflowRuns = await fetch(
         `https://cloudbuild.googleapis.com/v1/projects/${encodeURIComponent(
@@ -98,7 +99,7 @@ export class CloudbuildClient implements CloudbuildApi {
           }),
         },
       );
-    };
+    }
 
     const builds: ActionsListWorkflowRunsForRepoResponseData = await workflowRuns.json();
 
