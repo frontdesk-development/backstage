@@ -30,7 +30,7 @@ export const Router = ({ entity }: { entity: Entity }) =>
   !isPluginApplicableToEntity(entity) ? (
     <WarningPanel title=" Grafana plugin:">
       `entity.metadata.annotations['
-      {GRAFANA_ANNOTATION}']` key is missing on the entity.{' '}
+      {GRAFANA_ANNOTATION2}']` key is missing on the entity.{' '}
     </WarningPanel>
   ) : (
     <Routes>
