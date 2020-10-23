@@ -74,21 +74,7 @@ export class CloudbuildClient implements CloudbuildApi {
 
     let workflowRuns: Response;
     console.log("@@@@@@@@ triggerId: ",triggerId);
-    if (triggerId !== undefined) {
-      workflowRuns = await fetch(
-        `https://cloudbuild.googleapis.com/v1/projects/${encodeURIComponent(
-          projectId,
-        )}/builds?filter=(trigger_id=\"${encodeURIComponent(
-          triggerId || '',
-        )}\")`,
-        {
-          headers: new Headers({
-            Accept: '*/*',
-            Authorization: `Bearer ${await this.getToken()}`,
-          }),
-        },
-      );
-    } else if (triggerId !== '') {
+    if (typeof triggerId !== 'undefined' && triggerId) {
       workflowRuns = await fetch(
         `https://cloudbuild.googleapis.com/v1/projects/${encodeURIComponent(
           projectId,
