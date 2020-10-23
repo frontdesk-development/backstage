@@ -68,7 +68,8 @@ export function useWorkflowRuns({
             },
             substitutions: run.substitutions,
             source: {
-              branchName: run.substitutions?.REPO_NAME || run.statusDetail,
+              branchName:
+                run.substitutions?.REPO_NAME || run.buildTriggerInfo.name,
               commit: {
                 hash: run.substitutions?.COMMIT_SHA || run.statusDetail,
                 url: run.substitutions?.REPO_NAME || run.statusDetail,

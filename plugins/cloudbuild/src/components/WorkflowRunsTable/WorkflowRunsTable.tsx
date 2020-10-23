@@ -73,7 +73,7 @@ const generatedColumns: TableColumn[] = [
         component={RouterLink}
         to={generatePath(buildRouteRef.path, { id: row.id! })}
       >
-        {row.substitutions?.REPO_NAME || '-'}
+        {row.buildTriggerInfo?.name}
       </Link>
     ),
   },
