@@ -95,7 +95,6 @@ export async function createRouter(
             handler: async (ctx: StageContext<{ token: string }>) => {
               const preparer = preparers.get(ctx.entity);
               ctx.logger.info('Will now prepare the skeleton');
-              ctx.logger.info(`Token Prepare: ${token}`);
               const skeletonDir = await preparer.prepare(ctx.entity, token, {
                 logger: ctx.logger,
               });
@@ -109,7 +108,6 @@ export async function createRouter(
             ) => {
               const templater = templaters.get(ctx.entity);
               ctx.logger.info('Will now run the template');
-              ctx.logger.info(`Token run templater: ${token}`);
               const { resultDir } = await templater.run({
                 directory: ctx.skeletonDir,
                 dockerClient,
@@ -127,7 +125,6 @@ export async function createRouter(
             ) => {
               const publisher = publishers.get(ctx.entity);
               ctx.logger.info('Will now store the template');
-              ctx.logger.info(`Token publish: ${token}`);
               const { remoteUrl } = await publisher.publish({
                 entity: ctx.entity,
                 values: ctx.values,
