@@ -18,3 +18,6 @@
 /plugins/gcp-projects                       @trivago/ebarrios
 /plugins/github-prs                         @trivago/ebarrios
 /plugins/grafana                            @trivago/ebarrios
+/.github/workflows/techdocs.yml             @spotify/techdocs-core
+/.github/workflows/techdocs-pypi.yml        @spotify/techdocs-core
+/.changeset/cost-insights-*                 @spotify/silver-lining
