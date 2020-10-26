@@ -22,6 +22,7 @@ export const locationSpecSchema = yup
     type: yup.string().required(),
     target: yup.string().required(),
     token: yup.string().optional(),
+    presence: yup.string(),
   })
   .noUnknown()
   .required();

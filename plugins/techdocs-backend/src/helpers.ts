@@ -20,6 +20,7 @@ import parseGitUrl from 'git-url-parse';
 import NodeGit, { Clone, Repository, Cred } from 'nodegit';
 import fs from 'fs-extra';
 import { getDefaultBranch } from './default-branch';
+import { getGitRepoType } from './git-auth';
 import { Entity } from '@backstage/catalog-model';
 import { InputError } from '@backstage/backend-common';
 import { RemoteProtocol } from './techdocs/stages/prepare/types';
@@ -134,9 +135,6 @@ export const checkoutGitRepository = async (
     privateToken,
   );
 
-  // TODO: Should propably not be hardcoded names of env variables, but seems too hard to access config down here
-  // const user = process.env.GITHUB_PRIVATE_TOKEN_USER || '';
-  const user = parsedGitLocation.user || '';
   let token = process.env.GITHUB_TOKEN || '';
   if (privateToken !== '') {
     token = privateToken || '';
@@ -172,8 +170,10 @@ export const checkoutGitRepository = async (
     }
   }
 
-  if (user && token) {
-    parsedGitLocation.token = `${user}:${token}`;
+  if (token) {
+    const type = getGitRepoType(repoUrl);
+    const auth = type === 'github' ? `${token}:x-oauth-basic` : `:${token}`;
+    parsedGitLocation.token = auth;
   }
 
   const repositoryCheckoutUrl = parsedGitLocation.toString('https');

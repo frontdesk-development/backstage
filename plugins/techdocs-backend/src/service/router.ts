@@ -17,7 +17,7 @@ import { Logger } from 'winston';
 import Router from 'express-promise-router';
 import express from 'express';
 import Knex from 'knex';
-import fetch from 'node-fetch';
+import fetch from 'cross-fetch';
 import { Config } from '@backstage/config';
 import Docker from 'dockerode';
 import {
@@ -109,6 +109,7 @@ export async function createRouter({
     }
 
     const token = req.headers.authorization || '';
+
     const { kind, namespace, name } = req.params;
 
     const catalogUrl = await discovery.getBaseUrl('catalog');
@@ -116,8 +117,10 @@ export async function createRouter({
 
     const catalogRes = await fetch(`${catalogUrl}/entities/by-name/${triple}`);
     if (!catalogRes.ok) {
-      catalogRes.body.pipe(res.status(catalogRes.status));
-      return;
+      const catalogResText = await catalogRes.text();
+      res.status(catalogRes.status);
+      res.send(catalogResText);
+      return res.send(catalogResText);
     }
 
     const entity: Entity = await catalogRes.json();
@@ -136,7 +139,7 @@ export async function createRouter({
       await docsBuilder.build(token);
     }
 
-    res.redirect(`${storageUrl}${req.path.replace('/docs', '')}`);
+    return res.redirect(`${storageUrl}${req.path.replace('/docs', '')}`);
   });
 
   if (publisher instanceof LocalPublish) {
