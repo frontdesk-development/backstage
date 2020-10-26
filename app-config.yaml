@@ -80,7 +80,6 @@ integrations:
     - host: github.com
       token:
         $env: GITHUB_TOKEN
-
   gitlab:
     - host: gitlab.com
       token:
@@ -125,23 +124,17 @@ catalog:
         - target: https://github.com
           token:
             $env: GITHUB_PRIVATE_TOKEN
+    githubOrg:
+      providers:
+        - target: https://github.com
+          token:
+            $env: GITHUB_TOKEN
 
 scaffolder:
   github:
     host: https://github.com
-    token:
-      $env: GITHUB_TOKEN
-    visibility: public # or 'internal' or 'private'
-  gitlab:
-    api:
-      baseUrl: https://gitlab.com
-      token:
-        $env: GITLAB_TOKEN
-  azure:
-    baseUrl: https://dev.azure.com/{your-organization}
-    api:
-      token:
-        $env: AZURE_TOKEN
+    token: 'Token'
+    visibility: private # or 'internal' or 'private'
 
 auth:
   providers:

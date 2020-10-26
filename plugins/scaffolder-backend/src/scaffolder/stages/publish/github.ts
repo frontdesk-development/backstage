@@ -16,6 +16,7 @@
 
 import { PublisherBase } from './types';
 import { Octokit } from '@octokit/rest';
+import fs from 'fs-extra';
 
 import { JsonValue } from '@backstage/config';
 import { RequiredTemplateValues } from '../templater';
@@ -50,6 +51,19 @@ export class GithubPublisher implements PublisherBase {
     const remoteUrl = await this.createRemote(values, token);
 
     await this.pushToRemote(directory, remoteUrl, token);
+
+    if (values?.kubernetes_deploy === 'yes') {
+      const templateId = `${values.storePath}-gitops`;
+      const tempDir = `/tmp/${templateId}`;
+      await fs.promises.mkdir(tempDir, { recursive: true });
+      await Repository.init(tempDir, 0);
+
+      const manifestValues = values;
+      manifestValues.storePath = `${values.storePath}-gitops`;
+
+      const remoteUrlManifest = await this.createRemote(manifestValues, token);
+      await this.pushToRemote(tempDir, remoteUrlManifest, token);
+    }
 
     return { remoteUrl };
   }
