@@ -147,44 +147,8 @@ following contents to get you up and running quickly.</p>
   templaters.register(<span class="hljs-string">'cookiecutter'</span>, cookiecutterTemplater);
   templaters.register(<span class="hljs-string">'cra'</span>, craTemplater);
 
-  <span class="hljs-keyword">const</span> filePreparer = <span class="hljs-keyword">new</span> FilePreparer();
-  <span class="hljs-keyword">const</span> githubPreparer = <span class="hljs-keyword">new</span> GithubPreparer();
-  <span class="hljs-keyword">const</span> gitlabPreparer = <span class="hljs-keyword">new</span> GitlabPreparer(config);
-  <span class="hljs-keyword">const</span> preparers = <span class="hljs-keyword">new</span> Preparers();
-
-  preparers.register(<span class="hljs-string">'file'</span>, filePreparer);
-  preparers.register(<span class="hljs-string">'github'</span>, githubPreparer);
-  preparers.register(<span class="hljs-string">'gitlab'</span>, gitlabPreparer);
-  preparers.register(<span class="hljs-string">'gitlab/api'</span>, gitlabPreparer);
-
-  <span class="hljs-keyword">const</span> publishers = <span class="hljs-keyword">new</span> Publishers();
-
-  <span class="hljs-keyword">const</span> githubToken = config.getString(<span class="hljs-string">'scaffolder.github.token'</span>);
-  <span class="hljs-keyword">const</span> repoVisibility = config.getString(
-    <span class="hljs-string">'scaffolder.github.visibility'</span>,
-  ) <span class="hljs-keyword">as</span> RepoVisibilityOptions;
-
-  <span class="hljs-keyword">const</span> githubClient = <span class="hljs-keyword">new</span> Octokit({ auth: githubToken });
-  <span class="hljs-keyword">const</span> githubPublisher = <span class="hljs-keyword">new</span> GithubPublisher({
-    client: githubClient,
-    token: githubToken,
-    repoVisibility,
-  });
-  publishers.register(<span class="hljs-string">'file'</span>, githubPublisher);
-  publishers.register(<span class="hljs-string">'github'</span>, githubPublisher);
-
-  <span class="hljs-keyword">const</span> gitLabConfig = config.getOptionalConfig(<span class="hljs-string">'scaffolder.gitlab.api'</span>);
-
-  <span class="hljs-keyword">if</span> (gitLabConfig) {
-    <span class="hljs-keyword">const</span> gitLabToken = gitLabConfig.getString(<span class="hljs-string">'token'</span>);
-    <span class="hljs-keyword">const</span> gitLabClient = <span class="hljs-keyword">new</span> Gitlab({
-      host: gitLabConfig.getOptionalString(<span class="hljs-string">'baseUrl'</span>),
-      token: gitLabToken,
-    });
-    <span class="hljs-keyword">const</span> gitLabPublisher = <span class="hljs-keyword">new</span> GitlabPublisher(gitLabClient, gitLabToken);
-    publishers.register(<span class="hljs-string">'gitlab'</span>, gitLabPublisher);
-    publishers.register(<span class="hljs-string">'gitlab/api'</span>, gitLabPublisher);
-  }
+  <span class="hljs-keyword">const</span> preparers = <span class="hljs-keyword">await</span> Preparers.fromConfig(config, { logger });
+  <span class="hljs-keyword">const</span> publishers = <span class="hljs-keyword">await</span> Publishers.fromConfig(config, { logger });
 
   <span class="hljs-keyword">const</span> dockerClient = <span class="hljs-keyword">new</span> Docker();
   <span class="hljs-keyword">return</span> <span class="hljs-keyword">await</span> createRouter({
