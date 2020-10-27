@@ -83,7 +83,7 @@ export class TechdocsGenerator implements GeneratorBase {
             logStream,
           });
           this.logger.info(
-            `[TechDocs]: Successfully generated docs from ${directory} into ${resultDir} using local mkdocs`,
+            `Successfully generated docs from ${directory} into ${resultDir} using local mkdocs`,
           );
           break;
         case 'docker':
@@ -96,7 +96,7 @@ export class TechdocsGenerator implements GeneratorBase {
             dockerClient,
           });
           this.logger.info(
-            `[TechDocs]: Successfully generated docs from ${directory} into ${resultDir} using techdocs-container`,
+            `Successfully generated docs from ${directory} into ${resultDir} using techdocs-container`,
           );
           break;
         default:
@@ -106,7 +106,7 @@ export class TechdocsGenerator implements GeneratorBase {
       }
     } catch (error) {
       this.logger.debug(
-        `[TechDocs]: Failed to generate docs from ${directory} into ${resultDir}`,
+        `Failed to generate docs from ${directory} into ${resultDir}`,
       );
       this.logger.warn(`[TechDocs]: Build failed with error: ${log}`);
       throw new Error(
