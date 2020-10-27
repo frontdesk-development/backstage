@@ -65,7 +65,7 @@ export class GithubOrgReaderProcessor implements CatalogProcessor {
       ? graphql
       : graphql.defaults({
           headers: {
-            authorization: `token ${provider.token}`,
+            authorization: `token ${location.token}`,
           },
         });
 

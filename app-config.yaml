@@ -16,6 +16,7 @@ backend:
     credentials: true
   csp:
     connect-src: ["'self'", 'http:', 'https:']
+  # workingDirectory: /tmp # Use this to configure a working direcotry for the scaffolder, defaults to the OS temp-dir
 
 # See README.md in the proxy-backend plugin for information on the configuration format
 proxy:
@@ -140,9 +141,19 @@ catalog:
 
 scaffolder:
   github:
-    host: https://github.com
-    token: 'Token'
-    visibility: private # or 'internal' or 'private'
+    token:
+      $env: GITHUB_TOKEN
+    visibility: internal #public or 'internal' or 'private'
+  gitlab:
+    api:
+      baseUrl: https://gitlab.com
+      token:
+        $env: GITLAB_TOKEN
+  azure:
+    baseUrl: https://dev.azure.com/{your-organization}
+    api:
+      token:
+        $env: AZURE_TOKEN
 
 auth:
   providers:
