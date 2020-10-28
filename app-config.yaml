@@ -85,20 +85,10 @@ integrations:
     - host: github.com
       token:
         $env: GITHUB_TOKEN
-  gitlab:
-    - host: gitlab.com
+  githubOrg:
+    - host: https://github.com
       token:
-        $env: GITLAB_TOKEN
-  bitbucket:
-    - host: bitbucket.org
-      username:
-        $env: BITBUCKET_USERNAME
-      appPassword:
-        $env: BITBUCKET_APP_PASSWORD
-  azure:
-    - host: dev.azure.com
-      token:
-        $env: AZURE_TOKEN
+        $env: GITHUB_TOKEN
 
 catalog:
   rules:
@@ -127,22 +117,10 @@ catalog:
     - type: github
       target: https://github.com/trivago/cookiecutter-terraform/blob/master/template.yaml
 
-  processors:
-    github:
-      providers:
-        - target: https://github.com
-          token:
-            $env: GITHUB_PRIVATE_TOKEN
-    githubOrg:
-      providers:
-        - target: https://github.com
-          token:
-            $env: GITHUB_TOKEN
 
 scaffolder:
   github:
-    token:
-      $env: GITHUB_TOKEN
+    token: 'token'
     visibility: internal #public or 'internal' or 'private'
   gitlab:
     api:
