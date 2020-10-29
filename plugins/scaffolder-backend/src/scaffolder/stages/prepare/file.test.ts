@@ -43,7 +43,7 @@ const setupTest = async (fixturePath: string) => {
   };
 
   const filePreparer = new FilePreparer();
-  const resultDir = await filePreparer.prepare(template, {
+  const resultDir = await filePreparer.prepare(template, '', {
     workingDirectory: os.tmpdir(),
   });
 

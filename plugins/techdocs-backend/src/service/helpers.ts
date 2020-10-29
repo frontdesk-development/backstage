@@ -49,7 +49,7 @@ export class DocsBuilder {
   private entity: Entity;
   private logger: Logger;
   private dockerClient: Docker;
-  private token: string;
+  // private token: string;
 
   constructor({
     preparers,
@@ -58,20 +58,20 @@ export class DocsBuilder {
     entity,
     logger,
     dockerClient,
-    token,
-  }: DocsBuilderArguments) {
+  }: // token,
+  DocsBuilderArguments) {
     this.preparer = preparers.get(entity);
     this.generator = generators.get(entity);
     this.publisher = publisher;
     this.entity = entity;
     this.logger = logger;
     this.dockerClient = dockerClient;
-    this.token = token;
+    // this.token = token;
   }
 
   public async build(token?: string) {
     this.logger.info(`Running preparer on entity ${getEntityId(this.entity)}`);
-    const preparedDir = await this.preparer.prepare(this.entity, this.token);
+    const preparedDir = await this.preparer.prepare(this.entity, token);
 
     this.logger.info(`Running generator on entity ${getEntityId(this.entity)}`);
     const { resultDir } = await this.generator.run({

@@ -24,6 +24,7 @@ import { PreparerBase } from './types';
 export class FilePreparer implements PreparerBase {
   async prepare(
     template: TemplateEntityV1alpha1,
+    _: string,
     opts?: { workingDirectory?: string },
   ): Promise<string> {
     const { protocol, location } = parseLocationAnnotation(template);

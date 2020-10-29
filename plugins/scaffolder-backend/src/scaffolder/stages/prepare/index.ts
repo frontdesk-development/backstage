@@ -17,5 +17,3 @@ export * from './preparers';
 export * from './types';
 export * from './file';
 export * from './github';
-export * from './gitlab';
-export * from './azure';

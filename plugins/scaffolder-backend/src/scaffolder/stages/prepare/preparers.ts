@@ -25,8 +25,6 @@ import {
 } from '../helpers';
 import { RemoteProtocol } from '../types';
 import { FilePreparer } from './file';
-import { GitlabPreparer } from './gitlab';
-import { AzurePreparer } from './azure';
 import { GithubPreparer } from './github';
 
 export class Preparers implements PreparerBuilder {
@@ -67,13 +65,8 @@ export class Preparers implements PreparerBuilder {
     const preparers = new Preparers(typeDetector);
 
     const filePreparer = new FilePreparer();
-    const gitlabPreparer = new GitlabPreparer(config);
-    const azurePreparer = new AzurePreparer(config);
 
     preparers.register('file', filePreparer);
-    preparers.register('gitlab', gitlabPreparer);
-    preparers.register('gitlab/api', gitlabPreparer);
-    preparers.register('azure/api', azurePreparer);
 
     const githubConfig = config.getOptionalConfig('scaffolder.github');
     if (githubConfig) {
