@@ -128,7 +128,11 @@ export const TemplatePage = () => {
 
     const {
       entities: [createdEntity],
-    } = await catalogApi.addLocation('github', componentYaml);
+    } = await catalogApi.addLocation(
+      'github',
+      componentYaml,
+      job.metadata.token,
+    );
 
     setEntity((createdEntity as any) as TemplateEntityV1alpha1);
   };

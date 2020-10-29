@@ -58,6 +58,11 @@ export class JobProcessor implements Processor {
       logStream: stream,
     };
 
+    let localToken: string = '';
+    if (token !== undefined) {
+      localToken = token;
+    }
+
     const job: Job = {
       id,
       context,
@@ -68,6 +73,7 @@ export class JobProcessor implements Processor {
         status: 'PENDING',
       })),
       status: 'PENDING',
+      token: localToken,
     };
 
     this.jobs.set(job.id, job);

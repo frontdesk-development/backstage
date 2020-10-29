@@ -75,7 +75,6 @@ export class GithubPublisher implements PublisherBase {
     const githubClientPublish = new Octokit({ auth: token });
     const [owner, name] = values.storePath.split('/');
     const description = values.description as string;
-
     const user = await githubClientPublish.users.getByUsername({
       username: owner,
     });
@@ -87,6 +86,7 @@ export class GithubPublisher implements PublisherBase {
             org: owner,
             headers: {
               Accept: `application/vnd.github.nebula-preview+json`,
+              authorization: `token ${token}`,
             },
             visibility: this.repoVisibility,
             description: description,

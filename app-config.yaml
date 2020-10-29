@@ -121,7 +121,7 @@ catalog:
 scaffolder:
   github:
     token: 'token'
-    visibility: internal #public or 'internal' or 'private'
+    visibility: private #public or 'internal' or 'private'
   gitlab:
     api:
       baseUrl: https://gitlab.com

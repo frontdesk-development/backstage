@@ -50,6 +50,7 @@ export type Job = {
   status: ProcessorStatus;
   stages: StageResult[];
   error?: Error;
+  token: string;
 };
 
 export type Processor = {

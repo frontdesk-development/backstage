@@ -19,10 +19,12 @@ export type Job = {
     entity: any;
     values: any;
     remoteUrl?: string;
+    token?: string;
   };
   status: 'PENDING' | 'STARTED' | 'COMPLETED' | 'FAILED';
   stages: Stage[];
   error?: Error;
+  token: string;
 };
 
 export type Stage = {
