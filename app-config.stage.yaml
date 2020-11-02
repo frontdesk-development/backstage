@@ -94,12 +94,6 @@ auth:
 catalog:
   rules:
     - allow: [Component, API, Group, User, Template, Location]
-  processors:
-    github:
-      providers:
-        - target: https://github.com
-          token:
-            $env: GITHUB_PRIVATE_TOKEN
   locations:
     # Backstage Example Templates
     - type: github
@@ -114,6 +108,16 @@ catalog:
       target: https://github.com/frontdesk-development/cookiecutter-argocd/blob/master/template.yaml
     - type: github
       target: https://github.com/trivago/cookiecutter-terraform/blob/master/template.yaml
+
+integrations:
+  github:
+    - host: github.com
+      token:
+        $env: GITHUB_TOKEN
+  githubOrg:
+    - host: https://github.com
+      token:
+        $env: GITHUB_TOKEN
 
 lighthouse:
   baseUrl: http://frontdesk.sre-frontdesk.stage.europe-west4.tools.trv.cloud/lighthouse-be
