@@ -56,7 +56,10 @@ export class GithubPublisher implements PublisherBase {
       const templateId = `${values.storePath}-gitops`;
       const tempDir = `/tmp/${templateId}`;
       await fs.promises.mkdir(tempDir, { recursive: true });
-      await Repository.init(tempDir, 0);
+      await fs.promises.writeFile(
+        `${tempDir}/README.md`,
+        'Gitops empty readme file to avoid having a bare repo.',
+      );
 
       const manifestValues = values;
       manifestValues.storePath = `${values.storePath}-gitops`;
