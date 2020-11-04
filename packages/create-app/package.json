@@ -32,7 +32,7 @@
     "@backstage/plugin-github-actions": "0.1.1-alpha.26",
     "@backstage/plugin-api-docs": "0.1.1-alpha.26",
     "@backstage/catalog-model": "0.1.1-alpha.26",
-    "@backstage/config": "^0.1.1-alpha.26",
+    "@backstage/config": "^0.1.1",
     "@backstage/core": "^0.1.1-alpha.26",
     "@backstage/plugin-catalog": "^0.1.1-alpha.26",
     "@backstage/plugin-proxy-backend": "^0.1.1-alpha.26",
