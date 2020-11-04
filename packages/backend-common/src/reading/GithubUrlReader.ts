@@ -57,11 +57,13 @@ export type ProviderConfig = {
    * If no token is specified, anonymous access is used.
    */
   token?: string;
+  appToken?: string;
 };
 
 export function getApiRequestOptions(
   provider: ProviderConfig,
   token?: string,
+  appToken?: string,
 ): RequestInit {
   const headers: HeadersInit = {
     Accept: 'application/vnd.github.v3.raw',
@@ -75,6 +77,10 @@ export function getApiRequestOptions(
     headers.Authorization = `token ${token}`;
   }
 
+  if (appToken) {
+    headers.Authorization = `Bearer ${appToken}`;
+  }
+
   return {
     headers,
   };
@@ -83,6 +89,7 @@ export function getApiRequestOptions(
 export function getRawRequestOptions(
   provider: ProviderConfig,
   token?: string,
+  appToken?: string,
 ): RequestInit {
   const headers: HeadersInit = {};
 
@@ -92,6 +99,10 @@ export function getRawRequestOptions(
 
   if (token) {
     headers.Authorization = `token ${token}`;
+  }
+
+  if (appToken) {
+    headers.Authorization = `Bearer ${appToken}`;
   }
 
   return {
@@ -215,14 +226,14 @@ export class GithubUrlReader implements UrlReader {
     this.config = config;
   }
 
-  async read(url: string, token?: string): Promise<Buffer> {
+  async read(url: string, token?: string, appToken?: string): Promise<Buffer> {
     const useApi = this.config.apiBaseUrl && (token || !this.config.rawBaseUrl);
     const ghUrl = useApi
       ? getApiUrl(url, this.config)
       : getRawUrl(url, this.config);
     const options = useApi
-      ? getApiRequestOptions(this.config, token)
-      : getRawRequestOptions(this.config, token);
+      ? getApiRequestOptions(this.config, token, appToken)
+      : getRawRequestOptions(this.config, token, appToken);
 
     let response: Response;
     try {

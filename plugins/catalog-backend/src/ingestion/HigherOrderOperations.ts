@@ -24,7 +24,7 @@ import {
   HigherOrderOperation,
   LocationReader,
 } from './types';
-// import { OAuthApi } from '@backstage/core';
+import { createAppAuth } from '@octokit/auth-app';
 
 /**
  * Placeholder for operations that span several catalogs and/or stretches out
@@ -39,8 +39,7 @@ export class HigherOrderOperations implements HigherOrderOperation {
     private readonly locationsCatalog: LocationsCatalog,
     private readonly locationReader: LocationReader,
     private readonly logger: Logger,
-  ) // private readonly githubAuthApi: OAuthApi,
-  {}
+  ) {}
 
   /**
    * Adds a single location to the catalog.
@@ -145,8 +144,23 @@ export class HigherOrderOperations implements HigherOrderOperation {
   }
 
   private async getToken(): Promise<string> {
-    // return this.githubAuthApi.getAccessToken();
-    return '';
+    const appId = process.env.GITHUB_APP_ID ?? '';
+    const privateKey = process.env.GITHUB_PRIVATE_KEY ?? '';
+    const installationId = process.env.GITHUB_INSTALLATION_ID ?? '';
+    const clientId = process.env.GITHUB_CLIENT_ID;
+    const clientSecret = process.env.GITHUB_CLIENT_SECRET;
+
+    const auth = createAppAuth({
+      appId: appId,
+      privateKey: privateKey,
+      installationId: installationId,
+      clientId: clientId,
+      clientSecret: clientSecret,
+    });
+
+    const appAuthentication = await auth({ type: 'installation' });
+
+    return appAuthentication.token;
   }
 
   // Performs a full refresh of a single location
@@ -154,11 +168,14 @@ export class HigherOrderOperations implements HigherOrderOperation {
     let startTimestamp = process.hrtime();
     const token = await this.getToken();
 
-    const readerOutput = await this.locationReader.read({
-      type: location.type,
-      target: location.target,
+    const readerOutput = await this.locationReader.read(
+      {
+        type: location.type,
+        target: location.target,
+        appToken: token,
+      },
       token,
-    });
+    );
 
     for (const item of readerOutput.errors) {
       this.logger.warn(
