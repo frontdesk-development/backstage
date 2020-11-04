@@ -24,7 +24,7 @@ import {
   HigherOrderOperation,
   LocationReader,
 } from './types';
-import { OAuthApi } from '@backstage/core';
+// import { OAuthApi } from '@backstage/core';
 
 /**
  * Placeholder for operations that span several catalogs and/or stretches out
@@ -39,8 +39,8 @@ export class HigherOrderOperations implements HigherOrderOperation {
     private readonly locationsCatalog: LocationsCatalog,
     private readonly locationReader: LocationReader,
     private readonly logger: Logger,
-    private readonly githubAuthApi: OAuthApi,
-  ) {}
+  ) // private readonly githubAuthApi: OAuthApi,
+  {}
 
   /**
    * Adds a single location to the catalog.
