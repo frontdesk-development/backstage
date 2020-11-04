@@ -24,6 +24,7 @@ import {
   HigherOrderOperation,
   LocationReader,
 } from './types';
+import { OAuthApi } from '@backstage/core';
 
 /**
  * Placeholder for operations that span several catalogs and/or stretches out
@@ -38,6 +39,7 @@ export class HigherOrderOperations implements HigherOrderOperation {
     private readonly locationsCatalog: LocationsCatalog,
     private readonly locationReader: LocationReader,
     private readonly logger: Logger,
+    private readonly githubAuthApi: OAuthApi,
   ) {}
 
   /**
@@ -142,13 +144,20 @@ export class HigherOrderOperations implements HigherOrderOperation {
     );
   }
 
+  private async getToken(): Promise<string> {
+    // return this.githubAuthApi.getAccessToken();
+    return '';
+  }
+
   // Performs a full refresh of a single location
   private async refreshSingleLocation(location: Location) {
     let startTimestamp = process.hrtime();
+    const token = await this.getToken();
 
     const readerOutput = await this.locationReader.read({
       type: location.type,
       target: location.target,
+      token,
     });
 
     for (const item of readerOutput.errors) {
