@@ -230,7 +230,11 @@ export const googleAuthApiRef: ApiRef<
  * for a full list of supported scopes.
  */
 export const githubAuthApiRef: ApiRef<
-  OAuthApi & OpenIdConnectApi & ProfileInfoApi & BackstageIdentityApi & SessionApi
+  OAuthApi &
+    OpenIdConnectApi &
+    ProfileInfoApi &
+    BackstageIdentityApi &
+    SessionApi
 > = createApiRef({
   id: 'core.auth.github',
   description: 'Provides authentication towards GitHub APIs',
@@ -319,4 +323,15 @@ export const samlAuthApiRef: ApiRef<
 > = createApiRef({
   id: 'core.auth.saml',
   description: 'Example of how to use SAML custom provider',
+});
+
+export const oneloginAuthApiRef: ApiRef<
+  OAuthApi &
+    OpenIdConnectApi &
+    ProfileInfoApi &
+    BackstageIdentityApi &
+    SessionApi
+> = createApiRef({
+  id: 'core.auth.onelogin',
+  description: 'Provides authentication towards OneLogin APIs and identities',
 });
