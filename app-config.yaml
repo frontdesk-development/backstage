@@ -115,7 +115,7 @@ catalog:
 
     # trivago terraform template
     - type: github
-      target: https://github.com/trivago/cookiecutter-terraform/blob/master/template.yaml
+      target: https://github.com/frontdesk-development/cookiecutter-gcp-cicd/blob/master/template.yaml 
 
 
 scaffolder:

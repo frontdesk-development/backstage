@@ -73,7 +73,7 @@ export class LocationReaders implements LocationReader {
 
       for (const item of items) {
         if (item.type === 'location') {
-          await this.handleLocation(item, emit);
+          await this.handleLocation(item, emit, location.appToken);
         } else if (item.type === 'entity') {
           if (rulesEnforcer.isAllowed(item.entity, item.location)) {
             const relations = Array<EntityRelationSpec>();
@@ -126,8 +126,11 @@ export class LocationReaders implements LocationReader {
   private async handleLocation(
     item: CatalogProcessorLocationResult,
     emit: CatalogProcessorEmit,
+    appToken?: string,
   ) {
     const { processors, logger } = this.options;
+
+    item.location.appToken = appToken;
 
     const validatedEmit: CatalogProcessorEmit = emitResult => {
       if (emitResult.type === 'relation') {

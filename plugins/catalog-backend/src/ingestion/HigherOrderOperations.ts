@@ -147,8 +147,15 @@ export class HigherOrderOperations implements HigherOrderOperation {
     const appId = process.env.GITHUB_APP_ID ?? '';
     const privateKey = process.env.GITHUB_PRIVATE_KEY ?? '';
     const installationId = process.env.GITHUB_INSTALLATION_ID ?? '';
-    const clientId = process.env.GITHUB_CLIENT_ID;
-    const clientSecret = process.env.GITHUB_CLIENT_SECRET;
+    const clientId = process.env.AUTH_GITHUB_CLIENT_ID;
+    const clientSecret = process.env.AUTH_GITHUB_CLIENT_SECRET;
+
+    // console.log("### Env variables: ");
+    // console.log("### appId:          ",appId);
+    // console.log("### privateKey:     ",privateKey);
+    // console.log("### installationID: ",installationId);
+    // console.log("### clientId:       ",clientId);
+    // console.log("### clientSecret:   ",clientSecret);
 
     const auth = createAppAuth({
       appId: appId,
@@ -159,6 +166,7 @@ export class HigherOrderOperations implements HigherOrderOperation {
     });
 
     const appAuthentication = await auth({ type: 'installation' });
+    // console.log("JWT token: ", appAuthentication.token);
 
     return appAuthentication.token;
   }
