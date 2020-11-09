@@ -107,7 +107,7 @@ export class DocsBuilder {
     const { type, target } = getLocationForEntity(this.entity);
 
     // Unless docs are stored locally
-    const nonAgeCheckTypes = ['dir', 'file'];
+    const nonAgeCheckTypes = ['dir', 'file', 'url'];
     if (!nonAgeCheckTypes.includes(type)) {
       const branch =
         this.entity.metadata.annotations?.['github.com/project-slug-branch'] ||

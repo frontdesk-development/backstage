@@ -15,7 +15,6 @@
  */
 
 import { createApiRef, DiscoveryApi } from '@backstage/core';
-import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
 
 export const scaffolderApiRef = createApiRef<ScaffolderApi>({
   id: 'plugin.scaffolder.service',
@@ -33,11 +32,11 @@ export class ScaffolderApi {
    * Executes the scaffolding of a component, given a template and its
    * parameter values.
    *
-   * @param template Template entity for the scaffolder to use. New project is going to be created out of this template.
+   * @param templateName Template name for the scaffolder to use. New project is going to be created out of this template.
    * @param values Parameters for the template, e.g. name, description
    */
   async scaffold(
-    template: TemplateEntityV1alpha1,
+    templateName: string,
     values: Record<string, any>,
     token: string,
   ) {
@@ -47,10 +46,9 @@ export class ScaffolderApi {
       headers: {
         'Content-Type': 'application/json',
       },
-      // TODO(shmidt-i): when repo picker is implemented, take isOrg from it
       body: JSON.stringify({
-        template,
-        values: { ...values, isOrg: true },
+        templateName,
+        values: { ...values },
         token: token,
       }),
     });

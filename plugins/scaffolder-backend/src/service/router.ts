@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
 import { Config, JsonValue } from '@backstage/config';
 import fs from 'fs-extra';
 import Docker from 'dockerode';
@@ -29,6 +28,8 @@ import {
   TemplaterBuilder,
   PublisherBuilder,
 } from '../scaffolder';
+import { CatalogEntityClient } from '../lib/catalog';
+import { validate, ValidatorResult } from 'jsonschema';
 
 export interface RouterOptions {
   preparers: PreparerBuilder;
@@ -38,6 +39,7 @@ export interface RouterOptions {
   logger: Logger;
   config: Config;
   dockerClient: Docker;
+  entityClient: CatalogEntityClient;
 }
 
 export async function createRouter(
@@ -53,6 +55,7 @@ export async function createRouter(
     logger: parentLogger,
     config,
     dockerClient,
+    entityClient,
   } = options;
 
   const logger = parentLogger.child({ plugin: 'scaffolder' });
@@ -103,11 +106,24 @@ export async function createRouter(
       });
     })
     .post('/v1/jobs', async (req, res) => {
-      const template: TemplateEntityV1alpha1 = req.body.template;
+      const templateName: string = req.body.templateName;
       const values: RequiredTemplateValues & Record<string, JsonValue> =
         req.body.values;
 
       const token: string = req.body.token;
+
+      const template = await entityClient.findTemplate(templateName);
+
+      const validationResult: ValidatorResult = validate(
+        values,
+        template.spec.schema,
+      );
+
+      if (!validationResult.valid) {
+        res.status(400).json({ errors: validationResult.errors });
+        return;
+      }
+
       const job = jobProcessor.create({
         token: token,
         entity: template,
