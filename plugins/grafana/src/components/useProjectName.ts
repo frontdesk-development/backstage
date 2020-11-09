@@ -30,18 +30,14 @@
  */
 
 import { useAsync } from 'react-use';
-import { catalogApiRef, EntityCompoundName } from '@backstage/plugin-catalog';
-import { useApi } from '@backstage/core';
+import { Entity } from '@backstage/catalog-model';
 
 export const GRAFANA_ANNOTATION = 'grafana/graf-top';
 export const GRAFANA_ANNOTATION2 = 'grafana/dashboard';
 
-export const useProjectName = (name: EntityCompoundName) => {
-  const catalogApi = useApi(catalogApiRef);
-
+export const useProjectName = (entity: Entity) => {
   const { value, loading, error } = useAsync(async () => {
-    const entity = await catalogApi.getEntityByName(name);
-    return entity?.metadata.annotations?.['github.com/project-slug'] ?? '';
+    return entity?.metadata.annotations?.[GRAFANA_ANNOTATION2] ?? '';
   });
   return { value, loading, error };
 };
