@@ -13,7 +13,7 @@
         <id>https://backstage.io/blog/2020/10/22/cost-insights-plugin.html</id>
         <link href="https://backstage.io/blog/2020/10/22/cost-insights-plugin.html"/>
         <updated>2020-10-22T06:00:00.000Z</updated>
-        <summary type="html"><![CDATA[<p>How did Spotify save millions on cloud costs within a matter of months?? We made cost optimization just another part of the daily development process. Our newly open sourced <a href="https://github.com/spotify/backstage/tree/master/plugins/cost-insights">Cost Insights plugin</a> makes a team’s cloud costs visible — and actionable — right inside Backstage. So engineers can see the impact of their cloud usage (down to a product and resource level) and make optimizations wherever and whenever it makes sense. By managing cloud costs from the ground up, you can make smarter decisions that let you continue to build and scale quickly, without wasting resources.</p>
+        <summary type="html"><![CDATA[<p>How did Spotify save millions on cloud costs within a matter of months?? We made cost optimization just another part of the daily development process. Our newly open sourced <a href="https://github.com/backstage/backstage/tree/master/plugins/cost-insights">Cost Insights plugin</a> makes a team’s cloud costs visible — and actionable — right inside Backstage. So engineers can see the impact of their cloud usage (down to a product and resource level) and make optimizations wherever and whenever it makes sense. By managing cloud costs from the ground up, you can make smarter decisions that let you continue to build and scale quickly, without wasting resources.</p>
 <iframe width="780" height="440" src="https://www.youtube.com/embed/YLAd5hdXR_Q" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 <p>Are we turning engineers into accountants? Nope, we’re just letting engineers do what they do best, in the place that feels natural to them: inside Backstage.</p>
 ]]></summary>
@@ -124,7 +124,7 @@
         <link href="https://backstage.io/blog/2020/05/22/phase-2-service-catalog.html"/>
         <updated>2020-05-22T06:00:00.000Z</updated>
         <summary type="html"><![CDATA[<p><strong>TL;DR</strong> Thanks to the help from the Backstage community, we’ve made excellent progress and are now moving into Phase 2 of Backstage — building out a Service Catalog and the surrounding systems that will help unify the tools you use to manage your software.</p>
-<p>We released the open source version of Backstage a little less than two months ago, and have been thrilled to see so many people jumping in and contributing to the project in its early stages. We’re excited to see what the community can build together as we progress through <a href="https://github.com/spotify/backstage#project-roadmap">each phase of Backstage</a>.</p>
+<p>We released the open source version of Backstage a little less than two months ago, and have been thrilled to see so many people jumping in and contributing to the project in its early stages. We’re excited to see what the community can build together as we progress through <a href="https://github.com/backstage/backstage#project-roadmap">each phase of Backstage</a>.</p>
 <p><img src="/blog/assets/20-05-20/Service_Catalog_MVP.png" alt="img"></p>
 ]]></summary>
         <author>
