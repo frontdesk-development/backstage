@@ -30,7 +30,10 @@ backend:
 
 proxy:
   '/circleci/api':
-    target: https://circleci.com/api/v1.1
+    target: 'https://circleci.com/api/v1.1'
+    changeOrigin: true
+    pathRewrite:
+      '^/proxy/circleci/api/': '/'
     headers:
       Circle-Token:
         $secret:
