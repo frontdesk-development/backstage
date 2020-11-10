@@ -25,13 +25,16 @@ backend:
       host:
         $secret:
           env: PGHOST
+  csp:
+    connect-src: ["'self'", 'http:', 'https:']
 
 proxy:
   '/circleci/api':
     target: https://circleci.com/api/v1.1
     headers:
       Circle-Token:
-        $env: CIRCLECI_AUTH_TOKEN
+        $secret:
+          env: CIRCLECI_AUTH_TOKEN
 
   '/jenkins/api':
     target: 'http://localhost:8080'
@@ -97,17 +100,17 @@ catalog:
     - allow: [Component, API, Group, User, Template, Location]
   locations:
     # Backstage Example Templates
-    - type: github
+    - type: url
       target: https://github.com/spotify/backstage/blob/master/plugins/scaffolder-backend/sample-templates/react-ssr-template/template.yaml
-    - type: github
+    - type: url
       target: https://github.com/spotify/backstage/blob/master/plugins/scaffolder-backend/sample-templates/springboot-grpc-template/template.yaml
-    - type: github
+    - type: url
       target: https://github.com/spotify/backstage/blob/master/plugins/scaffolder-backend/sample-templates/create-react-app/template.yaml
-    - type: github
+    - type: url
       target: https://github.com/spotify/cookiecutter-golang/blob/master/template.yaml
-    - type: github
+    - type: url
       target: https://github.com/frontdesk-development/cookiecutter-argocd/blob/master/template.yaml
-    - type: github
+    - type: url
       target: https://github.com/trivago/cookiecutter-terraform/blob/master/template.yaml
 
 integrations:
