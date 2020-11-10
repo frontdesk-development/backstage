@@ -28,10 +28,11 @@ backend:
 
 proxy:
   '/circleci/api':
-    target: 'https://circleci.com/api/v1.1'
-    changeOrigin: true
-    pathRewrite:
-      '^/proxy/circleci/api/': '/'
+    target: https://circleci.com/api/v1.1
+    headers:
+      Circle-Token:
+        $env: CIRCLECI_AUTH_TOKEN
+
   '/jenkins/api':
     target: 'http://localhost:8080'
     changeOrigin: true
