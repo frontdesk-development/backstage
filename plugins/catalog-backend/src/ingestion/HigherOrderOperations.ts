@@ -166,7 +166,6 @@ export class HigherOrderOperations implements HigherOrderOperation {
     });
 
     const appAuthentication = await auth({ type: 'installation' });
-    // console.log("JWT token: ", appAuthentication.token);
 
     return appAuthentication.token;
   }

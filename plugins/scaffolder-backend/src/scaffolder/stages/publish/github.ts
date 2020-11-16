@@ -58,7 +58,7 @@ export class GithubPublisher implements PublisherBase {
       await fs.promises.mkdir(tempDir, { recursive: true });
       await fs.promises.writeFile(
         `${tempDir}/README.md`,
-        'Gitops empty readme file to avoid having a bare repo.',
+        `This is the auto-generated gitops repo for [${values?.component_id}](https://github.com/${values.storePath}).`,
       );
 
       const manifestValues = values;
@@ -117,6 +117,17 @@ export class GithubPublisher implements PublisherBase {
         permission: 'admin',
       });
     }
+
+    let topics = ['frontdesk'];
+    if (values?.storePath.endsWith('-gitops')) {
+      topics = [...topics, 'gitops'];
+    }
+
+    await githubClientPublish.repos.replaceAllTopics({
+      owner: owner,
+      repo: name,
+      names: topics,
+    });
 
     return data?.clone_url;
   }
