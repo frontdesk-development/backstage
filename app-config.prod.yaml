@@ -25,6 +25,8 @@ backend:
       host:
         $secret:
           env: PGHOST
+  csp:
+    connect-src: ["'self'", 'http:', 'https:']
 
 proxy:
   '/circleci/api':
@@ -32,6 +34,11 @@ proxy:
     changeOrigin: true
     pathRewrite:
       '^/proxy/circleci/api/': '/'
+    headers:
+      Circle-Token:
+        $secret:
+          env: CIRCLECI_AUTH_TOKEN
+
   '/jenkins/api':
     target: 'http://localhost:8080'
     changeOrigin: true
@@ -96,17 +103,17 @@ catalog:
     - allow: [Component, API, Group, User, Template, Location]
   locations:
     # Backstage Example Templates
-    - type: github
+    - type: url
       target: https://github.com/spotify/backstage/blob/master/plugins/scaffolder-backend/sample-templates/react-ssr-template/template.yaml
-    - type: github
+    - type: url
       target: https://github.com/spotify/backstage/blob/master/plugins/scaffolder-backend/sample-templates/springboot-grpc-template/template.yaml
-    - type: github
+    - type: url
       target: https://github.com/spotify/backstage/blob/master/plugins/scaffolder-backend/sample-templates/create-react-app/template.yaml
-    - type: github
+    - type: url
       target: https://github.com/spotify/cookiecutter-golang/blob/master/template.yaml
-    - type: github
+    - type: url
       target: https://github.com/frontdesk-development/cookiecutter-argocd/blob/master/template.yaml
-    - type: github
+    - type: url
       target: https://github.com/trivago/cookiecutter-terraform/blob/master/template.yaml
 
 integrations:
@@ -137,3 +144,12 @@ kubernetes:
   clusterLocatorMethods:
     - 'config'
   clusters: []
+
+homepage:
+  clocks:
+    - label: UTC
+      timzone: UTC
+    - label: SFO
+      timezone: 'America/San_Francisco'
+    - label: DUS
+      timezone: 'Europe/Berlin'
