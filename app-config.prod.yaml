@@ -1,6 +1,7 @@
 app:
   title: Frontdesk
   baseUrl: http://frontdesk.trivago.cloud
+  googleAnalyticsTrackingId: UA-82157708-30
 
 backend:
   baseUrl: http://frontdesk.trivago.cloud/backend
