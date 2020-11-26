@@ -1,5 +1,22 @@
 # @backstage/plugin-catalog-backend
 
+## 0.2.1
+
+### Patch Changes
+
+- Updated dependencies [c5bab94ab]
+- Updated dependencies [7b37d65fd]
+- Updated dependencies [4aca74e08]
+- Updated dependencies [e8f69ba93]
+- Updated dependencies [0c0798f08]
+- Updated dependencies [0c0798f08]
+- Updated dependencies [199237d2f]
+- Updated dependencies [6627b626f]
+- Updated dependencies [33b7300eb]
+  - @backstage/core-api@0.2.1
+  - @backstage/core@0.3.0
+  - @backstage/backend-common@0.2.1
+
 ## 0.2.0
 
 ### Minor Changes
