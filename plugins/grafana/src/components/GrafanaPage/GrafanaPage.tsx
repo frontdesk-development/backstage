@@ -34,8 +34,6 @@ export const GrafanaIframe = ({ entity }: { entity?: Entity }) => {
   let grafanaUrl = config.getString('grafana.baseUrl');
   const middleHeight = innerHeight / 2;
 
-  console.log("#### CIRCLECI_AUTH_TOKEN:", process.env.CIRCLECI_AUTH_TOKEN);
-
   if (entity?.metadata?.annotations?.['grafana/dashboard'] !== undefined) {
     grafanaUrl = entity?.metadata?.annotations?.['grafana/dashboard'] || '';
     return (

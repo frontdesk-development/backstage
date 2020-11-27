@@ -30,7 +30,8 @@ import {
 } from '../scaffolder';
 import { CatalogEntityClient } from '../lib/catalog';
 import { validate, ValidatorResult } from 'jsonschema';
-
+import { PublisherOptions } from '../scaffolder/stages/publish/types';
+// /home/ebarrios/git/frontdesk-dev/plugins/scaffolder-backend/src/scaffolder/stages/publish/types.ts
 export interface RouterOptions {
   preparers: PreparerBuilder;
   templaters: TemplaterBuilder;
@@ -165,12 +166,12 @@ export async function createRouter(
             ) => {
               const publisher = publishers.get(ctx.entity);
               ctx.logger.info('Will now store the template');
-              const result = await publisher.publish({
-                entity: ctx.entity,
+              const pOptions: PublisherOptions = {
                 values: ctx.values,
                 directory: ctx.resultDir,
                 token: token,
-              });
+              };
+              const result = await publisher.publish(pOptions);
               return result;
             },
           },

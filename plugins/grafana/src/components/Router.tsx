@@ -19,7 +19,7 @@ import { Routes, Route } from 'react-router';
 import { rootRouteRef } from '../plugin';
 import { GrafanaIframe } from './GrafanaPage';
 import { GRAFANA_ANNOTATION, GRAFANA_ANNOTATION2 } from './useProjectName';
-import { WarningPanel } from '@backstage/core';
+import { MissingAnnotationEmptyState } from '@backstage/core';
 
 const isPluginApplicableToEntity = (entity: Entity) =>
   Boolean(entity.metadata.annotations?.[GRAFANA_ANNOTATION]) ||
@@ -28,10 +28,7 @@ const isPluginApplicableToEntity = (entity: Entity) =>
 export const Router = ({ entity }: { entity: Entity }) =>
   // TODO(shmidt-i): move warning to a separate standardized component
   !isPluginApplicableToEntity(entity) ? (
-    <WarningPanel title=" Grafana plugin:">
-      `entity.metadata.annotations['
-      {GRAFANA_ANNOTATION2}']` key is missing on the entity.{' '}
-    </WarningPanel>
+    <MissingAnnotationEmptyState annotation={GRAFANA_ANNOTATION2} />
   ) : (
     <Routes>
       <Route

@@ -24,6 +24,7 @@ jest.mock('./helpers', () => ({
 import { AzurePublisher } from './azure';
 import { GitApi } from 'azure-devops-node-api/GitApi';
 import { pushToRemoteUserPass } from './helpers';
+import { PublisherOptions } from './types';
 
 const { mockGitApi } = require('azure-devops-node-api/GitApi') as {
   mockGitApi: {
@@ -44,13 +45,15 @@ describe('Azure Publisher', () => {
         remoteUrl: 'https://dev.azure.com/organization/project/_git/repo',
       } as { remoteUrl: string });
 
-      const result = await publisher.publish({
+      const pOptions: PublisherOptions = {
         values: {
           storePath: 'project/repo',
           owner: 'bob',
         },
         directory: '/tmp/test',
-      });
+        token: '',
+      };
+      const result = await publisher.publish(pOptions);
 
       expect(result).toEqual({
         remoteUrl: 'https://dev.azure.com/organization/project/_git/repo',

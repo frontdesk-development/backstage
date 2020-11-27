@@ -24,6 +24,7 @@ import { GitlabPublisher } from './gitlab';
 import { Gitlab as GitlabAPI } from '@gitbeaker/core';
 import { Gitlab } from '@gitbeaker/node';
 import { pushToRemoteUserPass } from './helpers';
+import { PublisherOptions } from './types';
 
 const { mockGitlabClient } = require('@gitbeaker/node') as {
   mockGitlabClient: {
@@ -49,14 +50,16 @@ describe('GitLab Publisher', () => {
         http_url_to_repo: 'mockclone',
       } as { http_url_to_repo: string });
 
-      const result = await publisher.publish({
+      const pOptions: PublisherOptions = {
         values: {
-          isOrg: true,
           storePath: 'blam/test',
           owner: 'bob',
         },
         directory: '/tmp/test',
-      });
+        token: '',
+      };
+
+      const result = await publisher.publish(pOptions);
 
       expect(result).toEqual({ remoteUrl: 'mockclone' });
       expect(mockGitlabClient.Projects.create).toHaveBeenCalledWith({
@@ -80,13 +83,16 @@ describe('GitLab Publisher', () => {
         http_url_to_repo: 'mockclone',
       } as { http_url_to_repo: string });
 
-      const result = await publisher.publish({
+      const pOptions: PublisherOptions = {
         values: {
           storePath: 'blam/test',
           owner: 'bob',
         },
         directory: '/tmp/test',
-      });
+        token: '',
+      };
+
+      const result = await publisher.publish(pOptions);
 
       expect(result).toEqual({ remoteUrl: 'mockclone' });
       expect(mockGitlabClient.Users.current).toHaveBeenCalled();
