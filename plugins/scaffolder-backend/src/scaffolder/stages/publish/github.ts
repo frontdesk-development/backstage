@@ -14,13 +14,11 @@
  * limitations under the License.
  */
 
-import { PublisherBase } from './types';
+import { PublisherBase, PublisherOptions, PublisherResult } from './types';
 import { Octokit } from '@octokit/rest';
-import fs from 'fs-extra';
-
+import { pushToRemoteUserPass } from './helpers';
 import { JsonValue } from '@backstage/config';
 import { RequiredTemplateValues } from '../templater';
-import { Repository, Remote, Signature, Cred } from 'nodegit';
 
 export type RepoVisibilityOptions = 'private' | 'internal' | 'public';
 
@@ -43,32 +41,15 @@ export class GithubPublisher implements PublisherBase {
     values,
     directory,
     token,
-  }: {
-    values: RequiredTemplateValues & Record<string, JsonValue>;
-    directory: string;
-    token: string;
-  }): Promise<{ remoteUrl: string }> {
+  }: PublisherOptions): Promise<PublisherResult> {
     const remoteUrl = await this.createRemote(values, token);
+    await pushToRemoteUserPass(directory, remoteUrl, token, 'x-oauth-basic');
+    const catalogInfoUrl = remoteUrl.replace(
+      /\.git$/,
+      '/blob/master/catalog-info.yaml',
+    );
 
-    await this.pushToRemote(directory, remoteUrl, token);
-
-    if (values?.kubernetes_deploy === 'yes') {
-      const templateId = `${values.storePath}-gitops`;
-      const tempDir = `/tmp/${templateId}`;
-      await fs.promises.mkdir(tempDir, { recursive: true });
-      await fs.promises.writeFile(
-        `${tempDir}/README.md`,
-        `This is the auto-generated gitops repo for [${values?.component_id}](https://github.com/${values.storePath}).`,
-      );
-
-      const manifestValues = values;
-      manifestValues.storePath = `${values.storePath}-gitops`;
-
-      const remoteUrlManifest = await this.createRemote(manifestValues, token);
-      await this.pushToRemote(tempDir, remoteUrlManifest, token);
-    }
-
-    return { remoteUrl };
+    return { remoteUrl, catalogInfoUrl };
   }
 
   private async createRemote(
@@ -130,33 +111,5 @@ export class GithubPublisher implements PublisherBase {
     });
 
     return data?.clone_url;
-  }
-
-  private async pushToRemote(
-    directory: string,
-    remote: string,
-    token: string,
-  ): Promise<void> {
-    const repo = await Repository.init(directory, 0);
-    const index = await repo.refreshIndex();
-    await index.addAll();
-    await index.write();
-    const oid = await index.writeTree();
-    await repo.createCommit(
-      'HEAD',
-      Signature.now('Scaffolder', 'scaffolder@backstage.io'),
-      Signature.now('Scaffolder', 'scaffolder@backstage.io'),
-      'initial commit',
-      oid,
-      [],
-    );
-    const remoteRepo = await Remote.create(repo, 'origin', remote);
-    await remoteRepo.push(['refs/heads/master:refs/heads/master'], {
-      callbacks: {
-        credentials: () => {
-          return Cred.userpassPlaintextNew(token as string, 'x-oauth-basic');
-        },
-      },
-    });
   }
 }

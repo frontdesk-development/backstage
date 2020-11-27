@@ -15,39 +15,41 @@
  */
 
 import { ConfigReader } from '@backstage/config';
-import { setupServer } from 'msw/node';
+import { GitHubIntegrationConfig } from '@backstage/integration';
 import { msw } from '@backstage/test-utils';
+import fs from 'fs';
 import { rest } from 'msw';
+import { setupServer } from 'msw/node';
+import path from 'path';
 import {
   getApiRequestOptions,
   getApiUrl,
   getRawRequestOptions,
   getRawUrl,
   GithubUrlReader,
-  ProviderConfig,
-  readConfig,
 } from './GithubUrlReader';
-import fs from 'fs';
-import path from 'path';
-import mockfs from 'mock-fs';
-import recursive from 'recursive-readdir';
+import { ReadTreeResponseFactory } from './tree';
+
+const treeResponseFactory = ReadTreeResponseFactory.create({
+  config: new ConfigReader({}),
+});
 
 describe('GithubUrlReader', () => {
   describe('getApiRequestOptions', () => {
     it('sets the correct API version', () => {
-      const config: ProviderConfig = { host: '', apiBaseUrl: '' };
+      const config: GitHubIntegrationConfig = { host: '', apiBaseUrl: '' };
       expect((getApiRequestOptions(config).headers as any).Accept).toEqual(
         'application/vnd.github.v3.raw',
       );
     });
 
     it('inserts a token when needed', () => {
-      const withToken: ProviderConfig = {
+      const withToken: GitHubIntegrationConfig = {
         host: '',
         apiBaseUrl: '',
         token: 'A',
       };
-      const withoutToken: ProviderConfig = {
+      const withoutToken: GitHubIntegrationConfig = {
         host: '',
         apiBaseUrl: '',
       };
@@ -62,12 +64,12 @@ describe('GithubUrlReader', () => {
 
   describe('getRawRequestOptions', () => {
     it('inserts a token when needed', () => {
-      const withToken: ProviderConfig = {
+      const withToken: GitHubIntegrationConfig = {
         host: '',
         rawBaseUrl: '',
         token: 'A',
       };
-      const withoutToken: ProviderConfig = {
+      const withoutToken: GitHubIntegrationConfig = {
         host: '',
         rawBaseUrl: '',
       };
@@ -82,12 +84,12 @@ describe('GithubUrlReader', () => {
 
   describe('getApiUrl', () => {
     it('rejects targets that do not look like URLs', () => {
-      const config: ProviderConfig = { host: '', apiBaseUrl: '' };
+      const config: GitHubIntegrationConfig = { host: '', apiBaseUrl: '' };
       expect(() => getApiUrl('a/b', config)).toThrow(/Incorrect URL: a\/b/);
     });
 
     it('happy path for github', () => {
-      const config: ProviderConfig = {
+      const config: GitHubIntegrationConfig = {
         host: 'github.com',
         apiBaseUrl: 'https://api.github.com',
       };
@@ -114,7 +116,7 @@ describe('GithubUrlReader', () => {
     });
 
     it('happy path for ghe', () => {
-      const config: ProviderConfig = {
+      const config: GitHubIntegrationConfig = {
         host: 'ghe.mycompany.net',
         apiBaseUrl: 'https://ghe.mycompany.net/api/v3',
       };
@@ -133,12 +135,12 @@ describe('GithubUrlReader', () => {
 
   describe('getRawUrl', () => {
     it('rejects targets that do not look like URLs', () => {
-      const config: ProviderConfig = { host: '', apiBaseUrl: '' };
+      const config: GitHubIntegrationConfig = { host: '', apiBaseUrl: '' };
       expect(() => getRawUrl('a/b', config)).toThrow(/Incorrect URL: a\/b/);
     });
 
     it('happy path for github', () => {
-      const config: ProviderConfig = {
+      const config: GitHubIntegrationConfig = {
         host: 'github.com',
         rawBaseUrl: 'https://raw.githubusercontent.com',
       };
@@ -155,7 +157,7 @@ describe('GithubUrlReader', () => {
     });
 
     it('happy path for ghe', () => {
-      const config: ProviderConfig = {
+      const config: GitHubIntegrationConfig = {
         host: 'ghe.mycompany.net',
         rawBaseUrl: 'https://ghe.mycompany.net/raw',
       };
@@ -170,66 +172,15 @@ describe('GithubUrlReader', () => {
     });
   });
 
-  describe('readConfig', () => {
-    function config(
-      providers: { host: string; apiBaseUrl?: string; token?: string }[],
-    ) {
-      return ConfigReader.fromConfigs([
-        {
-          context: '',
-          data: {
-            integrations: { github: providers },
-          },
-        },
-      ]);
-    }
-
-    it('adds a default GitHub entry when missing', () => {
-      const output = readConfig(config([]));
-      expect(output).toEqual([
-        {
-          host: 'github.com',
-          apiBaseUrl: 'https://api.github.com',
-          rawBaseUrl: 'https://raw.githubusercontent.com',
-        },
-      ]);
-    });
-
-    it('injects the correct GitHub API base URL when missing', () => {
-      const output = readConfig(config([{ host: 'github.com' }]));
-      expect(output).toEqual([
-        {
-          host: 'github.com',
-          apiBaseUrl: 'https://api.github.com',
-          rawBaseUrl: 'https://raw.githubusercontent.com',
-        },
-      ]);
-    });
-
-    it('rejects custom targets with no base URLs', () => {
-      expect(() => readConfig(config([{ host: 'ghe.company.com' }]))).toThrow(
-        "GitHub integration for 'ghe.company.com' must configure an explicit apiBaseUrl and rawBaseUrl",
-      );
-    });
-
-    it('rejects funky configs', () => {
-      expect(() => readConfig(config([{ host: 7 } as any]))).toThrow(/host/);
-      expect(() => readConfig(config([{ token: 7 } as any]))).toThrow(/token/);
-      expect(() =>
-        readConfig(config([{ host: 'github.com', apiBaseUrl: 7 } as any])),
-      ).toThrow(/apiBaseUrl/);
-      expect(() =>
-        readConfig(config([{ host: 'github.com', token: 7 } as any])),
-      ).toThrow(/token/);
-    });
-  });
-
   describe('implementation', () => {
     it('rejects unknown targets', async () => {
-      const processor = new GithubUrlReader({
-        host: 'github.com',
-        apiBaseUrl: 'https://api.github.com',
-      });
+      const processor = new GithubUrlReader(
+        {
+          host: 'github.com',
+          apiBaseUrl: 'https://api.github.com',
+        },
+        { treeResponseFactory },
+      );
       await expect(
         processor.read('https://not.github.com/apa'),
       ).rejects.toThrow(
@@ -250,7 +201,7 @@ describe('GithubUrlReader', () => {
     beforeEach(() => {
       worker.use(
         rest.get(
-          'https://github.com/spotify/mock/archive/repo.tar.gz',
+          'https://github.com/backstage/mock/archive/repo.tar.gz',
           (_, res, ctx) =>
             res(
               ctx.status(200),
@@ -262,18 +213,21 @@ describe('GithubUrlReader', () => {
     });
 
     it('returns the wanted files from an archive', async () => {
-      const processor = new GithubUrlReader({
-        host: 'github.com',
-      });
-
-      const response = await processor.readTree(
-        'https://github.com/spotify/mock',
-        'repo',
-        ['mkdocs.yml', 'docs'],
+      const processor = new GithubUrlReader(
+        {
+          host: 'github.com',
+          apiBaseUrl: 'https://api.github.com',
+        },
+        { treeResponseFactory },
       );
 
-      const files = response.files();
+      const response = await processor.readTree(
+        'https://github.com/backstage/mock/tree/repo',
+      );
 
+      const files = await response.files();
+
+      expect(files.length).toBe(2);
       const mkDocsFile = await files[0].content();
       const indexMarkdownFile = await files[1].content();
 
@@ -281,33 +235,41 @@ describe('GithubUrlReader', () => {
       expect(indexMarkdownFile.toString()).toBe('# Test\n');
     });
 
-    it('returns a folder path from an archive', async () => {
-      const processor = new GithubUrlReader({
-        host: 'github.com',
-      });
+    it('must specify a branch', async () => {
+      const processor = new GithubUrlReader(
+        {
+          host: 'github.com',
+          apiBaseUrl: 'https://api.github.com',
+        },
+        { treeResponseFactory },
+      );
+
+      await expect(
+        processor.readTree('https://github.com/backstage/mock'),
+      ).rejects.toThrow(
+        'GitHub URL must contain branch to be able to fetch tree',
+      );
+    });
+
+    it('returns the wanted files from an archive with a subpath', async () => {
+      const processor = new GithubUrlReader(
+        {
+          host: 'github.com',
+          apiBaseUrl: 'https://api.github.com',
+        },
+        { treeResponseFactory },
+      );
 
       const response = await processor.readTree(
-        'https://github.com/spotify/mock',
-        'repo',
-        ['mkdocs.yml', 'docs'],
+        'https://github.com/backstage/mock/tree/repo/docs',
       );
 
-      mockfs();
-      const directory = await response.dir('/tmp/fs');
+      const files = await response.files();
 
-      const writtenToDirectory = fs.existsSync(directory);
-      const paths = await recursive(directory);
-      mockfs.restore();
+      expect(files.length).toBe(1);
+      const indexMarkdownFile = await files[0].content();
 
-      expect(writtenToDirectory).toBe(true);
-      expect(paths.sort()).toEqual(
-        [
-          '/tmp/fs/mock-repo/docs/index.md',
-          '/tmp/fs/mock-repo/mkdocs.yml',
-        ].sort(),
-      );
-
-      worker.resetHandlers();
+      expect(indexMarkdownFile.toString()).toBe('# Test\n');
     });
   });
 });

@@ -23,12 +23,12 @@ import {
   useApi,
   useQueryParamState,
 } from '@backstage/core';
+import { entityRoute, entityRouteParams } from '@backstage/plugin-catalog';
 import { Chip, Link } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
 import React from 'react';
 import { generatePath, Link as RouterLink } from 'react-router-dom';
 import { apiDocsConfigRef } from '../../config';
-import { entityRoute } from '../../routes';
 
 const ApiTypeTitle = ({ apiEntity }: { apiEntity: ApiEntityV1alpha1 }) => {
   const config = useApi(apiDocsConfigRef);
@@ -46,16 +46,10 @@ const columns: TableColumn<Entity>[] = [
     render: (entity: any) => (
       <Link
         component={RouterLink}
-        to={generatePath(entityRoute.path, {
-          optionalNamespaceAndName: [
-            entity.metadata.namespace,
-            entity.metadata.name,
-          ]
-            .filter(Boolean)
-            .join(':'),
-          kind: entity.kind,
-          selectedTabId: 'overview',
-        })}
+        to={generatePath(
+          `/catalog/${entityRoute.path}`,
+          entityRouteParams(entity),
+        )}
       >
         {entity.metadata.name}
       </Link>
@@ -90,7 +84,13 @@ const columns: TableColumn<Entity>[] = [
       <>
         {entity.metadata.tags &&
           entity.metadata.tags.map(t => (
-            <Chip key={t} label={t} style={{ marginBottom: '0px' }} />
+            <Chip
+              key={t}
+              label={t}
+              size="small"
+              variant="outlined"
+              style={{ marginBottom: '0px' }}
+            />
           ))}
       </>
     ),
@@ -149,6 +149,7 @@ export const ApiExplorerTable = ({
         paging: false,
         actionsColumnIndex: -1,
         loadingType: 'linear',
+        padding: 'dense',
         showEmptyDataSourceMessage: !loading,
       }}
       data={entities}

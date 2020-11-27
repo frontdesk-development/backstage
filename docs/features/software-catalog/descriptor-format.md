@@ -2,8 +2,8 @@
 id: descriptor-format
 title: Descriptor Format of Catalog Entities
 sidebar_label: YAML File Format
-description: Documentation on Descriptor Format of Catalog Entities which
-describes the default data shape and semantics of catalog entities
+# prettier-ignore
+description: Documentation on Descriptor Format of Catalog Entities which describes the default data shape and semantics of catalog entities
 ---
 
 This section describes the default data shape and semantics of catalog entities.
@@ -22,11 +22,15 @@ we recommend that you name them `catalog-info.yaml`.
 - [Overall Shape Of An Entity](#overall-shape-of-an-entity)
 - [Common to All Kinds: The Envelope](#common-to-all-kinds-the-envelope)
 - [Common to All Kinds: The Metadata](#common-to-all-kinds-the-metadata)
+- [Common to All Kinds: Relations](#common-to-all-kinds-relations)
 - [Kind: Component](#kind-component)
 - [Kind: Template](#kind-template)
 - [Kind: API](#kind-api)
 - [Kind: Group](#kind-group)
 - [Kind: User](#kind-user)
+- [Kind: Resource](#kind-resource)
+- [Kind: System](#kind-system)
+- [Kind: Domain](#kind-domain)
 
 ## Overall Shape Of An Entity
 
@@ -39,7 +43,7 @@ software catalog API.
   "kind": "Component",
   "metadata": {
     "annotations": {
-      "backstage.io/managed-by-location": "file:/tmp/component-info.yaml",
+      "backstage.io/managed-by-location": "file:/tmp/catalog-info.yaml",
       "example.com/service-discovery": "artistweb",
       "circleci.com/project-slug": "github/example-org/artist-website"
     },
@@ -88,6 +92,43 @@ some metadata fields like `name`, `labels`, and `annotations` are of special
 significance and have reserved purposes and distinct shapes.
 
 See below for details about these fields.
+
+## Substitutions In The Descriptor Format
+
+The descriptor format supports substitutions using `$text`, `$json`, and
+`$yaml`.
+
+Placeholders like `$json: https://example.com/entity.json` are substituted by
+the content of the referenced file. Files can be referenced from any configured
+integration similar to locations by passing an absolute URL. It's also possible
+to reference relative files like `./referenced.yaml` from the same location.
+Relative references are handled relative to the folder of the
+`catalog-info.yaml` that contains the placeholder. There are three different
+types of placeholders:
+
+- `$text`: Interprets the contents of the referenced file as plain text and
+  embeds it as a string.
+- `$json`: Interprets the contents of the referenced file as JSON and embeds the
+  parsed structure.
+- `$yaml`: Interprets the contents of the referenced file as YAML and embeds the
+  parsed structure.
+
+For example, this can be used to load the definition of an API entity from a web
+server and embed it as a string in the field `spec.definition`:
+
+```yaml
+apiVersion: backstage.io/v1alpha1
+kind: API
+metadata:
+  name: petstore
+  description: The Petstore API
+spec:
+  type: openapi
+  lifecycle: production
+  owner: petstore@example.com
+  definition:
+    $text: https://petstore.swagger.io/v2/swagger.json
+```
 
 ## Common to All Kinds: The Envelope
 
@@ -259,6 +300,61 @@ This field is optional, and currently has no special semantics.
 Each tag must be sequences of `[a-z0-9]` separated by `-`, at most 63 characters
 in total.
 
+## Common to All Kinds: Relations
+
+The `relations` root field is a read-only list of relations, between the current
+entity and other entities, described in the
+[well-known relations section](well-known-relations.md). Relations are commonly
+two-way, so that there's a pair of relation types each describing one direction
+of the relation.
+
+A relation as part of a single entity that's read out of the API may look as
+follows.
+
+```js
+{
+  // ...
+  "relations": [
+    {
+      "target": {
+        "kind": "group",
+        "namespace": "default",
+        "name": "dev.infra"
+      },
+      "type": "ownedBy"
+    }
+  ],
+  "spec": {
+    "owner": "dev.infra",
+    // ...
+  }
+}
+```
+
+The fields of a relation are:
+
+| Field      | Type   | Description                                                                      |
+| ---------- | ------ | -------------------------------------------------------------------------------- |
+| `target`   | Object | A complete [compound reference](references.md) to the other end of the relation. |
+| `type`     | String | The type of relation FROM a source entity TO the target entity.                  |
+| `metadata` | Object | Reserved for future use.                                                         |
+
+Entity descriptor YAML files are not supposed to contain this field. Instead,
+catalog processors analyze the entity descriptor data and its surroundings, and
+deduce relations that are then attached onto the entity as read from the
+catalog.
+
+Where relations are produced, they are to be considered the authoritative source
+for that piece of data. In the example above, a plugin would do better to
+consume the relation rather than `spec.owner` for deducing the owner of the
+entity, because it may even be the case that the owner isn't taken from the YAML
+at all - it could be taken from a CODEOWNERS file nearby instead for example.
+Also, the `spec.owner` is on a shortened form and may have semantics associated
+with it (such as the default kind being `Group` if not specified).
+
+See the [well-known relations section](well-known-relations.md) for a list of
+well-known / common relations and their semantics.
+
 ## Kind: Component
 
 Describes the following entity kind:
@@ -285,7 +381,7 @@ spec:
   type: website
   lifecycle: production
   owner: artist-relations@example.com
-  implementsApis:
+  providesApis:
     - artist-api
 ```
 
@@ -349,8 +445,31 @@ group of people in an organizational structure.
 
 ### `spec.implementsApis` [optional]
 
+**NOTE**: This field was marked for deprecation on Nov 25nd, 2020. It will be
+removed entirely from the model on Dec 14th, 2020 in the repository and will not
+be present in released packages following the next release after that. Please
+update your code to not consume this field before the removal date.
+
 Links APIs that are implemented by the component, e.g. `artist-api`. This field
 is optional.
+
+The software catalog expects a list of one or more strings that references the
+names of other entities of the `kind` `API`.
+
+This field has the same behavior as `spec.providesApis`.
+
+### `spec.providesApis` [optional]
+
+Links APIs that are provided by the component, e.g. `artist-api`. This field is
+optional.
+
+The software catalog expects a list of one or more strings that references the
+names of other entities of the `kind` `API`.
+
+### `spec.consumesApis` [optional]
+
+Links APIs that are consumed by the component, e.g. `artist-api`. This field is
+optional.
 
 The software catalog expects a list of one or more strings that references the
 names of other entities of the `kind` `API`.
@@ -533,6 +652,9 @@ The current set of well-known and common values for this field is:
   [OpenAPI](https://swagger.io/specification/) version 2 or version 3 spec.
 - `asyncapi` - An API definition based on the
   [AsyncAPI](https://www.asyncapi.com/docs/specifications/latest/) spec.
+- `graphql` - An API definition based on
+  [GraphQL schemas](https://spec.graphql.org/) for consuming
+  [GraphQL](https://graphql.org/) based APIs.
 - `grpc` - An API definition based on
   [Protocol Buffers](https://developers.google.com/protocol-buffers) to use with
   [gRPC](https://grpc.io/).
@@ -641,6 +763,11 @@ sufficient to enter only the `metadata.name` field of that group.
 
 ### `spec.ancestors` [required]
 
+**NOTE**: This field was marked for deprecation on Nov 22nd, 2020. It will be
+removed entirely from the model on Dec 6th, 2020 in the repository and will not
+be present in released packages following the next release after that. Please
+update your code to not consume this field before the removal date.
+
 The recursive list of parents up the hierarchy, by stepping through parents one
 by one. The list must be present, but may be empty if `parent` is not present.
 The first entry in the list is equal to `parent`, and then the following ones
@@ -668,6 +795,11 @@ these entries point to groups in the same namespace, so in those cases it is
 sufficient to enter only the `metadata.name` field of those groups.
 
 ### `spec.descendants` [required]
+
+**NOTE**: This field was marked for deprecation on Nov 22nd, 2020. It will be
+removed entirely from the model on Dec 6th, 2020 in the repository and will not
+be present in released packages following the next release after that. Please
+update your code to not consume this field before the removal date.
 
 The immediate and recursive child groups of this group in the hierarchy
 (children, and children's children, etc.). The list must be present, but may be
@@ -740,3 +872,15 @@ with the default kind `Group` and the default namespace equal to the same
 namespace as the user. Only `Group` entities may be referenced. Most commonly,
 these entries point to groups in the same namespace, so in those cases it is
 sufficient to enter only the `metadata.name` field of those groups.
+
+## Kind: Resource
+
+This kind is not yet defined, but is reserved [for future use](system-model.md).
+
+## Kind: System
+
+This kind is not yet defined, but is reserved [for future use](system-model.md).
+
+## Kind: Domain
+
+This kind is not yet defined, but is reserved [for future use](system-model.md).

@@ -40,6 +40,18 @@ proxy:
         $env: TRAVISCI_AUTH_TOKEN
       travis-api-version: 3
 
+  '/newrelic/apm/api':
+    target: https://api.newrelic.com/v2
+    headers:
+      X-Api-Key:
+        $env: NEW_RELIC_REST_API_KEY
+
+  '/buildkite/api':
+    target: https://api.buildkite.com/v2/
+    headers:
+      Authorization:
+        $env: BUILDKITE_TOKEN
+
 organization:
   name: Spotify
 
@@ -53,9 +65,9 @@ sentry:
   organization: spotify
 
 rollbar:
-  organization: spotify
-  accountToken:
-    $env: ROLLBAR_ACCOUNT_TOKEN
+  organization: my-company
+  # NOTE: The rollbar-backend & accountToken key may be deprecated in the future (replaced by a proxy config)
+  accountToken: my-rollbar-account-token
 
 newrelic:
   api:
@@ -93,6 +105,49 @@ integrations:
 catalog:
   rules:
     - allow: [Component, API, Group, User, Template, Location]
+
+  processors:
+    githubOrg:
+      providers:
+        - target: https://github.com
+          token:
+            $env: GITHUB_TOKEN
+        #### Example for how to add your GitHub Enterprise instance using the API:
+        # - target: https://ghe.example.net
+        #   apiBaseUrl: https://ghe.example.net/api/v3
+        #   token:
+        #     $env: GHE_TOKEN
+    ldapOrg:
+      ### Example for how to add your enterprise LDAP server
+      # providers:
+      #   - target: ldaps://ds.example.net
+      #     bind:
+      #       dn: uid=ldap-reader-user,ou=people,ou=example,dc=example,dc=net
+      #       secret: { $secret: { env: LDAP_SECRET } }
+      #     users:
+      #       dn: ou=people,ou=example,dc=example,dc=net
+      #       options:
+      #         filter: (uid=*)
+      #       map:
+      #         description: l
+      #     groups:
+      #       dn: ou=access,ou=groups,ou=example,dc=example,dc=net
+      #       options:
+      #         filter: (&(objectClass=some-group-class)(!(groupType=email)))
+    microsoftGraphOrg:
+      ### Example for how to add your Microsoft Graph tenant
+      #providers:
+      #  - target: https://graph.microsoft.com/v1.0
+      #    authority: https://login.microsoftonline.com
+      #    tenantId:
+      #      $env: MICROSOFT_GRAPH_TENANT_ID
+      #    clientId:
+      #      $env: MICROSOFT_GRAPH_CLIENT_ID
+      #    clientSecret:
+      #      $env: MICROSOFT_GRAPH_CLIENT_SECRET_TOKEN
+      #    userFilter: accountEnabled eq true and userType eq 'member'
+      #    groupFilter: securityEnabled eq false and mailEnabled eq true and groupTypes/any(c:c+eq+'Unified')
+
   locations:
     # Backstage example components
     - type: url
@@ -132,8 +187,10 @@ scaffolder:
     api:
       token:
         $env: AZURE_TOKEN
-
 auth:
+  ### Providing an auth.session.secret will enable session support in the auth-backend
+  # session:
+  #   secret: custom session secret
   providers:
     google:
       development:
@@ -178,6 +235,20 @@ auth:
           $env: AUTH_OAUTH2_AUTH_URL
         tokenUrl:
           $env: AUTH_OAUTH2_TOKEN_URL
+    oidc:
+      development:
+        metadataUrl:
+          $env: AUTH_OIDC_METADATA_URL
+        clientId:
+          $env: AUTH_OIDC_CLIENT_ID
+        clientSecret:
+          $env: AUTH_OIDC_CLIENT_SECRET
+        authorizationUrl:
+          $env: AUTH_OIDC_AUTH_URL
+        tokenUrl:
+          $env: AUTH_OIDC_TOKEN_URL
+        tokenSignedResponseAlg:
+          $env: AUTH_OIDC_TOKEN_SIGNED_RESPONSE_ALG
     auth0:
       development:
         clientId:
@@ -226,7 +297,7 @@ costInsights:
 homepage:
   clocks:
     - label: UTC
-      timzone: UTC
+      timezone: UTC
     - label: NYC
       timezone: 'America/New_York'
     - label: STO

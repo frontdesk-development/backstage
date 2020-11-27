@@ -165,15 +165,13 @@ export async function createRouter(
             ) => {
               const publisher = publishers.get(ctx.entity);
               ctx.logger.info('Will now store the template');
-              const { remoteUrl } = await publisher.publish({
+              const result = await publisher.publish({
                 entity: ctx.entity,
                 values: ctx.values,
                 directory: ctx.resultDir,
                 token: token,
               });
-              ctx.logger.info('Remote URL:');
-              ctx.logger.info(remoteUrl);
-              return { remoteUrl };
+              return result;
             },
           },
         ],
