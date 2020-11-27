@@ -73,10 +73,13 @@ export class DocsBuilder {
     this.logger.info(`Running preparer on entity ${getEntityId(this.entity)}`);
     const preparedDir = await this.preparer.prepare(this.entity, token);
 
+    const parsedLocationAnnotation = getLocationForEntity(this.entity);
+
     this.logger.info(`Running generator on entity ${getEntityId(this.entity)}`);
     const { resultDir } = await this.generator.run({
       directory: preparedDir,
       dockerClient: this.dockerClient,
+      parsedLocationAnnotation,
     });
 
     this.logger.info(`Running publisher on entity ${getEntityId(this.entity)}`);
