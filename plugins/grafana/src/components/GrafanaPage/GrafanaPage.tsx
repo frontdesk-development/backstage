@@ -31,7 +31,11 @@ import { Entity } from '@backstage/catalog-model';
 
 export const GrafanaIframe = ({ entity }: { entity?: Entity }) => {
   const config = useApi(configApiRef);
-  let grafanaUrl = config.getString('grafana.baseUrl');
+  const grafanaConfig = config.getOptionalConfig('grafana');
+  let grafanaUrl = 'https://monitoring.trivago.trv';
+  if (grafanaConfig) {
+    grafanaUrl = grafanaConfig?.getString('baseUrl');
+  }
   const middleHeight = innerHeight / 2;
 
   if (entity?.metadata?.annotations?.['grafana/dashboard'] !== undefined) {

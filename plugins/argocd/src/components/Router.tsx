@@ -19,7 +19,7 @@ import { Routes, Route } from 'react-router';
 import { rootRouteRef } from '../plugin';
 import { ArgocdIframe } from './ArgocdPage';
 import { ARGOCD_ANNOTATION } from './useProjectName';
-import { WarningPanel } from '@backstage/core';
+import { MissingAnnotationEmptyState } from '@backstage/core';
 
 const isPluginApplicableToEntity = (entity: Entity) =>
   Boolean(entity.metadata.annotations?.[ARGOCD_ANNOTATION]) &&
@@ -28,10 +28,7 @@ const isPluginApplicableToEntity = (entity: Entity) =>
 export const Router = ({ entity }: { entity: Entity }) =>
   // TODO(shmidt-i): move warning to a separate standardized component
   !isPluginApplicableToEntity(entity) ? (
-    <WarningPanel title=" Argocd plugin:">
-      `entity.metadata.annotations['
-      {ARGOCD_ANNOTATION}']` key is missing on the entity.{' '}
-    </WarningPanel>
+    <MissingAnnotationEmptyState annotation={ARGOCD_ANNOTATION} />
   ) : (
     <Routes>
       <Route
