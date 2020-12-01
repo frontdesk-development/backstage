@@ -89,13 +89,6 @@ export class LocalPublish implements PublisherBase {
         }
         result(true);
       });
-      fs.remove('/tmp/backstage-repo', err => {
-        if (err) {
-          this.logger.debug(`Failed to remove /tmp/backstage-repo dir`);
-          result(false);
-        }
-        result(true);
-      });
     });
   }
 }
