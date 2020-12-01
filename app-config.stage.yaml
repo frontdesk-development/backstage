@@ -147,9 +147,11 @@ kubernetes:
     - url: https://10.245.248.194
       name: tools-prod0-eu-w4
       authProvider: 'google'
+      serviceAccount: ''
     - url: https://10.245.248.178
       name: tools-stage0-eu-w4
       authProvider: 'google'
+      serviceAccount: ''
 
 costInsights:
   engineerCost: 200000
@@ -175,7 +177,7 @@ costInsights:
 homepage:
   clocks:
     - label: UTC
-      timzone: UTC
+      timezone: UTC
     - label: NYC
       timezone: 'America/New_York'
     - label: STO
