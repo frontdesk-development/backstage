@@ -128,10 +128,6 @@ export class TechdocsGenerator implements GeneratorBase {
       );
     }
 
-    // Remove backstage-repo from inside the temp
-    const repoPath = `${resultDir}/backstage-repo`;
-    fs.remove(repoPath);
-
     return { resultDir };
   }
 }

@@ -148,10 +148,12 @@ kubernetes:
       name: tools-prod0-eu-w4
       authProvider: 'google'
       serviceAccount: ''
+      serviceAccountToken: ''
     - url: https://10.245.248.178
       name: tools-stage0-eu-w4
       authProvider: 'google'
       serviceAccount: ''
+      serviceAccountToken: ''
 
 costInsights:
   engineerCost: 200000
