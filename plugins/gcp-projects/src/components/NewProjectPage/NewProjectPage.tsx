@@ -25,6 +25,8 @@ import {
   SimpleStepperStep,
   StructuredMetadataTable,
   SupportButton,
+  identityApiRef,
+  useApi,
 } from '@backstage/core';
 import {
   Button,
@@ -36,7 +38,13 @@ import {
 import React, { useState } from 'react';
 
 export const Project = () => {
+  const profile = useApi(identityApiRef).getProfile();
+  const email = profile.email;
+
   const [projectName, setProjectName] = useState('ProjectName');
+  const [pilar, setPilar] = useState('Pilar');
+  const [teamName, setTeamName] = useState('TeamName');
+  const groupNamePrefix = `trv-${pilar}-${teamName}-`;
   const [projectEmail, setProjectEmail] = useState('projectEmail@trivago.com');
   const [projectDescription, setProjectDescription] = useState(
     'Project Description',
@@ -59,7 +67,6 @@ export const Project = () => {
     'example.member1,example.member2',
   );
 
-  const [projectId, setProjectId] = useState('');
   const [disabled, setDisabled] = useState(true);
 
   const groupMembersArray = groupMembers.split(',');
@@ -82,9 +89,9 @@ ${showMembersArray}
     ]
   }`;
 
-  let projectsTf = `module "project_${projectName}" {
+  let projectsTf = `module "project_${groupNamePrefix}${projectName}" {
     source      = "../../modules/project"
-    name        = "${projectName}"
+    name        = "${groupNamePrefix}${projectName}"
     group_email = "${projectEmail}"
     description = "${projectDescription}"
     folder      = module.folder.name
@@ -158,7 +165,12 @@ ${showMembersArray}
     }
   };
 
+  const projectId = projectName;
+
   const metadata = {
+    Email: email,
+    Pilar: pilar,
+    TeamName: teamName,
     ProjectName: projectName,
     ProjectId: projectId,
     projectEmail: projectEmail,
@@ -182,13 +194,27 @@ ${showMembersArray}
         <Grid item xs={12} md={6}>
           <InfoCard title="Create new GCP Project">
             <SimpleStepper>
-              <SimpleStepperStep title="Project ID">
+              <SimpleStepperStep title="Pilar">
                 <TextField
                   variant="outlined"
-                  name="projectId"
-                  label="projectId"
-                  onChange={e => setProjectId(e.target.value)}
-                  value={projectId}
+                  name="pilar"
+                  label="Pilar"
+                  helperText="Project name pilar"
+                  inputProps={{ 'aria-label': 'Pilar' }}
+                  onChange={e => setPilar(e.target.value)}
+                  value={pilar}
+                  fullWidth
+                />
+              </SimpleStepperStep>
+              <SimpleStepperStep title="Team Name">
+                <TextField
+                  variant="outlined"
+                  name="teamName"
+                  label="Team Name"
+                  helperText="The name of team that owns the project."
+                  inputProps={{ 'aria-label': 'Team Name' }}
+                  onChange={e => setTeamName(e.target.value)}
+                  value={teamName}
                   fullWidth
                 />
               </SimpleStepperStep>

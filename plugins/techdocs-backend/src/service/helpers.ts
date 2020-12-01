@@ -88,6 +88,11 @@ export class DocsBuilder {
       directory: resultDir,
     });
 
+    // HERE REMOVE UNUSED TMP FILES!!!!
+    await this.publisher.cleanup({
+      directory: resultDir,
+    });
+
     if (!this.entity.metadata.uid) {
       throw new Error(
         'Trying to build documentation for entity not in service catalog',

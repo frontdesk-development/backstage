@@ -29,4 +29,6 @@ export type PublisherBase = {
     entity: Entity;
     directory: string;
   }): Promise<{ remoteUrl: string }> | { remoteUrl: string };
+
+  cleanup(opts: { directory: string }): Promise<boolean>;
 };

@@ -90,7 +90,7 @@ export class TechdocsGenerator implements GeneratorBase {
         case 'local':
           await runCommand({
             command: 'mkdocs',
-            args: ['build', '-d', resultDir, '-v'],
+            args: ['build', '-d', resultDir],
             options: {
               cwd: directory,
             },
@@ -127,6 +127,10 @@ export class TechdocsGenerator implements GeneratorBase {
         `Failed to generate docs from ${directory} into ${resultDir} with error ${error.message}`,
       );
     }
+
+    // Remove backstage-repo from inside the temp
+    const repoPath = `${resultDir}/backstage-repo`;
+    fs.remove(repoPath);
 
     return { resultDir };
   }

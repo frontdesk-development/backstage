@@ -53,7 +53,7 @@ proxy:
         $env: BUILDKITE_TOKEN
 
 organization:
-  name: Spotify
+  name: trivago 
 
 techdocs:
   storageUrl: http://localhost:7000/api/techdocs/static/docs
@@ -62,7 +62,7 @@ techdocs:
     techdocs: 'docker'
 
 sentry:
-  organization: spotify
+  organization: trivago 
 
 rollbar:
   organization: my-company

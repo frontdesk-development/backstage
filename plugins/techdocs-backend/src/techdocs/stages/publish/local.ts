@@ -79,4 +79,16 @@ export class LocalPublish implements PublisherBase {
       });
     });
   }
+
+  cleanup({ directory }: { directory: string }): Promise<boolean> {
+    return new Promise(result => {
+      fs.remove(directory, err => {
+        if (err) {
+          this.logger.debug(`Failed to remove temp dir from ${directory}`);
+          result(false);
+        }
+        result(true);
+      });
+    });
+  }
 }
