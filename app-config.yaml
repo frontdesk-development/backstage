@@ -84,7 +84,16 @@ kubernetes:
   serviceLocatorMethod: 'multiTenant'
   clusterLocatorMethods:
     - 'config'
-  clusters: [] 
+  clusters:
+    - url: https://10.245.248.194
+      name: tools-prod0-eu-w4
+      authProvider: 'serviceAccount'
+      serviceAccountToken: ''
+    - url: https://10.245.248.178
+      name: tools-stage0-eu-w4
+      authProvider: 'serviceAccount' 
+      serviceAccountToken: ''
+
 
 integrations:
   github:
