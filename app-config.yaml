@@ -88,11 +88,11 @@ kubernetes:
     - url: https://10.245.248.194
       name: tools-prod0-eu-w4
       authProvider: 'serviceAccount'
-      serviceAccountToken: ''
+      serviceAccountToken: 'token'
     - url: https://10.245.248.178
       name: tools-stage0-eu-w4
       authProvider: 'serviceAccount' 
-      serviceAccountToken: ''
+      serviceAccountToken: 'token'
 
 
 integrations:
