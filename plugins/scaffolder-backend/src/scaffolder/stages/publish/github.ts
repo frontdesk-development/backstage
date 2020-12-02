@@ -19,6 +19,7 @@ import { Octokit } from '@octokit/rest';
 import { pushToRemoteUserPass } from './helpers';
 import { JsonValue } from '@backstage/config';
 import { RequiredTemplateValues } from '../templater';
+import fs from 'fs-extra';
 
 export type RepoVisibilityOptions = 'private' | 'internal' | 'public';
 
@@ -48,6 +49,27 @@ export class GithubPublisher implements PublisherBase {
       /\.git$/,
       '/blob/master/catalog-info.yaml',
     );
+
+    if (values?.kubernetes_deploy === 'yes') {
+      const templateId = `${values.storePath}-gitops`;
+      const tempDir = `/tmp/${templateId}`;
+      await fs.promises.mkdir(tempDir, { recursive: true });
+      await fs.promises.writeFile(
+        `${tempDir}/README.md`,
+        'Gitops empty readme file to avoid having a bare repo.',
+      );
+
+      const manifestValues = values;
+      manifestValues.storePath = `${values.storePath}-gitops`;
+
+      const remoteUrlManifest = await this.createRemote(manifestValues, token);
+      await pushToRemoteUserPass(
+        tempDir,
+        remoteUrlManifest,
+        token,
+        'x-oauth-basic',
+      );
+    }
 
     return { remoteUrl, catalogInfoUrl };
   }
