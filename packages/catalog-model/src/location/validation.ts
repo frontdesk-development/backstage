@@ -35,3 +35,10 @@ export const locationSchema = yup
   })
   .noUnknown()
   .required();
+
+export const analyzeLocationSchema = yup
+  .object<{ location: LocationSpec }>({
+    location: locationSpecSchema,
+  })
+  .noUnknown()
+  .required();
