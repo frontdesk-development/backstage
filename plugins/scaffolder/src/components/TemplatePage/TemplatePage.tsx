@@ -119,7 +119,10 @@ export const TemplatePage = () => {
     try {
       const {
         entities: [createdEntity],
-      } = await catalogApi.addLocation({ target: job.metadata.catalogInfoUrl });
+      } = await catalogApi.addLocation({
+        target: job.metadata.catalogInfoUrl,
+        token: job.metadata.token,
+      });
 
       const resolvedPath = generatePath(
         `/catalog/${entityRoute.path}`,
