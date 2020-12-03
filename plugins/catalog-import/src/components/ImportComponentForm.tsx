@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { errorApiRef, useApi } from '@backstage/core';
+import { errorApiRef, useApi, githubAuthApiRef } from '@backstage/core';
 import { BackstageTheme } from '@backstage/theme';
 import {
   Button,
@@ -49,6 +49,8 @@ type Props = {
 };
 
 export const RegisterComponentForm = ({ nextStep, saveConfig }: Props) => {
+  const githubAuthApi = useApi(githubAuthApiRef);
+  const tokenPromise = githubAuthApi.getAccessToken();
   const { register, handleSubmit, errors, formState } = useForm({
     mode: 'onChange',
   });
@@ -74,7 +76,10 @@ export const RegisterComponentForm = ({ nextStep, saveConfig }: Props) => {
           config: await generateEntityDefinitions(target),
         });
       } else {
-        const data = await catalogApi.addLocation({ target });
+        const data = await catalogApi.addLocation({
+          target,
+          token: await tokenPromise,
+        });
         saveConfig({
           type,
           location: data.location.target,
