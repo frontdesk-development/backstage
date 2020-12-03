@@ -65,6 +65,9 @@ proxy:
 organization:
   name: trivago 
 
+jira:
+  apiVersion: 2
+
 techdocs:
   storageUrl: http://localhost:7000/api/techdocs/static/docs
   requestUrl: http://localhost:7000/api/techdocs
