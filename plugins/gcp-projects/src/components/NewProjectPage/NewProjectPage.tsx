@@ -34,18 +34,22 @@ import {
   TextField,
   FormControlLabel,
   Switch,
+  Select,
+  MenuItem,
 } from '@material-ui/core';
+import { GroupsTfRender, NetworkTfRender } from './templates';
 import React, { useState } from 'react';
 
 export const Project = () => {
   const profile = useApi(identityApiRef).getProfile();
   const email = profile.email;
 
-  const [projectName, setProjectName] = useState('ProjectName');
-  const [pilar, setPilar] = useState('Pilar');
-  const [teamName, setTeamName] = useState('TeamName');
+  const [projectName, setProjectName] = useState('');
+  const [pilar, setPilar] = useState('');
+  const [region, setRegion] = useState('playground');
+  const [teamName, setTeamName] = useState('');
   const groupNamePrefix = `trv-${pilar}-${teamName}-`;
-  const [projectEmail, setProjectEmail] = useState('projectEmail@trivago.com');
+  const [projectEmail, setProjectEmail] = useState('');
   const [projectDescription, setProjectDescription] = useState(
     'Project Description',
   );
@@ -80,18 +84,18 @@ export const Project = () => {
   showMembersArray = showMembersArray.slice(0, -1);
   showMembersArray = showMembersArray.trimEnd();
 
-  const groupsTf = `module "group_${groupName}" { 
-    source       = "../../modules/group"
-    name         = "${groupName}"
-    display_name = "${groupDisplayName}"
-    members = [
-${showMembersArray}
-    ]
-  }`;
+//   const groupsTf = `module "group_${groupName}" { 
+//     source       = "../../modules/group"
+//     name         = "${groupName}"
+//     display_name = "${groupDisplayName}"
+//     members = [
+// ${showMembersArray}
+//     ]
+//   }`;
 
-  let projectsTf = `module "project_${groupNamePrefix}${projectName}" {
+  let projectsTfPlayground = `module "project_${groupNamePrefix.toLowerCase().split(" ").join("-")}${projectName.toLowerCase().split(" ").join("-")}" {
     source      = "../../modules/project"
-    name        = "${groupNamePrefix}${projectName}"
+    name        = "${groupNamePrefix.toLowerCase().split(" ").join("-")}${projectName.toLowerCase().split(" ").join("-")}"
     group_email = "${projectEmail}"
     description = "${projectDescription}"
     folder      = module.folder.name
@@ -99,36 +103,97 @@ ${showMembersArray}
     shared_vpc_enabled = ${vpcEnable}`;
 
   if (vpcEnable) {
-    projectsTf = `${projectsTf}
+    projectsTfPlayground = `${projectsTfPlayground}
     shared_vpc_subnets = [
       "${subnetRegion}/${subnetName}",
     ]
     auto_create_network = ${autoCreateNet}
-  }`;
+}`;
   } else {
-    projectsTf = `${projectsTf}
-  }`;
+    projectsTfPlayground = `${projectsTfPlayground}
+}`;
   }
 
-  const networkTf = `   {
-    subnet_name           = "${subnetName}"
-    subnet_ip             = "${subnetRange}"
-    subnet_region         = "${subnetRegion}"
-    subnet_private_access = ${subnetPrivateAccess}
-  },`;
+  let projectsTfProd = `module "project_${groupNamePrefix.toLowerCase().split(" ").join("-")}${projectName.toLowerCase().split(" ").join("-")}-prod" {
+    source      = "../../modules/project"
+    name        = "${groupNamePrefix.toLowerCase().split(" ").join("-")}${projectName.toLowerCase().split(" ").join("-")}-prod"
+    group_email = "${projectEmail}"
+    description = "Prod enviroment for ${projectName}"
+    folder      = module.folder.name
+    tier        = "prod"
+    shared_vpc_enabled = ${vpcEnable}`;
 
-  const GroupsTfTemplate = () => {
-    return (
-      <textarea style={{ height: '250px', width: '100%' }} readOnly>
-        {groupsTf}
-      </textarea>
-    );
-  };
+  if (vpcEnable) {
+    projectsTfProd = `${projectsTfProd}
+    shared_vpc_subnets = [
+      "${subnetRegion}/${subnetName}",
+    ]
+    auto_create_network = ${autoCreateNet}
+}`;
+  } else {
+    projectsTfProd = `${projectsTfProd}
+}`;
+  }
+
+  let projectsTfStage = `module "project_${groupNamePrefix.toLowerCase().split(" ").join("-")}${projectName.toLowerCase().split(" ").join("-")}-stage" {
+    source      = "../../modules/project"
+    name        = "${groupNamePrefix.toLowerCase().split(" ").join("-")}${projectName.toLowerCase().split(" ").join("-")}-stage"
+    group_email = "${projectEmail}"
+    description = "Stage enviroment for ${projectName}"
+    folder      = module.folder.name
+    tier        = "stage"
+    shared_vpc_enabled = ${vpcEnable}`;
+
+  if (vpcEnable) {
+    projectsTfStage = `${projectsTfStage}
+    shared_vpc_subnets = [
+      "${subnetRegion}/${subnetName}",
+    ]
+    auto_create_network = ${autoCreateNet}
+}`;
+  } else {
+    projectsTfStage = `${projectsTfStage}
+}`;
+  }
+
+  let projectsTfEdge = `module "project_${groupNamePrefix.toLowerCase().split(" ").join("-")}${projectName.toLowerCase().split(" ").join("-")}-edge" {
+    source      = "../../modules/project"
+    name        = "${groupNamePrefix.toLowerCase().split(" ").join("-")}${projectName.toLowerCase().split(" ").join("-")}-edge"
+    group_email = "${projectEmail}"
+    description = "Edge env for ${projectName}"
+    folder      = module.folder.name
+    tier        = "edge"
+    shared_vpc_enabled = ${vpcEnable}`;
+
+  if (vpcEnable) {
+    projectsTfEdge = `${projectsTfEdge}
+    shared_vpc_subnets = [
+      "${subnetRegion}/${subnetName}",
+    ]
+    auto_create_network = ${autoCreateNet}
+}`;
+  } else {
+    projectsTfEdge = `${projectsTfEdge}
+}`;
+  }
+
+  let projectsTfStages = projectsTfProd + `
+
+`+ projectsTfStage +`
+
+`+ projectsTfEdge;
 
   const ProjectsTfTemplate = () => {
+    if (region == "edge-stage-prod") {
     return (
       <textarea style={{ height: '250px', width: '100%' }} readOnly>
-        {projectsTf}
+        {projectsTfStages}
+      </textarea>
+    );
+    } 
+    return (
+      <textarea style={{ height: '250px', width: '100%' }} readOnly>
+        {projectsTfPlayground}
       </textarea>
     );
   };
@@ -136,10 +201,18 @@ ${showMembersArray}
   const NetworkTfTemplate = () => {
     return (
       <textarea style={{ height: '250px', width: '100%' }} readOnly>
-        {networkTf}
+        {NetworkTfRender(metadata)}
       </textarea>
     );
   };
+
+  const GroupsTfTemplate = () => {
+    return (
+      <textarea style={{ height: '250px', width: '100%' }} readOnly>
+        {GroupsTfRender(metadata)}
+      </textarea>
+    )
+  }
 
   const handleVpcEnableClick = () => {
     if (vpcEnable) {
@@ -168,11 +241,11 @@ ${showMembersArray}
   const projectId = projectName;
 
   const metadata = {
-    Email: email,
-    Pilar: pilar,
-    TeamName: teamName,
-    ProjectName: projectName,
-    ProjectId: projectId,
+    email: email,
+    pilar: pilar,
+    teamName: teamName,
+    projectName: projectName,
+    projectId: projectId,
     projectEmail: projectEmail,
     projectDescription: projectDescription,
     projectTier: projectTier,
@@ -186,7 +259,62 @@ ${showMembersArray}
     groupName: groupName,
     groupDisplayName: groupDisplayName,
     groupMembers: groupMembers,
+    region: region,
   };
+
+  const REGION_LIST = [
+    {
+      label: "Edge - Stage - Prod",
+      value: "edge-stage-prod",
+    },
+    {
+      label: "Playgorund",
+      value: "playground",
+    }
+  ]
+
+  const PILAR_LIST = [
+    {
+      label: 'Advertiser Relations',
+      value: 'advertiser-relations',
+    },
+    {
+      label: 'Content Engineering',
+      value: 'content-engineering',
+    },
+    {
+      label: 'Data Engineering',
+      value: 'data-engineering',
+    },
+    {
+      label: 'Datacenter Operations',
+      value: 'datacenter-operations',
+    },
+    {
+      label: 'Hotel Search',
+      value: 'hotel-search',
+    },
+    {
+      label: 'Infrastructure Operations',
+      value: 'io',
+    },
+    {
+      label: 'Marketing and Design',
+      value: 'mad',
+    },
+    {
+      label: 'Marketing',
+      value: 'marketing',
+    },
+    {
+      label: 'Marketplace',
+      value: 'marketplace',
+    },
+    {
+      label: 'Organizational Productivity',
+      value: 'organizational-productivity',
+    },
+  ];
 
   return (
     <Content>
@@ -195,16 +323,20 @@ ${showMembersArray}
           <InfoCard title="Create new GCP Project">
             <SimpleStepper>
               <SimpleStepperStep title="Pilar">
-                <TextField
+              <Select
+                  onChange={(e: React.ChangeEvent<any>) =>
+                    setPilar(e?.target?.value)
+                  }
                   variant="outlined"
-                  name="pilar"
-                  label="Pilar"
-                  helperText="Project name pilar"
-                  inputProps={{ 'aria-label': 'Pilar' }}
-                  onChange={e => setPilar(e.target.value)}
+                  placeholder="Pilar Name"
+                  label="Default"
                   value={pilar}
                   fullWidth
-                />
+                >
+                {PILAR_LIST.map((value: {label: string, value: string}) => (
+                  <MenuItem value={value.value}>{value.label}</MenuItem>
+                ))}
+              </Select>
               </SimpleStepperStep>
               <SimpleStepperStep title="Team Name">
                 <TextField
@@ -229,6 +361,22 @@ ${showMembersArray}
                   value={projectName}
                   fullWidth
                 />
+              </SimpleStepperStep>
+              <SimpleStepperStep title="Regions">
+              <Select
+                  onChange={(e: React.ChangeEvent<any>) =>
+                    setRegion(e?.target?.value)
+                  }
+                  variant="outlined"
+                  placeholder="Region"
+                  label="Default"
+                  value={region}
+                  fullWidth
+                >
+                {REGION_LIST.map((value: {label: string, value: string}) => (
+                  <MenuItem value={value.value}>{value.label}</MenuItem>
+                ))}
+              </Select>
               </SimpleStepperStep>
               <SimpleStepperStep title="Project Email">
                 <TextField
@@ -428,7 +576,7 @@ ${showMembersArray}
           </InfoCard>
           <br />
           <InfoCard title="groups.tf">
-            <GroupsTfTemplate />
+            <GroupsTfTemplate metadata={metadata}/>
           </InfoCard>
           <br />
           {vpcEnable && (
