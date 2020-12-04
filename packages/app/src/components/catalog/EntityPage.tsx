@@ -75,6 +75,11 @@ import {
   RecentTravisCIBuildsWidget,
   Router as TravisCIRouter,
 } from '@roadiehq/backstage-plugin-travis-ci';
+import {
+  JiraCard,
+  isPluginApplicableToEntity as isJiraAvailable,
+} from '@roadiehq/backstage-plugin-jira';
+
 import React, { ReactNode } from 'react';
 
 export const CICDSwitcher = ({ entity }: { entity: Entity }) => {
@@ -172,6 +177,11 @@ const ComponentOverviewContent = ({ entity }: { entity: Entity }) => (
     {isPullRequestsAvailable(entity) && (
       <Grid item sm={4}>
         <PullRequestsStatsCard entity={entity} />
+      </Grid>
+    )}
+    {isJiraAvailable(entity) && (
+      <Grid item md={6}>
+        <JiraCard entity={entity} />
       </Grid>
     )}
   </Grid>

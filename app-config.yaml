@@ -52,8 +52,21 @@ proxy:
       Authorization:
         $env: BUILDKITE_TOKEN
 
+  '/jira/api':
+    target: https://tasks.trivago.com
+    headers:
+      Authorization:
+        $env: JIRA_TOKEN
+      Accept: 'application/json'
+      Content-Type: 'application/json'
+      X-Atlassian-Token: 'no-check'
+      User-Agent: "MY-UA-STRING"
+
 organization:
   name: trivago 
+
+jira:
+  apiVersion: 2
 
 techdocs:
   storageUrl: http://localhost:7000/api/techdocs/static/docs
