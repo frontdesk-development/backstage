@@ -131,6 +131,8 @@ catalog:
       target: https://github.com/frontdesk-development/cookiecutter-argocd/blob/master/template.yaml
     - type: url
       target: https://github.com/trivago/cookiecutter-terraform/blob/master/template.yaml
+    - type: url
+      target: https://github.com/trivago/gcp-delivery-workshop/blob/master/template.yaml
 
 integrations:
   github:
