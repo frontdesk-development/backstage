@@ -62,6 +62,12 @@ proxy:
       X-Atlassian-Token: 'no-check'
       User-Agent: "MY-UA-STRING"
 
+  '/bridge/api':
+    target: https://trivago.bridgeapp.com/api
+    headers:
+      Authorization:
+        $env: BRIDGE_TOKEN
+
 organization:
   name: trivago 
 

@@ -15,40 +15,41 @@
  */
 
 type metadata = {
-    email: string | undefined;
-    pilar: string | undefined;
-    teamName: string | undefined;
-    projectName: string | undefined;
-    projectId: string | undefined;
-    projectEmail: string | undefined;
-    projectDescription: string | undefined;
-    projectTier: string | undefined;
-    vpcEnable: string | undefined;
-    vpcSubnet: string | undefined;
-    autoNetwork: string | undefined;
-    subnetName: string | undefined;
-    subnetRange: string | undefined;
-    subnetRegion: string | undefined;
-    subnetPrivateAccess: string | undefined;
-    groupName: string | undefined;
-    groupDisplayName: string | undefined;
-    groupMembers: string;
-    region: string | undefined;
-}
+  email: string | undefined;
+  pilar: string | undefined;
+  teamName: string | undefined;
+  projectName: string;
+  projectId: string | undefined;
+  projectEmail: string | undefined;
+  projectDescription: string | undefined;
+  projectTier: string | undefined;
+  vpcEnable: string | undefined;
+  vpcSubnet: string | undefined;
+  autoNetwork: string | undefined;
+  subnetName: string | undefined;
+  subnetRange: string | undefined;
+  subnetRegion: string | undefined;
+  subnetPrivateAccess: string | undefined;
+  groupName: string | undefined;
+  groupDisplayName: string | undefined;
+  groupMembers: string;
+  region: string | undefined;
+  groupNamePrefix: string;
+};
 
-export const GroupsTfRender = (metadata: metadata) => {
-    const groupMembersArray = metadata.groupMembers.split(',');
+export const groupsTfRender = (metadata: metadata) => {
+  const groupMembersArray = metadata.groupMembers.split(',');
 
-    let showMembersArray = '\t"';
-  
-    groupMembersArray.forEach((member: string) => {
-        showMembersArray = `${showMembersArray + member.trim()}",\n\t"`;
-    });
-  
-    showMembersArray = showMembersArray.slice(0, -1);
-    showMembersArray = showMembersArray.trimEnd();
+  let showMembersArray = '\t"';
 
-    const groupsTf = `module "group_${metadata.groupName}" { 
+  groupMembersArray.forEach((member: string) => {
+    showMembersArray = `${showMembersArray + member.trim()}",\n\t"`;
+  });
+
+  showMembersArray = showMembersArray.slice(0, -1);
+  showMembersArray = showMembersArray.trimEnd();
+
+  const groupsTf = `module "group_${metadata.groupName}" { 
     source       = "../../modules/group"
     name         = "${metadata.groupName}"
     display_name = "${metadata.groupDisplayName}"
@@ -56,21 +57,154 @@ export const GroupsTfRender = (metadata: metadata) => {
 ${showMembersArray}
     ]
 }`;
-   return groupsTf;
-  };
+  return groupsTf;
+};
 
-export const NetworkTfRender = (metadata: metadata) => {
-    const networkTf = `   {
+export const networkTfRender = (metadata: metadata) => {
+  const networkTf = `   {
         subnet_name           = "${metadata.subnetName}"
         subnet_ip             = "${metadata.subnetRange}"
         subnet_region         = "${metadata.subnetRegion}"
         subnet_private_access = ${metadata.subnetPrivateAccess}
       },`;
-    return networkTf;
-}
+  return networkTf;
+};
 
-export const ProjectsTfRender = (metadata: metadata) => {
-    if (metadata.region == "edge-stage-prod") {
+export const projectsTfRenderPlaygound = (metadata: metadata) => {
+  let projectsTfPlayground = `module "project_${metadata.groupNamePrefix
+    .toLowerCase()
+    .split(' ')
+    .join('-')}${metadata.projectName.toLowerCase().split(' ').join('-')}" {
+        source      = "../../modules/project"
+        name        = "${metadata.groupNamePrefix
+          .toLowerCase()
+          .split(' ')
+          .join('-')}${metadata.projectName.toLowerCase().split(' ').join('-')}"
+        group_email = "${metadata.projectEmail}" 
+        description = "${metadata.projectDescription}"
+        folder      = module.folder.name
+        tier        = "${metadata.projectTier}"
+        shared_vpc_enabled = ${metadata.vpcEnable}`;
 
-    }
-}
+  if (metadata.vpcEnable) {
+    projectsTfPlayground = `${projectsTfPlayground}
+        shared_vpc_subnets = [
+          "${metadata.subnetRegion}/${metadata.subnetName}",
+        ]
+        auto_create_network = ${metadata.autoNetwork}
+    }`;
+  } else {
+    projectsTfPlayground = `${projectsTfPlayground}
+    }`;
+  }
+  return projectsTfPlayground;
+};
+
+export const projectsTfRenderStages = (metadata: metadata) => {
+  let projectsTfProd = `module "project_${metadata.groupNamePrefix
+    .toLowerCase()
+    .split(' ')
+    .join('-')}${metadata.projectName
+    .toLowerCase()
+    .split(' ')
+    .join('-')}-prod" {
+        source      = "../../modules/project"
+        name        = "${metadata.groupNamePrefix
+          .toLowerCase()
+          .split(' ')
+          .join('-')}${metadata.projectName
+    .toLowerCase()
+    .split(' ')
+    .join('-')}-prod"
+        group_email = "${metadata.projectEmail}"
+        description = "Prod enviroment for ${metadata.projectName}"
+        folder      = module.folder.name
+        tier        = "prod"
+        shared_vpc_enabled = ${metadata.vpcEnable}`;
+
+  if (metadata.vpcEnable) {
+    projectsTfProd = `${projectsTfProd}
+        shared_vpc_subnets = [
+          "${metadata.subnetRegion}/${metadata.subnetName}",
+        ]
+        auto_create_network = ${metadata.autoNetwork}
+    }`;
+  } else {
+    projectsTfProd = `${projectsTfProd}
+    }`;
+  }
+
+  let projectsTfStage = `module "project_${metadata.groupNamePrefix
+    .toLowerCase()
+    .split(' ')
+    .join('-')}${metadata.projectName
+    .toLowerCase()
+    .split(' ')
+    .join('-')}-stage" {
+        source      = "../../modules/project"
+        name        = "${metadata.groupNamePrefix
+          .toLowerCase()
+          .split(' ')
+          .join('-')}${metadata.projectName
+    .toLowerCase()
+    .split(' ')
+    .join('-')}-stage"
+        group_email = "${metadata.projectEmail}"
+        description = "Stage enviroment for ${metadata.projectName}"
+        folder      = module.folder.name
+        tier        = "stage"
+        shared_vpc_enabled = ${metadata.vpcEnable}`;
+
+  if (metadata.vpcEnable) {
+    projectsTfStage = `${projectsTfStage}
+        shared_vpc_subnets = [
+          "${metadata.subnetRegion}/${metadata.subnetName}",
+        ]
+        auto_create_network = ${metadata.autoNetwork}
+    }`;
+  } else {
+    projectsTfStage = `${projectsTfStage}
+    }`;
+  }
+
+  let projectsTfEdge = `module "project_${metadata.groupNamePrefix
+    .toLowerCase()
+    .split(' ')
+    .join('-')}${metadata.projectName
+    .toLowerCase()
+    .split(' ')
+    .join('-')}-edge" {
+        source      = "../../modules/project"
+        name        = "${metadata.groupNamePrefix
+          .toLowerCase()
+          .split(' ')
+          .join('-')}${metadata.projectName
+    .toLowerCase()
+    .split(' ')
+    .join('-')}-edge"
+        group_email = "${metadata.projectEmail}"
+        description = "Edge env for ${metadata.projectName}"
+        folder      = module.folder.name
+        tier        = "edge"
+        shared_vpc_enabled = ${metadata.vpcEnable}`;
+
+  if (metadata.vpcEnable) {
+    projectsTfEdge = `${projectsTfEdge}
+        shared_vpc_subnets = [
+          "${metadata.subnetRegion}/${metadata.subnetName}",
+        ]
+        auto_create_network = ${metadata.autoNetwork}
+    }`;
+  } else {
+    projectsTfEdge = `${projectsTfEdge}
+    }`;
+  }
+
+  const projectsTfStages = `${projectsTfProd}
+    
+    ${projectsTfStage}
+    
+    ${projectsTfEdge}`;
+
+  return projectsTfStages;
+};

@@ -28,6 +28,7 @@ import {
   isPluginApplicableToEntity as isCircleCIAvailable,
   Router as CircleCIRouter,
 } from '@backstage/plugin-circleci';
+import { Router as BridgeRouter } from '@backstage/plugin-bridge-app-plugin';
 import {
   isPluginApplicableToEntity as isCloudbuildAvailable,
   Router as CloudbuildRouter,
@@ -228,6 +229,13 @@ const ServiceEntityPage = ({ entity }: { entity: Entity }) => (
         path="/api/*"
         title="API"
         element={<ApiDocsRouter entity={entity} />}
+      />
+    )}
+    {entity.metadata?.annotations?.['bridge.com/course-tag'] && (
+      <EntityPageLayout.Content
+        path="/bridge/*"
+        title="BRIDGE"
+        element={<BridgeRouter entity={entity} />}
       />
     )}
     <EntityPageLayout.Content

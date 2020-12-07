@@ -37,7 +37,12 @@ import {
   Select,
   MenuItem,
 } from '@material-ui/core';
-import { GroupsTfRender, NetworkTfRender } from './templates';
+import {
+  groupsTfRender,
+  networkTfRender,
+  projectsTfRenderPlaygound,
+  projectsTfRenderStages,
+} from './templates';
 import React, { useState } from 'react';
 
 export const Project = () => {
@@ -84,116 +89,42 @@ export const Project = () => {
   showMembersArray = showMembersArray.slice(0, -1);
   showMembersArray = showMembersArray.trimEnd();
 
-//   const groupsTf = `module "group_${groupName}" { 
-//     source       = "../../modules/group"
-//     name         = "${groupName}"
-//     display_name = "${groupDisplayName}"
-//     members = [
-// ${showMembersArray}
-//     ]
-//   }`;
+  const projectId = projectName;
 
-  let projectsTfPlayground = `module "project_${groupNamePrefix.toLowerCase().split(" ").join("-")}${projectName.toLowerCase().split(" ").join("-")}" {
-    source      = "../../modules/project"
-    name        = "${groupNamePrefix.toLowerCase().split(" ").join("-")}${projectName.toLowerCase().split(" ").join("-")}"
-    group_email = "${projectEmail}"
-    description = "${projectDescription}"
-    folder      = module.folder.name
-    tier        = "${projectTier}"
-    shared_vpc_enabled = ${vpcEnable}`;
-
-  if (vpcEnable) {
-    projectsTfPlayground = `${projectsTfPlayground}
-    shared_vpc_subnets = [
-      "${subnetRegion}/${subnetName}",
-    ]
-    auto_create_network = ${autoCreateNet}
-}`;
-  } else {
-    projectsTfPlayground = `${projectsTfPlayground}
-}`;
-  }
-
-  let projectsTfProd = `module "project_${groupNamePrefix.toLowerCase().split(" ").join("-")}${projectName.toLowerCase().split(" ").join("-")}-prod" {
-    source      = "../../modules/project"
-    name        = "${groupNamePrefix.toLowerCase().split(" ").join("-")}${projectName.toLowerCase().split(" ").join("-")}-prod"
-    group_email = "${projectEmail}"
-    description = "Prod enviroment for ${projectName}"
-    folder      = module.folder.name
-    tier        = "prod"
-    shared_vpc_enabled = ${vpcEnable}`;
-
-  if (vpcEnable) {
-    projectsTfProd = `${projectsTfProd}
-    shared_vpc_subnets = [
-      "${subnetRegion}/${subnetName}",
-    ]
-    auto_create_network = ${autoCreateNet}
-}`;
-  } else {
-    projectsTfProd = `${projectsTfProd}
-}`;
-  }
-
-  let projectsTfStage = `module "project_${groupNamePrefix.toLowerCase().split(" ").join("-")}${projectName.toLowerCase().split(" ").join("-")}-stage" {
-    source      = "../../modules/project"
-    name        = "${groupNamePrefix.toLowerCase().split(" ").join("-")}${projectName.toLowerCase().split(" ").join("-")}-stage"
-    group_email = "${projectEmail}"
-    description = "Stage enviroment for ${projectName}"
-    folder      = module.folder.name
-    tier        = "stage"
-    shared_vpc_enabled = ${vpcEnable}`;
-
-  if (vpcEnable) {
-    projectsTfStage = `${projectsTfStage}
-    shared_vpc_subnets = [
-      "${subnetRegion}/${subnetName}",
-    ]
-    auto_create_network = ${autoCreateNet}
-}`;
-  } else {
-    projectsTfStage = `${projectsTfStage}
-}`;
-  }
-
-  let projectsTfEdge = `module "project_${groupNamePrefix.toLowerCase().split(" ").join("-")}${projectName.toLowerCase().split(" ").join("-")}-edge" {
-    source      = "../../modules/project"
-    name        = "${groupNamePrefix.toLowerCase().split(" ").join("-")}${projectName.toLowerCase().split(" ").join("-")}-edge"
-    group_email = "${projectEmail}"
-    description = "Edge env for ${projectName}"
-    folder      = module.folder.name
-    tier        = "edge"
-    shared_vpc_enabled = ${vpcEnable}`;
-
-  if (vpcEnable) {
-    projectsTfEdge = `${projectsTfEdge}
-    shared_vpc_subnets = [
-      "${subnetRegion}/${subnetName}",
-    ]
-    auto_create_network = ${autoCreateNet}
-}`;
-  } else {
-    projectsTfEdge = `${projectsTfEdge}
-}`;
-  }
-
-  let projectsTfStages = projectsTfProd + `
-
-`+ projectsTfStage +`
-
-`+ projectsTfEdge;
+  const metadata = {
+    email: email,
+    pilar: pilar,
+    teamName: teamName,
+    projectName: projectName,
+    projectId: projectId,
+    projectEmail: projectEmail,
+    projectDescription: projectDescription,
+    projectTier: projectTier,
+    vpcEnable: String(vpcEnable),
+    vpcSubnet: vpcSubnet,
+    autoNetwork: String(autoCreateNet),
+    subnetName: subnetName,
+    subnetRange: subnetRange,
+    subnetRegion: subnetRegion,
+    subnetPrivateAccess: String(subnetPrivateAccess),
+    groupName: groupName,
+    groupDisplayName: groupDisplayName,
+    groupMembers: groupMembers,
+    region: region,
+    groupNamePrefix: groupNamePrefix,
+  };
 
   const ProjectsTfTemplate = () => {
-    if (region == "edge-stage-prod") {
+    if (region === 'edge-stage-prod') {
+      return (
+        <textarea style={{ height: '250px', width: '100%' }} readOnly>
+          {projectsTfRenderStages(metadata)}
+        </textarea>
+      );
+    }
     return (
       <textarea style={{ height: '250px', width: '100%' }} readOnly>
-        {projectsTfStages}
-      </textarea>
-    );
-    } 
-    return (
-      <textarea style={{ height: '250px', width: '100%' }} readOnly>
-        {projectsTfPlayground}
+        {projectsTfRenderPlaygound(metadata)}
       </textarea>
     );
   };
@@ -201,7 +132,7 @@ export const Project = () => {
   const NetworkTfTemplate = () => {
     return (
       <textarea style={{ height: '250px', width: '100%' }} readOnly>
-        {NetworkTfRender(metadata)}
+        {networkTfRender(metadata)}
       </textarea>
     );
   };
@@ -209,10 +140,10 @@ export const Project = () => {
   const GroupsTfTemplate = () => {
     return (
       <textarea style={{ height: '250px', width: '100%' }} readOnly>
-        {GroupsTfRender(metadata)}
+        {groupsTfRender(metadata)}
       </textarea>
-    )
-  }
+    );
+  };
 
   const handleVpcEnableClick = () => {
     if (vpcEnable) {
@@ -238,40 +169,16 @@ export const Project = () => {
     }
   };
 
-  const projectId = projectName;
-
-  const metadata = {
-    email: email,
-    pilar: pilar,
-    teamName: teamName,
-    projectName: projectName,
-    projectId: projectId,
-    projectEmail: projectEmail,
-    projectDescription: projectDescription,
-    projectTier: projectTier,
-    vpcEnable: String(vpcEnable),
-    vpcSubnet: vpcSubnet,
-    autoNetwork: String(autoCreateNet),
-    subnetName: subnetName,
-    subnetRange: subnetRange,
-    subnetRegion: subnetRegion,
-    subnetPrivateAccess: String(subnetPrivateAccess),
-    groupName: groupName,
-    groupDisplayName: groupDisplayName,
-    groupMembers: groupMembers,
-    region: region,
-  };
-
   const REGION_LIST = [
     {
-      label: "Edge - Stage - Prod",
-      value: "edge-stage-prod",
+      label: 'Edge - Stage - Prod',
+      value: 'edge-stage-prod',
     },
     {
-      label: "Playgorund",
-      value: "playground",
-    }
-  ]
+      label: 'Playgorund',
+      value: 'playground',
+    },
+  ];
 
   const PILAR_LIST = [
     {
@@ -323,7 +230,7 @@ export const Project = () => {
           <InfoCard title="Create new GCP Project">
             <SimpleStepper>
               <SimpleStepperStep title="Pilar">
-              <Select
+                <Select
                   onChange={(e: React.ChangeEvent<any>) =>
                     setPilar(e?.target?.value)
                   }
@@ -333,10 +240,10 @@ export const Project = () => {
                   value={pilar}
                   fullWidth
                 >
-                {PILAR_LIST.map((value: {label: string, value: string}) => (
-                  <MenuItem value={value.value}>{value.label}</MenuItem>
-                ))}
-              </Select>
+                  {PILAR_LIST.map((value: { label: string; value: string }) => (
+                    <MenuItem value={value.value}>{value.label}</MenuItem>
+                  ))}
+                </Select>
               </SimpleStepperStep>
               <SimpleStepperStep title="Team Name">
                 <TextField
@@ -363,7 +270,7 @@ export const Project = () => {
                 />
               </SimpleStepperStep>
               <SimpleStepperStep title="Regions">
-              <Select
+                <Select
                   onChange={(e: React.ChangeEvent<any>) =>
                     setRegion(e?.target?.value)
                   }
@@ -373,10 +280,12 @@ export const Project = () => {
                   value={region}
                   fullWidth
                 >
-                {REGION_LIST.map((value: {label: string, value: string}) => (
-                  <MenuItem value={value.value}>{value.label}</MenuItem>
-                ))}
-              </Select>
+                  {REGION_LIST.map(
+                    (value: { label: string; value: string }) => (
+                      <MenuItem value={value.value}>{value.label}</MenuItem>
+                    ),
+                  )}
+                </Select>
               </SimpleStepperStep>
               <SimpleStepperStep title="Project Email">
                 <TextField
@@ -576,7 +485,7 @@ export const Project = () => {
           </InfoCard>
           <br />
           <InfoCard title="groups.tf">
-            <GroupsTfTemplate metadata={metadata}/>
+            <GroupsTfTemplate />
           </InfoCard>
           <br />
           {vpcEnable && (
