@@ -65,6 +65,9 @@ proxy:
       Authorization:
         $env: BRIDGE_TOKEN
 
+jira:
+  apiVersion: 2
+
 organization:
   name: trivago
 
