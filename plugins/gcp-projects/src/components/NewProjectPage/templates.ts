@@ -70,7 +70,7 @@ export const networkTfRender = (metadata: metadata) => {
   return networkTf;
 };
 
-export const projectsTfRenderPlaygound = (metadata: metadata) => {
+export const projectsTfRenderPlayground = (metadata: metadata) => {
   let projectsTfPlayground = `module "project_${metadata.groupNamePrefix
     .toLowerCase()
     .split(' ')
@@ -92,10 +92,10 @@ export const projectsTfRenderPlaygound = (metadata: metadata) => {
           "${metadata.subnetRegion}/${metadata.subnetName}",
         ]
         auto_create_network = ${metadata.autoNetwork}
-    }`;
+}`;
   } else {
     projectsTfPlayground = `${projectsTfPlayground}
-    }`;
+}`;
   }
   return projectsTfPlayground;
 };
@@ -128,10 +128,10 @@ export const projectsTfRenderStages = (metadata: metadata) => {
           "${metadata.subnetRegion}/${metadata.subnetName}",
         ]
         auto_create_network = ${metadata.autoNetwork}
-    }`;
+}`;
   } else {
     projectsTfProd = `${projectsTfProd}
-    }`;
+}`;
   }
 
   let projectsTfStage = `module "project_${metadata.groupNamePrefix
@@ -161,10 +161,10 @@ export const projectsTfRenderStages = (metadata: metadata) => {
           "${metadata.subnetRegion}/${metadata.subnetName}",
         ]
         auto_create_network = ${metadata.autoNetwork}
-    }`;
+}`;
   } else {
     projectsTfStage = `${projectsTfStage}
-    }`;
+}`;
   }
 
   let projectsTfEdge = `module "project_${metadata.groupNamePrefix
@@ -194,17 +194,17 @@ export const projectsTfRenderStages = (metadata: metadata) => {
           "${metadata.subnetRegion}/${metadata.subnetName}",
         ]
         auto_create_network = ${metadata.autoNetwork}
-    }`;
+}`;
   } else {
     projectsTfEdge = `${projectsTfEdge}
-    }`;
+}`;
   }
 
   const projectsTfStages = `${projectsTfProd}
     
-    ${projectsTfStage}
+${projectsTfStage}
     
-    ${projectsTfEdge}`;
+${projectsTfEdge}`;
 
   return projectsTfStages;
 };

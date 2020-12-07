@@ -40,7 +40,7 @@ import {
 import {
   groupsTfRender,
   networkTfRender,
-  projectsTfRenderPlaygound,
+  projectsTfRenderPlayground,
   projectsTfRenderStages,
 } from './templates';
 import React, { useState } from 'react';
@@ -124,7 +124,7 @@ export const Project = () => {
     }
     return (
       <textarea style={{ height: '250px', width: '100%' }} readOnly>
-        {projectsTfRenderPlaygound(metadata)}
+        {projectsTfRenderPlayground(metadata)}
       </textarea>
     );
   };
@@ -175,7 +175,7 @@ export const Project = () => {
       value: 'edge-stage-prod',
     },
     {
-      label: 'Playgorund',
+      label: 'Playground',
       value: 'playground',
     },
   ];
