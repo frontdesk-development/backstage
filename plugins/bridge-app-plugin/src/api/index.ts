@@ -46,7 +46,7 @@ export class BridgeApi {
   async listAllCourses(): Promise<Courses> {
     const URL = await this.getApiUrl();
 
-    const response = await fetch(`${URL}/learner/library_items`);
+    const response = await fetch(`${URL}/api/learner/library_items`);
 
     if (!response.ok) {
       throw new Error(
@@ -63,12 +63,12 @@ export class BridgeApi {
     const URL = await this.getApiUrl();
 
     const getTag = await fetch(
-      `${URL}/learner/tags?search=${encodeURIComponent(tag)}`,
+      `${URL}/api/learner/tags?search=${encodeURIComponent(tag)}`,
     );
 
     if (!getTag.ok) {
       throw new Error(
-        `Get tag request failed to ${URL}/learner/tags?search=${tag} with ${getTag.status} ${getTag.statusText}`,
+        `Get tag request failed to ${URL}/api/learner/tags?search=${tag} with ${getTag.status} ${getTag.statusText}`,
       );
     }
 
@@ -79,7 +79,7 @@ export class BridgeApi {
     }
 
     const response = await fetch(
-      `${URL}/learner/library_items?tags=${encodeURIComponent(
+      `${URL}/api/learner/library_items?tags=${encodeURIComponent(
         tagResult.tags[0].id,
       )}`,
     );
