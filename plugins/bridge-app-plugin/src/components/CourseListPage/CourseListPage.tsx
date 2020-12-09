@@ -37,6 +37,7 @@ import { useAsync } from 'react-use';
 import { bridgeApiRef } from '../../api';
 import { Course } from '../../api/types';
 import { Entity } from '@backstage/catalog-model';
+import noImage from '../assets/no-image.png';
 
 const LongText = ({ text, max }: { text: string; max: number }) => {
   if (text.length < max) {
@@ -87,8 +88,7 @@ const PageContents = ({ entity }: { entity?: Entity }) => {
               <TableCell align="left" width="100px">
                 <img
                   src={
-                    course.cover_slide_data.background_image_url ??
-                    '../assets/no-image.png'
+                    course.cover_slide_data.background_image_url ?? { noImage }
                   }
                   width="100px"
                   height="100px"
