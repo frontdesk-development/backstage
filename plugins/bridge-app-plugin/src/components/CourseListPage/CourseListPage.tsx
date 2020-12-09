@@ -16,7 +16,6 @@
 
 import {
   ContentHeader,
-  Link,
   SupportButton,
   useApi,
   WarningPanel,
@@ -31,6 +30,7 @@ import {
   TableRow,
   Tooltip,
   Typography,
+  Button,
 } from '@material-ui/core';
 import React from 'react';
 import { useAsync } from 'react-use';
@@ -76,46 +76,42 @@ const PageContents = ({ entity }: { entity?: Entity }) => {
         <TableHead>
           <TableRow>
             <TableCell />
-            <TableCell>Title</TableCell>
-            <TableCell>Description</TableCell>
-            <TableCell>Enroll</TableCell>
-            <TableCell>Creation Time</TableCell>
+            <TableCell align="left">Title</TableCell>
+            <TableCell align="left">Description</TableCell>
+            <TableCell align="left" />
           </TableRow>
         </TableHead>
         <TableBody>
           {value?.library_items.map((course: Course) => (
             <TableRow key={course.id}>
-              <TableCell>
+              <TableCell align="left" width="100px">
                 <img
                   src={course.cover_slide_data.background_image_url}
-                  width="200px"
-                  height="200px"
+                  width="100px"
+                  height="100px"
                   alt=""
+                  style={{ borderRadius: '30%' }}
                 />
               </TableCell>
-              <TableCell>
+              <TableCell align="left" width="250px">
                 <Typography>
                   <LongText text={course.title} max={30} />
                 </Typography>
               </TableCell>
-              <TableCell>
+              <TableCell align="left">
                 <Typography>
-                  <LongText text={course.description} max={50} />
+                  <LongText text={course.description} max={80} />
                 </Typography>
               </TableCell>
-              <TableCell>
-                <Link
-                  to={`https://trivago.bridgeapp.com/learner/courses/${course.data.uuid}/enroll`}
+              <TableCell align="right">
+                <Button
+                  variant="contained"
+                  size="small"
+                  color="primary"
+                  href={`https://trivago.bridgeapp.com/learner/courses/${course.data.uuid}/enroll`}
                 >
-                  <Typography color="primary">
-                    <LongText text="Enroll" max={60} />
-                  </Typography>
-                </Link>
-              </TableCell>
-              <TableCell>
-                <Typography>
-                  <LongText text={course?.created_at} max={30} />
-                </Typography>
+                  Enroll
+                </Button>
               </TableCell>
             </TableRow>
           ))}
