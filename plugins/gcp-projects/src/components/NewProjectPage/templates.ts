@@ -22,7 +22,6 @@ type metadata = {
   projectId: string | undefined;
   projectEmail: string | undefined;
   projectDescription: string | undefined;
-  projectTier: string | undefined;
   vpcEnable: string | undefined;
   vpcSubnet: string | undefined;
   autoNetwork: string | undefined;
@@ -83,7 +82,7 @@ export const projectsTfRenderPlayground = (metadata: metadata) => {
         group_email = "${metadata.projectEmail}" 
         description = "${metadata.projectDescription}"
         folder      = module.folder.name
-        tier        = "${metadata.projectTier}"
+        tier        = "playground"
         shared_vpc_enabled = ${metadata.vpcEnable}`;
 
   if (metadata.vpcEnable) {

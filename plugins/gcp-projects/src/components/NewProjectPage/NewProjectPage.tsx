@@ -58,7 +58,6 @@ export const Project = () => {
   const [projectDescription, setProjectDescription] = useState(
     'Project Description',
   );
-  const [projectTier, setProjectTier] = useState('stage');
   const [vpcEnable, setVpcEnable] = useState(false);
   const [autoCreateNet, setAutoCreateNet] = useState(false);
   const [vpcSubnet, setVpcSubnet] = useState('');
@@ -68,10 +67,8 @@ export const Project = () => {
   const [subnetRange, setSubnetRange] = useState('10.245.240.128/27');
   const [subnetRegion, setSubnetRegion] = useState('europe-west4');
   const [subnetPrivateAccess, setSubnetPrivateAccess] = useState(false);
-  const [groupName, setGroupName] = useState('{group-name}');
-  const [groupDisplayName, setGroupDisplayName] = useState(
-    '{Group Display Name}',
-  );
+  const [groupName, setGroupName] = useState('');
+  const [groupDisplayName, setGroupDisplayName] = useState('');
   const [groupMembers, setGroupMembers] = useState(
     'example.member1,example.member2',
   );
@@ -99,7 +96,6 @@ export const Project = () => {
     projectId: projectId,
     projectEmail: projectEmail,
     projectDescription: projectDescription,
-    projectTier: projectTier,
     vpcEnable: String(vpcEnable),
     vpcSubnet: vpcSubnet,
     autoNetwork: String(autoCreateNet),
@@ -308,18 +304,6 @@ export const Project = () => {
                   inputProps={{ 'aria-label': 'Project Description' }}
                   onChange={e => setProjectDescription(e.target.value)}
                   value={projectDescription}
-                  fullWidth
-                />
-              </SimpleStepperStep>
-              <SimpleStepperStep title="Project tier">
-                <TextField
-                  variant="outlined"
-                  name="projectTier"
-                  label="Project Tier"
-                  helperText="The Tier for the new project."
-                  inputProps={{ 'aria-label': 'Project Tier' }}
-                  onChange={e => setProjectTier(e.target.value)}
-                  value={projectTier}
                   fullWidth
                 />
               </SimpleStepperStep>

@@ -86,7 +86,10 @@ const PageContents = ({ entity }: { entity?: Entity }) => {
             <TableRow key={course.id}>
               <TableCell align="left" width="100px">
                 <img
-                  src={course.cover_slide_data.background_image_url}
+                  src={
+                    course.cover_slide_data.background_image_url ??
+                    '../assets/no-image.png'
+                  }
                   width="100px"
                   height="100px"
                   alt=""
@@ -95,12 +98,18 @@ const PageContents = ({ entity }: { entity?: Entity }) => {
               </TableCell>
               <TableCell align="left" width="250px">
                 <Typography>
-                  <LongText text={course.title} max={30} />
+                  <LongText
+                    text={course.title ?? 'No title available'}
+                    max={30}
+                  />
                 </Typography>
               </TableCell>
               <TableCell align="left">
                 <Typography>
-                  <LongText text={course.description} max={80} />
+                  <LongText
+                    text={course.description ?? 'No description available'}
+                    max={80}
+                  />
                 </Typography>
               </TableCell>
               <TableCell align="right">
