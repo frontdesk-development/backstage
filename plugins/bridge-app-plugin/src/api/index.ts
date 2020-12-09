@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Courses, Course, Tags } from './types';
+import { Courses, Course, Tags, Tag } from './types';
 import { createApiRef, DiscoveryApi } from '@backstage/core';
 
 export const bridgeApiRef = createApiRef<BridgeApi>({
@@ -59,29 +59,36 @@ export class BridgeApi {
     return courses;
   }
 
-  async listCourses(tag: string): Promise<Courses | string> {
+  async listCourses(reqTag: string): Promise<Courses | string> {
     const URL = await this.getApiUrl();
 
     const getTag = await fetch(
-      `${URL}/learner/tags?search=${encodeURIComponent(tag)}`,
+      `${URL}/learner/tags?search=${encodeURIComponent(reqTag)}`,
     );
 
     if (!getTag.ok) {
       throw new Error(
-        `Get tag request failed to ${URL}/learner/tags?search=${tag} with ${getTag.status} ${getTag.statusText}`,
+        `Get tag request failed to ${URL}/learner/tags?search=${reqTag} with ${getTag.status} ${getTag.statusText}`,
       );
     }
 
     const tagResult: Tags = await getTag.json();
 
-    if (tagResult.tags[0].name.toLowerCase() !== tag) {
+    const tagId = tagResult.tags.map((tag: Tag) => {
+      if (tag.name === reqTag) {
+        return tag.id;
+      }
       return 'Tag not found';
+    });
+
+    tagId.sort();
+
+    if (tagId[0] === 'Tag not found') {
+      throw new Error(`Tag "${reqTag}" not found.`);
     }
 
     const response = await fetch(
-      `${URL}/learner/library_items?tags=${encodeURIComponent(
-        tagResult.tags[0].id,
-      )}`,
+      `${URL}/learner/library_items?tags=${encodeURIComponent(tagId[0])}`,
     );
 
     if (!response.ok) {
