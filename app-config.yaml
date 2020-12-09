@@ -63,7 +63,7 @@ proxy:
       User-Agent: "MY-UA-STRING"
 
   '/bridge/api':
-    target: https://trivago.bridgeapp.com/api
+    target: https://trivago.bridgeapp.com
     headers:
       Authorization:
         $env: BRIDGE_TOKEN

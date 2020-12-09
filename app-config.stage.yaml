@@ -3,7 +3,7 @@ app:
   baseUrl: http://frontdesk.sre-frontdesk.stage.europe-west4.tools.trv.cloud
 
 backend:
-  baseUrl: http://frontdesk.sre-frontdesk.stage.europe-west4.tools.trv.cloud/backend
+  baseUrl: http://frontdesk.sre-frontdesk.stage.europe-west4.tools.trv.cloud
   listen:
     port: 7000
   cors:
