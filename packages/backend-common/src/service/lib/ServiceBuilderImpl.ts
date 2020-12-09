@@ -53,12 +53,7 @@ const DEFAULT_CSP = {
   'frame-ancestors': ["'self'"],
   'img-src': ["'self'", 'data:'],
   'object-src': ["'none'"],
-  'script-src': [
-    "'self'",
-    "'unsafe-eval'",
-    "'unsafe-inline'",
-    'https://*.cloudfront.net',
-  ],
+  'script-src': ["'self'"],
   'script-src-attr': ["'none'"],
   'style-src': ["'self'", 'https:', "'unsafe-inline'"],
   'upgrade-insecure-requests': [] as string[],
