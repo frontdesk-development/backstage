@@ -39,3 +39,35 @@ export type Status = {
   message: string;
   details: string[];
 };
+
+export type Metadata = {
+  email: string | undefined;
+  pilar: string | undefined;
+  teamName: string | undefined;
+  projectName: string;
+  projectId: string | undefined;
+  projectEmail: string | undefined;
+  projectDescription: string | undefined;
+  vpcEnable: string | undefined;
+  vpcSubnet: string | undefined;
+  autoNetwork: string | undefined;
+  subnetName: string | undefined;
+  subnetRange: string | undefined;
+  subnetRegion: string | undefined;
+  subnetPrivateAccess: string | undefined;
+  groupName: string | undefined;
+  groupDisplayName: string | undefined;
+  groupMembers: string;
+  region: string | undefined;
+  groupNamePrefix: string;
+  owner: string;
+  repo: string;
+  projectTf: string;
+  groupTf: string;
+  networkTf: string;
+};
+
+export type Templates = {
+  path: string;
+  content: string;
+};
