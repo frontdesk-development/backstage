@@ -28,6 +28,7 @@ import {
   identityApiRef,
   useApi,
   errorApiRef,
+  configApiRef,
 } from '@backstage/core';
 import {
   Grid,
@@ -48,6 +49,10 @@ import React, { FC, useState } from 'react';
 import { CreationStatus } from '../CreationStatus';
 
 export const Project: FC<{}> = () => {
+  const configApi = useApi(configApiRef);
+  const gcpConfig = configApi.getOptionalConfig('gcpProjects');
+  const owner = gcpConfig?.getString('owner') ?? 'owner';
+  const repo = gcpConfig?.getString('repo') ?? 'repo';
   const errorApi = useApi(errorApiRef);
   const api = useApi(gcpApiRef);
   const profile = useApi(identityApiRef).getProfile();
@@ -112,8 +117,8 @@ export const Project: FC<{}> = () => {
     groupMembers: groupMembers,
     region: region,
     groupNamePrefix: groupNamePrefix,
-    owner: 'frontdesk-development',
-    repo: 'testpr',
+    owner: owner,
+    repo: repo,
     projectTf: '',
     groupTf: '',
     networkTf: '',

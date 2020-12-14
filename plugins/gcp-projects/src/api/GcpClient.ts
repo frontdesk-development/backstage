@@ -153,14 +153,40 @@ export class GcpClient implements GcpApi {
 
     const groupFileName = `terraform/trivago/${metadata.pilar}/${metadata.teamName}/groups.tf`;
 
+    const groupResponse = await octo.repos
+      .getContent({
+        owner: metadata.owner,
+        repo: metadata.repo,
+        path: groupFileName,
+      })
+      .catch(() => {});
+
+    let groupTf: string = '';
+    let groupSha: string = '';
+    if (groupResponse) {
+      if (groupResponse?.status === 200) {
+        const groupContent = Buffer.from(
+          groupResponse.data.content,
+          'base64',
+        ).toString();
+        groupTf = `${groupContent}\n\n${metadata.groupTf}`;
+        groupSha = groupResponse.data.sha;
+      } else {
+        groupTf = metadata.groupTf;
+      }
+    } else {
+      groupTf = metadata.groupTf;
+    }
+
     await octo.repos
       .createOrUpdateFileContents({
         owner,
         repo,
         path: groupFileName,
         message: `Add groups.tf config file`,
-        content: btoa(metadata.groupTf),
+        content: btoa(groupTf),
         branch: branchName,
+        sha: groupSha,
       })
       .catch(e => {
         throw new Error(
@@ -173,14 +199,40 @@ export class GcpClient implements GcpApi {
 
     const projectFileName = `terraform/trivago/${metadata.pilar}/${metadata.teamName}/projects.tf`;
 
+    const projectResponse = await octo.repos
+      .getContent({
+        owner: metadata.owner,
+        repo: metadata.repo,
+        path: projectFileName,
+      })
+      .catch(() => {});
+
+    let projectTf: string = '';
+    let projectSha: string = '';
+    if (projectResponse) {
+      if (projectResponse.status === 200) {
+        const projectContent = Buffer.from(
+          projectResponse.data.content,
+          'base64',
+        ).toString();
+        projectTf = `${projectContent}\n\n${metadata.projectTf}`;
+        projectSha = projectResponse.data.sha;
+      } else {
+        projectTf = metadata.projectTf;
+      }
+    } else {
+      projectTf = metadata.projectTf;
+    }
+
     await octo.repos
       .createOrUpdateFileContents({
         owner,
         repo,
         path: projectFileName,
         message: `Add groups.tf config file`,
-        content: btoa(metadata.projectTf),
+        content: btoa(projectTf),
         branch: branchName,
+        sha: projectSha,
       })
       .catch(e => {
         throw new Error(

@@ -83,6 +83,10 @@ techdocs:
 sentry:
   organization: trivago 
 
+gcpProjects:
+  owner: frontdesk-development
+  repo: testPr
+
 rollbar:
   organization: my-company
   # NOTE: The rollbar-backend & accountToken key may be deprecated in the future (replaced by a proxy config)

@@ -45,5 +45,29 @@
   },
   "files": [
     "dist"
-  ]
+  ],
+  "configSchema": {
+    "$schema": "https://backstage.io/schema/config-v1",
+    "title": "@backstage/gcp-projects",
+    "type": "object",
+    "properties": {
+      "gcpProjects": {
+        "type": "object",
+        "properties": {
+          "owner": {
+            "type": "string",
+            "visibility": "frontend"
+          },
+          "repo": {
+            "type": "string",
+            "visibility": "frontend"
+          }
+        },
+        "required": [
+          "owner",
+          "repo"
+        ]
+      }
+    }
+  }
 }

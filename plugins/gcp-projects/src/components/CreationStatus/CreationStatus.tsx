@@ -56,7 +56,12 @@ export const CreationStatus = ({ prLink }: Props) => {
       </DialogContent>
       {prLink && (
         <DialogActions>
-          <Button variant="contained" color="primary" href={prLink}>
+          <Button
+            variant="contained"
+            color="primary"
+            href={prLink}
+            target="_blank"
+          >
             View on GitHub
           </Button>
         </DialogActions>

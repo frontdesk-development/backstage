@@ -61,6 +61,10 @@ proxy:
 jira:
   apiVersion: 2
 
+gcpProjects:
+  owner: frontdesk-development
+  repo: testPr
+
 organization:
   name: trivago
 
