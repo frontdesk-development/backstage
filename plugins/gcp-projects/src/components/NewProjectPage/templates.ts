@@ -14,29 +14,9 @@
  * limitations under the License.
  */
 
-type metadata = {
-  email: string | undefined;
-  pilar: string | undefined;
-  teamName: string | undefined;
-  projectName: string;
-  projectId: string | undefined;
-  projectEmail: string | undefined;
-  projectDescription: string | undefined;
-  vpcEnable: string | undefined;
-  vpcSubnet: string | undefined;
-  autoNetwork: string | undefined;
-  subnetName: string | undefined;
-  subnetRange: string | undefined;
-  subnetRegion: string | undefined;
-  subnetPrivateAccess: string | undefined;
-  groupName: string | undefined;
-  groupDisplayName: string | undefined;
-  groupMembers: string;
-  region: string | undefined;
-  groupNamePrefix: string;
-};
+import { Metadata } from '../../api/types';
 
-export const groupsTfRender = (metadata: metadata) => {
+export const groupsTfRender = (metadata: Metadata) => {
   const groupMembersArray = metadata.groupMembers.split(',');
 
   let showMembersArray = '\t"';
@@ -59,7 +39,7 @@ ${showMembersArray}
   return groupsTf;
 };
 
-export const networkTfRender = (metadata: metadata) => {
+export const networkTfRender = (metadata: Metadata) => {
   const networkTf = `   {
         subnet_name           = "${metadata.subnetName}"
         subnet_ip             = "${metadata.subnetRange}"
@@ -69,7 +49,7 @@ export const networkTfRender = (metadata: metadata) => {
   return networkTf;
 };
 
-export const projectsTfRenderPlayground = (metadata: metadata) => {
+export const projectsTfRenderPlayground = (metadata: Metadata) => {
   let projectsTfPlayground = `module "project_${metadata.groupNamePrefix
     .toLowerCase()
     .split(' ')
@@ -99,7 +79,7 @@ export const projectsTfRenderPlayground = (metadata: metadata) => {
   return projectsTfPlayground;
 };
 
-export const projectsTfRenderStages = (metadata: metadata) => {
+export const projectsTfRenderStages = (metadata: Metadata) => {
   let projectsTfProd = `module "project_${metadata.groupNamePrefix
     .toLowerCase()
     .split(' ')

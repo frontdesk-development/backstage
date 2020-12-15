@@ -18,6 +18,7 @@ import {
   createApiFactory,
   createPlugin,
   createRouteRef,
+  githubAuthApiRef,
   googleAuthApiRef,
 } from '@backstage/core';
 import { gcpApiRef, GcpClient } from './api';
@@ -43,9 +44,12 @@ export const plugin = createPlugin({
   apis: [
     createApiFactory({
       api: gcpApiRef,
-      deps: { googleAuthApi: googleAuthApiRef },
-      factory({ googleAuthApi }) {
-        return new GcpClient(googleAuthApi);
+      deps: {
+        googleAuthApi: googleAuthApiRef,
+        githubAuthApi: githubAuthApiRef,
+      },
+      factory({ googleAuthApi, githubAuthApi }) {
+        return new GcpClient(googleAuthApi, githubAuthApi);
       },
     }),
   ],

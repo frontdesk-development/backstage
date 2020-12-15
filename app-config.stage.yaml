@@ -63,6 +63,10 @@ jira:
 organization:
   name: trivago
 
+gcpProjects:
+  owner: trivago 
+  repo: gcp-shared-config-stage
+
 techdocs:
   storageUrl: http://frontdesk.sre-frontdesk.stage.europe-west4.tools.trv.cloud/api/techdocs/static/docs
   requestUrl: http://frontdesk.sre-frontdesk.stage.europe-west4.tools.trv.cloud/api/techdocs

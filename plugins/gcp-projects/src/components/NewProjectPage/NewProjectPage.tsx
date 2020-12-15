@@ -27,9 +27,10 @@ import {
   SupportButton,
   identityApiRef,
   useApi,
+  errorApiRef,
+  configApiRef,
 } from '@backstage/core';
 import {
-  Button,
   Grid,
   TextField,
   FormControlLabel,
@@ -43,12 +44,22 @@ import {
   projectsTfRenderPlayground,
   projectsTfRenderStages,
 } from './templates';
-import React, { useState } from 'react';
+import { Metadata, gcpApiRef } from '../../api';
+import React, { FC, useState } from 'react';
+import { CreationStatus } from '../CreationStatus';
 
-export const Project = () => {
+export const Project: FC<{}> = () => {
+  const configApi = useApi(configApiRef);
+  const gcpConfig = configApi.getOptionalConfig('gcpProjects');
+  const owner = gcpConfig?.getString('owner') ?? 'owner';
+  const repo = gcpConfig?.getString('repo') ?? 'repo';
+  const errorApi = useApi(errorApiRef);
+  const api = useApi(gcpApiRef);
   const profile = useApi(identityApiRef).getProfile();
   const email = profile.email;
 
+  const [modalOpen, setModalOpen] = useState(false);
+  const [prLink, setPrLink] = useState<string | undefined>();
   const [projectName, setProjectName] = useState('');
   const [pilar, setPilar] = useState('');
   const [region, setRegion] = useState('playground');
@@ -73,8 +84,6 @@ export const Project = () => {
     'example.member1,example.member2',
   );
 
-  const [disabled, setDisabled] = useState(true);
-
   const groupMembersArray = groupMembers.split(',');
 
   let showMembersArray = '\t"';
@@ -88,7 +97,7 @@ export const Project = () => {
 
   const projectId = projectName;
 
-  const metadata = {
+  const metadata: Metadata = {
     email: email,
     pilar: pilar,
     teamName: teamName,
@@ -108,36 +117,51 @@ export const Project = () => {
     groupMembers: groupMembers,
     region: region,
     groupNamePrefix: groupNamePrefix,
+    owner: owner,
+    repo: repo,
+    projectTf: '',
+    groupTf: '',
+    networkTf: '',
   };
 
   const ProjectsTfTemplate = () => {
     if (region === 'edge-stage-prod') {
+      metadata.projectTf = projectsTfRenderStages(metadata);
       return (
         <textarea style={{ height: '250px', width: '100%' }} readOnly>
           {projectsTfRenderStages(metadata)}
         </textarea>
       );
     }
+    metadata.projectTf = projectsTfRenderPlayground(metadata);
     return (
-      <textarea style={{ height: '250px', width: '100%' }} readOnly>
-        {projectsTfRenderPlayground(metadata)}
-      </textarea>
+      <textarea
+        style={{ height: '250px', width: '100%' }}
+        readOnly
+        value={projectsTfRenderPlayground(metadata)}
+      />
     );
   };
 
   const NetworkTfTemplate = () => {
+    metadata.networkTf = networkTfRender(metadata);
     return (
-      <textarea style={{ height: '250px', width: '100%' }} readOnly>
-        {networkTfRender(metadata)}
-      </textarea>
+      <textarea
+        style={{ height: '250px', width: '100%' }}
+        readOnly
+        value={networkTfRender(metadata)}
+      />
     );
   };
 
   const GroupsTfTemplate = () => {
+    metadata.groupTf = groupsTfRender(metadata);
     return (
-      <textarea style={{ height: '250px', width: '100%' }} readOnly>
-        {groupsTfRender(metadata)}
-      </textarea>
+      <textarea
+        style={{ height: '250px', width: '100%' }}
+        readOnly
+        value={groupsTfRender(metadata)}
+      />
     );
   };
 
@@ -219,8 +243,18 @@ export const Project = () => {
     },
   ];
 
+  const onSubmit = async (metadata: Metadata) => {
+    try {
+      setModalOpen(true);
+      setPrLink(await api.createPr(metadata));
+    } catch (e) {
+      errorApi.post(e);
+    }
+  };
+
   return (
     <Content>
+      {modalOpen && <CreationStatus prLink={prLink} />}
       <Grid container spacing={3}>
         <Grid item xs={12} md={6}>
           <InfoCard title="Create new GCP Project">
@@ -436,31 +470,13 @@ export const Project = () => {
               <SimpleStepperStep
                 title="Review"
                 actions={{
-                  nextText: 'Confirm',
-                  onNext: () => setDisabled(false),
+                  nextText: 'Create',
+                  onNext: () => onSubmit(metadata),
                 }}
               >
                 <StructuredMetadataTable metadata={metadata} />
               </SimpleStepperStep>
             </SimpleStepper>
-            <Button
-              variant="text"
-              data-testid="cancel-button"
-              color="primary"
-              href="/gcp-projects"
-            >
-              Cancel
-            </Button>
-            <Button
-              variant="contained"
-              color="primary"
-              disabled={disabled}
-              href={`newProject?projectName=${encodeURIComponent(
-                projectName,
-              )},projectId=${encodeURIComponent(projectId)}`} // Need to extend this to add all the fields.
-            >
-              Create
-            </Button>
           </InfoCard>
         </Grid>
         <Grid item xs={6} md={6}>

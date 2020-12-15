@@ -15,14 +15,18 @@
  */
 
 import { OAuthApi } from '@backstage/core';
+import { Octokit } from '@octokit/rest';
 import { GcpApi } from './GcpApi';
-import { Operation, Project } from './types';
+import { Operation, Project, Metadata } from './types';
 
 const BASE_URL =
   'https://content-cloudresourcemanager.googleapis.com/v1/projects';
 
 export class GcpClient implements GcpApi {
-  constructor(private readonly googleAuthApi: OAuthApi) {}
+  constructor(
+    private readonly googleAuthApi: OAuthApi,
+    private readonly githubAuthApi: OAuthApi,
+  ) {}
 
   async listProjects(): Promise<Project[]> {
     const response = await fetch(BASE_URL, {
@@ -95,4 +99,176 @@ export class GcpClient implements GcpApi {
       'https://www.googleapis.com/auth/cloud-platform',
     );
   }
+
+  async createPr(metadata: Metadata): Promise<string> {
+    const token = await this.githubAuthApi.getAccessToken(['repo']);
+    const owner = metadata.owner;
+    const repo = metadata.repo;
+
+    const octo = new Octokit({
+      auth: token,
+    });
+
+    const state = {
+      curTime: new Date().toISOString().split(':').join('-'),
+    };
+    const branchName = `frontdesk-integration-${state.curTime}`;
+
+    const repoData = await octo.repos
+      .get({
+        owner,
+        repo,
+      })
+      .catch(e => {
+        throw new Error(formatHttpErrorMessage("Couldn't fetch repo data", e));
+      });
+
+    const parentRef = await octo.git
+      .getRef({
+        owner,
+        repo,
+        ref: `heads/${repoData.data.default_branch}`,
+      })
+      .catch(e => {
+        throw new Error(
+          formatHttpErrorMessage("Couldn't fetch default branch data", e),
+        );
+      });
+
+    await octo.git
+      .createRef({
+        owner,
+        repo,
+        ref: `refs/heads/${branchName}`,
+        sha: parentRef.data.object.sha,
+      })
+      .catch(e => {
+        throw new Error(
+          formatHttpErrorMessage(
+            `Couldn't create a new branch with name '${branchName}'`,
+            e,
+          ),
+        );
+      });
+
+    const groupFileName = `terraform/trivago/${metadata.pilar}/${metadata.teamName}/groups.tf`;
+
+    const groupResponse = await octo.repos
+      .getContent({
+        owner: metadata.owner,
+        repo: metadata.repo,
+        path: groupFileName,
+      })
+      .catch(() => {});
+
+    let groupTf: string = '';
+    let groupSha: string = '';
+    if (groupResponse) {
+      if (groupResponse?.status === 200) {
+        const groupContent = Buffer.from(
+          groupResponse.data.content,
+          'base64',
+        ).toString();
+        groupTf = `${groupContent}\n\n${metadata.groupTf}`;
+        groupSha = groupResponse.data.sha;
+      } else {
+        groupTf = metadata.groupTf;
+      }
+    } else {
+      groupTf = metadata.groupTf;
+    }
+
+    await octo.repos
+      .createOrUpdateFileContents({
+        owner,
+        repo,
+        path: groupFileName,
+        message: `Add groups.tf config file`,
+        content: btoa(groupTf),
+        branch: branchName,
+        sha: groupSha,
+      })
+      .catch(e => {
+        throw new Error(
+          formatHttpErrorMessage(
+            `Couldn't create a commit with ${groupFileName} file added`,
+            e,
+          ),
+        );
+      });
+
+    const projectFileName = `terraform/trivago/${metadata.pilar}/${metadata.teamName}/projects.tf`;
+
+    const projectResponse = await octo.repos
+      .getContent({
+        owner: metadata.owner,
+        repo: metadata.repo,
+        path: projectFileName,
+      })
+      .catch(() => {});
+
+    let projectTf: string = '';
+    let projectSha: string = '';
+    if (projectResponse) {
+      if (projectResponse.status === 200) {
+        const projectContent = Buffer.from(
+          projectResponse.data.content,
+          'base64',
+        ).toString();
+        projectTf = `${projectContent}\n\n${metadata.projectTf}`;
+        projectSha = projectResponse.data.sha;
+      } else {
+        projectTf = metadata.projectTf;
+      }
+    } else {
+      projectTf = metadata.projectTf;
+    }
+
+    await octo.repos
+      .createOrUpdateFileContents({
+        owner,
+        repo,
+        path: projectFileName,
+        message: `Add groups.tf config file`,
+        content: btoa(projectTf),
+        branch: branchName,
+        sha: projectSha,
+      })
+      .catch(e => {
+        throw new Error(
+          formatHttpErrorMessage(
+            `Couldn't create a commit with ${projectFileName} file added`,
+            e,
+          ),
+        );
+      });
+
+    const pullRequestRespone = await octo.pulls
+      .create({
+        owner,
+        repo,
+        title: `Add ${metadata.pilar}/${metadata.teamName}/* config file`,
+        head: branchName,
+        base: repoData.data.default_branch,
+      })
+      .catch(e => {
+        throw new Error(
+          formatHttpErrorMessage(
+            `Couldn't create a pull request for ${branchName} branch`,
+            e,
+          ),
+        );
+      });
+
+    const result = pullRequestRespone.data.html_url;
+
+    return result;
+  }
+}
+
+function formatHttpErrorMessage(
+  message: string,
+  error: { status: number; message: string },
+) {
+  return `${message}, received http response status code ${error.status}: ${error.message}`;
 }

@@ -25,6 +25,7 @@
     "@material-ui/core": "^4.11.0",
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "4.0.0-alpha.45",
+    "@octokit/rest": "^18.0.0",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-router-dom": "^5.2.0",
@@ -44,5 +45,29 @@
   },
   "files": [
     "dist"
-  ]
+  ],
+  "configSchema": {
+    "$schema": "https://backstage.io/schema/config-v1",
+    "title": "@backstage/gcp-projects",
+    "type": "object",
+    "properties": {
+      "gcpProjects": {
+        "type": "object",
+        "properties": {
+          "owner": {
+            "type": "string",
+            "visibility": "frontend"
+          },
+          "repo": {
+            "type": "string",
+            "visibility": "frontend"
+          }
+        },
+        "required": [
+          "owner",
+          "repo"
+        ]
+      }
+    }
+  }
 }
