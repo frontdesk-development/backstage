@@ -19,6 +19,7 @@ import {
   SupportButton,
   useApi,
   WarningPanel,
+  configApiRef,
 } from '@backstage/core';
 import {
   LinearProgress,
@@ -54,6 +55,10 @@ const PageContents = ({ entity }: { entity?: Entity }) => {
   const api = useApi(bridgeApiRef);
   const tag =
     entity?.metadata?.annotations?.['bridge.com/course-tag'] || 'No tag found';
+
+  const configApi = useApi(configApiRef);
+  const bridgeConfig = configApi.getOptionalConfig('bridge');
+  const url = bridgeConfig?.getString('url') ?? 'https://company.bridgeapp.com';
 
   const { loading, error, value } = useAsync(() => api.listCourses(tag));
 
@@ -115,7 +120,7 @@ const PageContents = ({ entity }: { entity?: Entity }) => {
                   variant="contained"
                   size="small"
                   color="primary"
-                  href={`https://trivago.bridgeapp.com/learner/courses/${course.data.uuid}/enroll`}
+                  href={`${url}/learner/courses/${course.data.uuid}/enroll`}
                 >
                   Enroll
                 </Button>

@@ -46,5 +46,24 @@
   },
   "files": [
     "dist"
-  ]
+  ],
+  "configSchema": {
+    "$schema": "https://backstage.io/schema/config-v1",
+    "title": "@trivago/backstage-plugin-bridge",
+    "type": "object",
+    "properties": {
+      "bridge": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "visibility": "frontend"
+          }
+        },
+        "required": [
+          "url"
+        ]
+      }
+    }
+  }
 }
