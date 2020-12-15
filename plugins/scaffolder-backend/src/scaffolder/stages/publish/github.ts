@@ -42,8 +42,9 @@ export class GithubPublisher implements PublisherBase {
     values,
     directory,
     token,
+    github,
   }: PublisherOptions): Promise<PublisherResult> {
-    const remoteUrl = await this.createRemote(values, token);
+    const remoteUrl = await this.createRemote(values, token, github);
     await pushToRemoteUserPass(directory, remoteUrl, token, 'x-oauth-basic');
     const catalogInfoUrl = remoteUrl.replace(
       /\.git$/,
@@ -62,7 +63,11 @@ export class GithubPublisher implements PublisherBase {
       const manifestValues = values;
       manifestValues.storePath = `${values.storePath}-gitops`;
 
-      const remoteUrlManifest = await this.createRemote(manifestValues, token);
+      const remoteUrlManifest = await this.createRemote(
+        manifestValues,
+        token,
+        github,
+      );
       await pushToRemoteUserPass(
         tempDir,
         remoteUrlManifest,
@@ -77,6 +82,7 @@ export class GithubPublisher implements PublisherBase {
   private async createRemote(
     values: RequiredTemplateValues & Record<string, JsonValue>,
     token: string,
+    github?: string[],
   ) {
     const githubClientPublish = new Octokit({ auth: token });
     const [owner, name] = values.storePath.split('/');
@@ -122,6 +128,11 @@ export class GithubPublisher implements PublisherBase {
     }
 
     let topics = ['frontdesk'];
+
+    if (github) {
+      topics = [...topics, ...github];
+    }
+
     if (values?.storePath.endsWith('-gitops')) {
       topics = [...topics, 'gitops'];
     }

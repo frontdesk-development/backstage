@@ -58,7 +58,7 @@ export type Metadata = {
   groupName: string | undefined;
   groupDisplayName: string | undefined;
   groupMembers: string;
-  region: string | undefined;
+  environment: string | undefined;
   groupNamePrefix: string;
   owner: string;
   repo: string;

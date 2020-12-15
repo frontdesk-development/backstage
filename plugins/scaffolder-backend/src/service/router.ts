@@ -170,6 +170,7 @@ export async function createRouter(
                 values: ctx.values,
                 directory: ctx.resultDir,
                 token: token,
+                github: ctx.entity.spec.githubTags,
               };
               const result = await publisher.publish(pOptions);
               return result;

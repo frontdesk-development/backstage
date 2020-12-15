@@ -43,6 +43,7 @@ export interface TemplateEntityV1alpha1 extends Entity {
     templater: string;
     path?: string;
     schema: JSONSchema;
+    githubTags?: string[];
   };
 }
 

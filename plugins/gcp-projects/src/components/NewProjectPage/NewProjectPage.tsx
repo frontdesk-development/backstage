@@ -62,7 +62,8 @@ export const Project: FC<{}> = () => {
   const [prLink, setPrLink] = useState<string | undefined>();
   const [projectName, setProjectName] = useState('');
   const [pilar, setPilar] = useState('');
-  const [region, setRegion] = useState('playground');
+  const [region, setRegion] = useState('');
+  const [environment, setEnvironment] = useState('playground');
   const [teamName, setTeamName] = useState('');
   const groupNamePrefix = `trv-${pilar}-${teamName}-`;
   const [projectEmail, setProjectEmail] = useState('');
@@ -115,7 +116,7 @@ export const Project: FC<{}> = () => {
     groupName: groupName,
     groupDisplayName: groupDisplayName,
     groupMembers: groupMembers,
-    region: region,
+    environment: environment,
     groupNamePrefix: groupNamePrefix,
     owner: owner,
     repo: repo,
@@ -125,7 +126,7 @@ export const Project: FC<{}> = () => {
   };
 
   const ProjectsTfTemplate = () => {
-    if (region === 'edge-stage-prod') {
+    if (environment === 'edge-stage-prod') {
       metadata.projectTf = projectsTfRenderStages(metadata);
       return (
         <textarea style={{ height: '250px', width: '100%' }} readOnly>
@@ -189,7 +190,7 @@ export const Project: FC<{}> = () => {
     }
   };
 
-  const REGION_LIST = [
+  const ENV_LIST = [
     {
       label: 'Edge - Stage - Prod',
       value: 'edge-stage-prod',
@@ -199,6 +200,21 @@ export const Project: FC<{}> = () => {
       value: 'playground',
     },
   ];
+
+  const REGION_LIST = [
+    {
+      label: 'All',
+      value: 'all',
+    },
+    {
+      label: 'Europe West 4',
+      value: 'europe-west4',
+    },
+  ];
+
+  // Region all ->   "europe-west4/trv-io-member-service-prod-eu-w4",
+  //                "us-central1/trv-io-member-service-prod-us-c1",
+  //                "asia-east1/trv-io-member-service-prod-as-e1",
 
   const PILAR_LIST = [
     {
@@ -299,13 +315,27 @@ export const Project: FC<{}> = () => {
                   fullWidth
                 />
               </SimpleStepperStep>
-              <SimpleStepperStep title="Regions">
+              <SimpleStepperStep title="Environment">
+                <Select
+                  onChange={(e: React.ChangeEvent<any>) =>
+                    setEnvironment(e?.target?.value)
+                  }
+                  variant="outlined"
+                  label="Default"
+                  value={environment}
+                  fullWidth
+                >
+                  {ENV_LIST.map((value: { label: string; value: string }) => (
+                    <MenuItem value={value.value}>{value.label}</MenuItem>
+                  ))}
+                </Select>
+              </SimpleStepperStep>
+              <SimpleStepperStep title="Region">
                 <Select
                   onChange={(e: React.ChangeEvent<any>) =>
                     setRegion(e?.target?.value)
                   }
                   variant="outlined"
-                  placeholder="Region"
                   label="Default"
                   value={region}
                   fullWidth

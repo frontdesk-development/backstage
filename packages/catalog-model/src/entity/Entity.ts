@@ -48,6 +48,8 @@ export type Entity = {
    * The relations that this entity has with other entities.
    */
   relations?: EntityRelation[];
+
+  githubTags?: (string | undefined)[];
 };
 
 /**

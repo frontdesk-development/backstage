@@ -36,6 +36,7 @@ export type PublisherOptions = {
   values: RequiredTemplateValues & Record<string, JsonValue>;
   directory: string;
   token: string;
+  github?: string[];
 };
 
 export type PublisherResult = {
