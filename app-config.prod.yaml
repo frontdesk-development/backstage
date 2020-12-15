@@ -62,8 +62,8 @@ jira:
   apiVersion: 2
 
 gcpProjects:
-  owner: frontdesk-development
-  repo: testPr
+  owner: trivago 
+  repo: gcp-shared-config
 
 organization:
   name: trivago
