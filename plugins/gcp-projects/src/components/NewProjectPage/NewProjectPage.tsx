@@ -30,17 +30,9 @@ import {
   errorApiRef,
   configApiRef,
 } from '@backstage/core';
+import { Grid, TextField, Select, MenuItem } from '@material-ui/core';
 import {
-  Grid,
-  TextField,
-  FormControlLabel,
-  Switch,
-  Select,
-  MenuItem,
-} from '@material-ui/core';
-import {
-  groupsTfRender,
-  networkTfRender,
+  subnetsTfRender,
   projectsTfRenderPlayground,
   projectsTfRenderStages,
 } from './templates';
@@ -62,39 +54,13 @@ export const Project: FC<{}> = () => {
   const [prLink, setPrLink] = useState<string | undefined>();
   const [projectName, setProjectName] = useState('');
   const [pilar, setPilar] = useState('');
-  const [region, setRegion] = useState('');
   const [environment, setEnvironment] = useState('playground');
   const [teamName, setTeamName] = useState('');
   const groupNamePrefix = `trv-${pilar}-${teamName}-`;
-  const [projectEmail, setProjectEmail] = useState('');
+  const [groupEmail, setGroupEmail] = useState('');
   const [projectDescription, setProjectDescription] = useState(
     'Project Description',
   );
-  const [vpcEnable, setVpcEnable] = useState(false);
-  const [autoCreateNet, setAutoCreateNet] = useState(false);
-  const [vpcSubnet, setVpcSubnet] = useState('');
-  const [subnetName, setSubnetName] = useState(
-    'trv-io-sre-testing-stage-eu-w4',
-  );
-  const [subnetRange, setSubnetRange] = useState('10.245.240.128/27');
-  const [subnetRegion, setSubnetRegion] = useState('europe-west4');
-  const [subnetPrivateAccess, setSubnetPrivateAccess] = useState(false);
-  const [groupName, setGroupName] = useState('');
-  const [groupDisplayName, setGroupDisplayName] = useState('');
-  const [groupMembers, setGroupMembers] = useState(
-    'example.member1,example.member2',
-  );
-
-  const groupMembersArray = groupMembers.split(',');
-
-  let showMembersArray = '\t"';
-
-  groupMembersArray.forEach(member => {
-    showMembersArray = `${showMembersArray + member.trim()}",\n\t"`;
-  });
-
-  showMembersArray = showMembersArray.slice(0, -1);
-  showMembersArray = showMembersArray.trimEnd();
 
   const projectId = projectName;
 
@@ -104,25 +70,14 @@ export const Project: FC<{}> = () => {
     teamName: teamName,
     projectName: projectName,
     projectId: projectId,
-    projectEmail: projectEmail,
+    groupEmail: groupEmail,
     projectDescription: projectDescription,
-    vpcEnable: String(vpcEnable),
-    vpcSubnet: vpcSubnet,
-    autoNetwork: String(autoCreateNet),
-    subnetName: subnetName,
-    subnetRange: subnetRange,
-    subnetRegion: subnetRegion,
-    subnetPrivateAccess: String(subnetPrivateAccess),
-    groupName: groupName,
-    groupDisplayName: groupDisplayName,
-    groupMembers: groupMembers,
     environment: environment,
     groupNamePrefix: groupNamePrefix,
     owner: owner,
     repo: repo,
     projectTf: '',
-    groupTf: '',
-    networkTf: '',
+    subnetsTf: '',
   };
 
   const ProjectsTfTemplate = () => {
@@ -144,77 +99,31 @@ export const Project: FC<{}> = () => {
     );
   };
 
-  const NetworkTfTemplate = () => {
-    metadata.networkTf = networkTfRender(metadata);
+  const SubnetsTfTemplate = () => {
+    metadata.subnetsTf = subnetsTfRender(metadata);
     return (
       <textarea
         style={{ height: '250px', width: '100%' }}
         readOnly
-        value={networkTfRender(metadata)}
+        value={subnetsTfRender(metadata)}
       />
     );
-  };
-
-  const GroupsTfTemplate = () => {
-    metadata.groupTf = groupsTfRender(metadata);
-    return (
-      <textarea
-        style={{ height: '250px', width: '100%' }}
-        readOnly
-        value={groupsTfRender(metadata)}
-      />
-    );
-  };
-
-  const handleVpcEnableClick = () => {
-    if (vpcEnable) {
-      setVpcEnable(false);
-    } else {
-      setVpcEnable(true);
-    }
-  };
-
-  const handleAutoCreateNetworkClick = () => {
-    if (autoCreateNet) {
-      setAutoCreateNet(false);
-    } else {
-      setAutoCreateNet(true);
-    }
-  };
-
-  const handleSubnetPrivateAccessClick = () => {
-    if (subnetPrivateAccess) {
-      setSubnetPrivateAccess(false);
-    } else {
-      setSubnetPrivateAccess(true);
-    }
   };
 
   const ENV_LIST = [
     {
-      label: 'Edge - Stage - Prod',
-      value: 'edge-stage-prod',
+      label: 'Edge-Stage-Prod (Europe Only)',
+      value: 'edge-stage-prod-us',
     },
     {
-      label: 'Playground',
+      label: 'Edge-Stage-Prod (All Regions)',
+      value: 'edge-stage-prod-all',
+    },
+    {
+      label: 'Playground (Europe)',
       value: 'playground',
     },
   ];
-
-  const REGION_LIST = [
-    {
-      label: 'All',
-      value: 'all',
-    },
-    {
-      label: 'Europe West 4',
-      value: 'europe-west4',
-    },
-  ];
-
-  // Region all ->   "europe-west4/trv-io-member-service-prod-eu-w4",
-  //                "us-central1/trv-io-member-service-prod-us-c1",
-  //                "asia-east1/trv-io-member-service-prod-as-e1",
 
   const PILAR_LIST = [
     {
@@ -315,47 +224,15 @@ export const Project: FC<{}> = () => {
                   fullWidth
                 />
               </SimpleStepperStep>
-              <SimpleStepperStep title="Environment">
-                <Select
-                  onChange={(e: React.ChangeEvent<any>) =>
-                    setEnvironment(e?.target?.value)
-                  }
-                  variant="outlined"
-                  label="Default"
-                  value={environment}
-                  fullWidth
-                >
-                  {ENV_LIST.map((value: { label: string; value: string }) => (
-                    <MenuItem value={value.value}>{value.label}</MenuItem>
-                  ))}
-                </Select>
-              </SimpleStepperStep>
-              <SimpleStepperStep title="Region">
-                <Select
-                  onChange={(e: React.ChangeEvent<any>) =>
-                    setRegion(e?.target?.value)
-                  }
-                  variant="outlined"
-                  label="Default"
-                  value={region}
-                  fullWidth
-                >
-                  {REGION_LIST.map(
-                    (value: { label: string; value: string }) => (
-                      <MenuItem value={value.value}>{value.label}</MenuItem>
-                    ),
-                  )}
-                </Select>
-              </SimpleStepperStep>
-              <SimpleStepperStep title="Project Email">
+              <SimpleStepperStep title="Group Email">
                 <TextField
                   variant="outlined"
-                  name="projectEmail"
-                  label="Project Email"
-                  helperText="The email for the new project."
-                  inputProps={{ 'aria-label': 'Project Email' }}
-                  onChange={e => setProjectEmail(e.target.value)}
-                  value={projectEmail}
+                  name="groupEmail"
+                  label="Group Email"
+                  helperText="The group email for the project."
+                  inputProps={{ 'aria-label': 'Group Email' }}
+                  onChange={e => setGroupEmail(e.target.value)}
+                  value={groupEmail}
                   fullWidth
                 />
               </SimpleStepperStep>
@@ -371,131 +248,20 @@ export const Project: FC<{}> = () => {
                   fullWidth
                 />
               </SimpleStepperStep>
-              <SimpleStepperStep title="VPC enable">
-                <FormControlLabel
-                  id="vpcEnable"
-                  name="vpcEnable"
-                  control={<Switch color="primary" name="switch" />}
-                  label="VPC enable"
-                  labelPlacement="end"
-                  onClick={handleVpcEnableClick}
-                />
-              </SimpleStepperStep>
-              {vpcEnable && (
-                <SimpleStepperStep title="VPC Subnet">
-                  <TextField
-                    variant="outlined"
-                    name="vpcSubnet"
-                    label="VPC Subnet"
-                    helperText="The VPC subnet for the new project."
-                    inputProps={{ 'aria-label': 'VPC Subnet' }}
-                    onChange={e => setVpcSubnet(e.target.value)}
-                    value={vpcSubnet}
-                    fullWidth
-                  />
-                </SimpleStepperStep>
-              )}
-              {vpcEnable && (
-                <SimpleStepperStep title="Auto Network">
-                  <FormControlLabel
-                    id="autoNetwork"
-                    name="autoNetwork"
-                    control={<Switch color="primary" name="switch" />}
-                    label="Auto create Network"
-                    labelPlacement="end"
-                    onClick={handleAutoCreateNetworkClick}
-                  />
-                </SimpleStepperStep>
-              )}
-              {vpcEnable && (
-                <SimpleStepperStep title="Subnet Name">
-                  <TextField
-                    variant="outlined"
-                    name="subnetName"
-                    label="Subnet Name"
-                    helperText="The subnet name for the new project."
-                    inputProps={{ 'aria-label': 'Subnet Name' }}
-                    onChange={e => setSubnetName(e.target.value)}
-                    value={subnetName}
-                    fullWidth
-                  />
-                </SimpleStepperStep>
-              )}
-              {vpcEnable && (
-                <SimpleStepperStep title="Subnet IP range">
-                  <TextField
-                    variant="outlined"
-                    name="subnetRange"
-                    label="Subnet IP Range"
-                    helperText="The subnet IP range for the new project."
-                    inputProps={{ 'aria-label': 'Subnet IP Range' }}
-                    onChange={e => setSubnetRange(e.target.value)}
-                    value={subnetRange}
-                    fullWidth
-                  />
-                </SimpleStepperStep>
-              )}
-              {vpcEnable && (
-                <SimpleStepperStep title="Subnet region">
-                  <TextField
-                    variant="outlined"
-                    name="subnetRegion"
-                    label="Subnet Region"
-                    helperText="The subnet Region for the new project."
-                    inputProps={{ 'aria-label': 'Subnet Region' }}
-                    onChange={e => setSubnetRegion(e.target.value)}
-                    value={subnetRegion}
-                    fullWidth
-                  />
-                </SimpleStepperStep>
-              )}
-              {vpcEnable && (
-                <SimpleStepperStep title="Subnet private Access">
-                  <FormControlLabel
-                    id="subnetPrivateAccess"
-                    name="subnetPrivateAccess"
-                    control={<Switch color="primary" name="switch" />}
-                    label="Subnet private access"
-                    labelPlacement="end"
-                    onClick={handleSubnetPrivateAccessClick}
-                  />
-                </SimpleStepperStep>
-              )}
-              <SimpleStepperStep title="Group Name">
-                <TextField
+              <SimpleStepperStep title="Environment">
+                <Select
+                  onChange={(e: React.ChangeEvent<any>) =>
+                    setEnvironment(e?.target?.value)
+                  }
                   variant="outlined"
-                  name="groupName"
-                  label="Group Name"
-                  helperText="The group name for the new project."
-                  inputProps={{ 'aria-label': 'Group Name' }}
-                  onChange={e => setGroupName(e.target.value)}
-                  value={groupName}
+                  label="Default"
+                  value={environment}
                   fullWidth
-                />
-              </SimpleStepperStep>
-              <SimpleStepperStep title="Group Display Name">
-                <TextField
-                  variant="outlined"
-                  name="groupDisplayName"
-                  label="Group Display Name"
-                  helperText="The group display name for the new project."
-                  inputProps={{ 'aria-label': 'Group Display Name' }}
-                  onChange={e => setGroupDisplayName(e.target.value)}
-                  value={groupDisplayName}
-                  fullWidth
-                />
-              </SimpleStepperStep>
-              <SimpleStepperStep title="Group Members">
-                <TextField
-                  variant="outlined"
-                  name="groupMembers"
-                  label="Group Members"
-                  helperText="The group members for the new project."
-                  inputProps={{ 'aria-label': 'Group Members' }}
-                  onChange={e => setGroupMembers(e.target.value)}
-                  value={groupMembers}
-                  fullWidth
-                />
+                >
+                  {ENV_LIST.map((value: { label: string; value: string }) => (
+                    <MenuItem value={value.value}>{value.label}</MenuItem>
+                  ))}
+                </Select>
               </SimpleStepperStep>
               <SimpleStepperStep
                 title="Review"
@@ -514,15 +280,9 @@ export const Project: FC<{}> = () => {
             <ProjectsTfTemplate />
           </InfoCard>
           <br />
-          <InfoCard title="groups.tf">
-            <GroupsTfTemplate />
+          <InfoCard title="subnets.tf">
+            <SubnetsTfTemplate />
           </InfoCard>
-          <br />
-          {vpcEnable && (
-            <InfoCard title="networks.tf">
-              <NetworkTfTemplate />
-            </InfoCard>
-          )}
         </Grid>
       </Grid>
     </Content>

@@ -46,25 +46,14 @@ export type Metadata = {
   teamName: string | undefined;
   projectName: string;
   projectId: string | undefined;
-  projectEmail: string | undefined;
+  groupEmail: string | undefined;
   projectDescription: string | undefined;
-  vpcEnable: string | undefined;
-  vpcSubnet: string | undefined;
-  autoNetwork: string | undefined;
-  subnetName: string | undefined;
-  subnetRange: string | undefined;
-  subnetRegion: string | undefined;
-  subnetPrivateAccess: string | undefined;
-  groupName: string | undefined;
-  groupDisplayName: string | undefined;
-  groupMembers: string;
   environment: string | undefined;
   groupNamePrefix: string;
   owner: string;
   repo: string;
   projectTf: string;
-  groupTf: string;
-  networkTf: string;
+  subnetsTf: string;
 };
 
 export type Templates = {
