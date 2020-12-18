@@ -64,6 +64,7 @@ export const CreationStatus = ({ prLink }: Props) => {
           >
             View on GitHub
           </Button>
+          <Button onClick={() => setOpen(false)}>Close</Button>
         </DialogActions>
       )}
       {prLink === undefined && (

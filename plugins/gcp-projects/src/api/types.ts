@@ -41,9 +41,13 @@ export type Status = {
 };
 
 export type Metadata = {
+  userEmail: string | undefined;
   email: string | undefined;
-  pilar: string | undefined;
+  pillar: string | undefined;
   teamName: string | undefined;
+  groupName: string | undefined;
+  groupMembers: string | undefined;
+  groupDisplayName: string | undefined;
   projectName: string;
   projectId: string | undefined;
   groupEmail: string | undefined;
@@ -54,6 +58,7 @@ export type Metadata = {
   repo: string;
   projectTf: string;
   subnetsTf: string;
+  groupsTf: string;
 };
 
 export type Templates = {

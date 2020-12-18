@@ -151,53 +151,101 @@ export class GcpClient implements GcpApi {
         );
       });
 
-    const groupFileName = `terraform/trivago/${metadata.pilar}/${metadata.teamName}/groups.tf`;
+    const subnetsFileName = `terraform/trivago/${metadata.pillar}/${metadata.teamName}/subnets.tf`;
 
-    const groupResponse = await octo.repos
+    const subnetsResponse = await octo.repos
       .getContent({
         owner: metadata.owner,
         repo: metadata.repo,
-        path: groupFileName,
+        path: subnetsFileName,
       })
       .catch(() => {});
 
-    let groupTf: string = '';
-    let groupSha: string = '';
-    if (groupResponse) {
-      if (groupResponse?.status === 200) {
-        const groupContent = Buffer.from(
-          groupResponse.data.content,
+    let subnetsTf: string = '';
+    let subnetsSha: string = '';
+    if (subnetsResponse) {
+      if (subnetsResponse?.status === 200) {
+        const subnetsContent = Buffer.from(
+          subnetsResponse.data.content,
           'base64',
         ).toString();
-        groupTf = `${groupContent}\n\n${metadata.groupTf}`;
-        groupSha = groupResponse.data.sha;
+        subnetsTf = `${subnetsContent}\n\n${metadata.subnetsTf}`;
+        subnetsSha = subnetsResponse.data.sha;
       } else {
-        groupTf = metadata.groupTf;
+        subnetsTf = metadata.subnetsTf;
       }
     } else {
-      groupTf = metadata.groupTf;
+      subnetsTf = metadata.subnetsTf;
     }
 
     await octo.repos
       .createOrUpdateFileContents({
         owner,
         repo,
-        path: groupFileName,
-        message: `Add groups.tf config file`,
-        content: btoa(groupTf),
+        path: subnetsFileName,
+        message: `Add subnets.tf config file`,
+        content: btoa(subnetsTf),
         branch: branchName,
-        sha: groupSha,
+        sha: subnetsSha,
       })
       .catch(e => {
         throw new Error(
           formatHttpErrorMessage(
-            `Couldn't create a commit with ${groupFileName} file added`,
+            `Couldn't create a commit with ${subnetsFileName} file added`,
             e,
           ),
         );
       });
 
-    const projectFileName = `terraform/trivago/${metadata.pilar}/${metadata.teamName}/projects.tf`;
+    if (metadata.groupName !== '') {
+      const groupsFileName = `terraform/trivago/${metadata.pillar}/${metadata.teamName}/groups.tf`;
+
+      const groupsResponse = await octo.repos
+        .getContent({
+          owner: metadata.owner,
+          repo: metadata.repo,
+          path: groupsFileName,
+        })
+        .catch(() => {});
+
+      let groupsTf: string = '';
+      let groupsSha: string = '';
+      if (groupsResponse) {
+        if (groupsResponse?.status === 200) {
+          const groupsContent = Buffer.from(
+            groupsResponse.data.content,
+            'base64',
+          ).toString();
+          groupsTf = `${groupsContent}\n\n${metadata.groupsTf}`;
+          groupsSha = groupsResponse.data.sha;
+        } else {
+          groupsTf = metadata.groupsTf;
+        }
+      } else {
+        groupsTf = metadata.groupsTf;
+      }
+
+      await octo.repos
+        .createOrUpdateFileContents({
+          owner,
+          repo,
+          path: groupsFileName,
+          message: `Add groups.tf config file`,
+          content: btoa(groupsTf),
+          branch: branchName,
+          sha: groupsSha,
+        })
+        .catch(e => {
+          throw new Error(
+            formatHttpErrorMessage(
+              `Couldn't create a commit with ${groupsFileName} file added`,
+              e,
+            ),
+          );
+        });
+    }
+
+    const projectFileName = `terraform/trivago/${metadata.pillar}/${metadata.teamName}/projects.tf`;
 
     const projectResponse = await octo.repos
       .getContent({
@@ -247,7 +295,7 @@ export class GcpClient implements GcpApi {
       .create({
         owner,
         repo,
-        title: `Add ${metadata.pilar}/${metadata.teamName}/* config file`,
+        title: `Add ${metadata.pillar}/${metadata.teamName}/* config file`,
         head: branchName,
         base: repoData.data.default_branch,
       })

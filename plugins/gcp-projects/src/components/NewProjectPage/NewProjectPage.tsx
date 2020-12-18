@@ -23,18 +23,31 @@ import {
   Page,
   SimpleStepper,
   SimpleStepperStep,
-  StructuredMetadataTable,
   SupportButton,
   identityApiRef,
   useApi,
   errorApiRef,
   configApiRef,
+  StructuredMetadataTable,
 } from '@backstage/core';
-import { Grid, TextField, Select, MenuItem } from '@material-ui/core';
 import {
-  subnetsTfRender,
+  Grid,
+  TextField,
+  Select,
+  MenuItem,
+  Switch,
+  FormControlLabel,
+  List,
+  ListItem,
+} from '@material-ui/core';
+import {
+  groupsTfRender,
+  subnetsTfRenderEu,
+  subnetsTfRenderAll,
+  subnetsTfRenderPlayground,
   projectsTfRenderPlayground,
-  projectsTfRenderStages,
+  projectsTfRenderStagesEu,
+  projectsTfRenderStagesAll,
 } from './templates';
 import { Metadata, gcpApiRef } from '../../api';
 import React, { FC, useState } from 'react';
@@ -53,21 +66,27 @@ export const Project: FC<{}> = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [prLink, setPrLink] = useState<string | undefined>();
   const [projectName, setProjectName] = useState('');
-  const [pilar, setPilar] = useState('');
+  const [pillar, setpillar] = useState('pillar');
   const [environment, setEnvironment] = useState('playground');
   const [teamName, setTeamName] = useState('');
-  const groupNamePrefix = `trv-${pilar}-${teamName}-`;
+  const groupNamePrefix = `trv-${pillar}-${teamName}-`;
   const [groupEmail, setGroupEmail] = useState('');
-  const [projectDescription, setProjectDescription] = useState(
-    'Project Description',
-  );
+  const [projectDescription, setProjectDescription] = useState('');
+  const [createGroup, setCreateGroup] = useState(Boolean);
+  const [groupName, setGroupName] = useState('');
+  const [groupMembers, setGroupMembers] = useState('');
+  const [groupDisplayName, setGroupDisplayName] = useState('');
 
   const projectId = projectName;
 
   const metadata: Metadata = {
+    userEmail: profile.email,
     email: email,
-    pilar: pilar,
+    pillar: pillar,
     teamName: teamName,
+    groupName: groupName,
+    groupMembers: groupMembers,
+    groupDisplayName: groupDisplayName,
     projectName: projectName,
     projectId: projectId,
     groupEmail: groupEmail,
@@ -78,42 +97,59 @@ export const Project: FC<{}> = () => {
     repo: repo,
     projectTf: '',
     subnetsTf: '',
+    groupsTf: '',
   };
 
-  const ProjectsTfTemplate = () => {
-    if (environment === 'edge-stage-prod') {
-      metadata.projectTf = projectsTfRenderStages(metadata);
-      return (
-        <textarea style={{ height: '250px', width: '100%' }} readOnly>
-          {projectsTfRenderStages(metadata)}
-        </textarea>
-      );
-    }
+  if (createGroup) {
+    metadata.groupsTf = groupsTfRender(metadata);
+    metadata.groupEmail = `group_team-${metadata.pillar}-${metadata.teamName}@trivago.com`;
+  }
+
+  // Render projects.tf
+  if (environment === 'edge-stage-prod-eu') {
+    metadata.projectTf = projectsTfRenderStagesEu(metadata);
+  } else if (environment === 'edge-stage-prod-all') {
+    metadata.projectTf = projectsTfRenderStagesAll(metadata);
+  } else {
     metadata.projectTf = projectsTfRenderPlayground(metadata);
-    return (
-      <textarea
-        style={{ height: '250px', width: '100%' }}
-        readOnly
-        value={projectsTfRenderPlayground(metadata)}
-      />
-    );
-  };
+  }
 
-  const SubnetsTfTemplate = () => {
-    metadata.subnetsTf = subnetsTfRender(metadata);
-    return (
-      <textarea
-        style={{ height: '250px', width: '100%' }}
-        readOnly
-        value={subnetsTfRender(metadata)}
-      />
-    );
+  // Render subnets.tf
+  if (environment === 'edge-stage-prod-eu') {
+    metadata.subnetsTf = subnetsTfRenderEu(metadata);
+  } else if (environment === 'edge-stage-prod-all') {
+    metadata.subnetsTf = subnetsTfRenderAll(metadata);
+  } else {
+    metadata.subnetsTf = subnetsTfRenderPlayground(metadata);
+  }
+
+  const info = (metadata: Metadata) => {
+    const partialMetadata: Partial<Metadata> = {};
+    partialMetadata.userEmail = metadata.userEmail;
+    partialMetadata.pillar = metadata.pillar;
+    partialMetadata.teamName = metadata.teamName;
+
+    if (metadata.groupName !== '') {
+      partialMetadata.groupName = metadata.groupName;
+      partialMetadata.groupMembers = metadata.groupMembers;
+      partialMetadata.groupDisplayName = metadata.groupDisplayName;
+    } else {
+      partialMetadata.email = metadata.email;
+    }
+
+    partialMetadata.projectName = metadata.projectName;
+    partialMetadata.projectId = metadata.projectId;
+    partialMetadata.groupEmail = metadata.groupEmail;
+    partialMetadata.projectDescription = metadata.projectDescription;
+    partialMetadata.environment = metadata.environment;
+
+    return <StructuredMetadataTable metadata={partialMetadata} />;
   };
 
   const ENV_LIST = [
     {
       label: 'Edge-Stage-Prod (Europe Only)',
-      value: 'edge-stage-prod-us',
+      value: 'edge-stage-prod-eu',
     },
     {
       label: 'Edge-Stage-Prod (All Regions)',
@@ -125,7 +161,11 @@ export const Project: FC<{}> = () => {
     },
   ];
 
-  const PILAR_LIST = [
+  const PILLAR_LIST = [
+    {
+      label: 'Pillar Name',
+      value: 'pillar',
+    },
     {
       label: 'Advertiser Relations',
       value: 'advertiser-relations',
@@ -177,76 +217,157 @@ export const Project: FC<{}> = () => {
     }
   };
 
+  const handleGroupClick = () => {
+    if (createGroup === false) {
+      setCreateGroup(true);
+    } else {
+      setCreateGroup(false);
+    }
+  };
+
   return (
     <Content>
       {modalOpen && <CreationStatus prLink={prLink} />}
       <Grid container spacing={3}>
-        <Grid item xs={12} md={6}>
+        <Grid item xs={12} md={12}>
           <InfoCard title="Create new GCP Project">
             <SimpleStepper>
-              <SimpleStepperStep title="Pilar">
-                <Select
-                  onChange={(e: React.ChangeEvent<any>) =>
-                    setPilar(e?.target?.value)
-                  }
-                  variant="outlined"
-                  placeholder="Pilar Name"
-                  label="Default"
-                  value={pilar}
-                  fullWidth
-                >
-                  {PILAR_LIST.map((value: { label: string; value: string }) => (
-                    <MenuItem value={value.value}>{value.label}</MenuItem>
-                  ))}
-                </Select>
+              <SimpleStepperStep title="Organizational information">
+                <>
+                  <List>
+                    <ListItem>
+                      <Select
+                        onChange={(e: React.ChangeEvent<any>) =>
+                          setpillar(e?.target?.value)
+                        }
+                        value={pillar}
+                        fullWidth
+                      >
+                        {PILLAR_LIST.map(
+                          (value: { label: string; value: string }) => (
+                            <MenuItem value={value.value}>
+                              {value.label}
+                            </MenuItem>
+                          ),
+                        )}
+                      </Select>
+                    </ListItem>
+                    <ListItem title="Team Name">
+                      <TextField
+                        name="teamName"
+                        label="Team Name"
+                        helperText="The name of team that owns the project."
+                        inputProps={{ 'aria-label': 'Team Name' }}
+                        onChange={e => setTeamName(e.target.value)}
+                        value={teamName}
+                        fullWidth
+                      />
+                    </ListItem>
+                  </List>
+                </>
               </SimpleStepperStep>
-              <SimpleStepperStep title="Team Name">
-                <TextField
-                  variant="outlined"
-                  name="teamName"
-                  label="Team Name"
-                  helperText="The name of team that owns the project."
-                  inputProps={{ 'aria-label': 'Team Name' }}
-                  onChange={e => setTeamName(e.target.value)}
-                  value={teamName}
-                  fullWidth
-                />
+              <SimpleStepperStep title="Do you want to create a new group?">
+                <>
+                  <FormControlLabel
+                    id="createGroup"
+                    name="createGroup"
+                    control={
+                      <Switch
+                        color="primary"
+                        name="switch"
+                        checked={createGroup}
+                      />
+                    }
+                    label=""
+                    labelPlacement="start"
+                    onClick={handleGroupClick}
+                  />
+                  {createGroup && (
+                    <InfoCard>
+                      <List>
+                        <ListItem>
+                          <TextField
+                            name="groupName"
+                            label="Group Name"
+                            helperText="The name of the new group."
+                            inputProps={{ 'aria-label': 'Group Name' }}
+                            onChange={e => setGroupName(e.target.value)}
+                            value={groupName}
+                            fullWidth
+                            required
+                          />
+                        </ListItem>
+                        <ListItem>
+                          <TextField
+                            name="groupDisplayName"
+                            label="Group Display Name"
+                            helperText="The display name of the new group."
+                            inputProps={{ 'aria-label': 'Group Display Name' }}
+                            onChange={e => setGroupDisplayName(e.target.value)}
+                            value={groupDisplayName}
+                            fullWidth
+                            required
+                          />
+                        </ListItem>
+                        <ListItem>
+                          <TextField
+                            name="groupMembers"
+                            label="firstname.lastname, firstname2.lastname2"
+                            helperText="Members of the new group."
+                            inputProps={{ 'aria-label': 'Group Members' }}
+                            onChange={e => setGroupMembers(e.target.value)}
+                            value={groupMembers}
+                            fullWidth
+                            required
+                          />
+                        </ListItem>
+                      </List>
+                    </InfoCard>
+                  )}
+                </>
               </SimpleStepperStep>
-              <SimpleStepperStep title="Project Name">
-                <TextField
-                  variant="outlined"
-                  name="projectName"
-                  label="Project Name"
-                  helperText="The name of the new project."
-                  inputProps={{ 'aria-label': 'Project Name' }}
-                  onChange={e => setProjectName(e.target.value)}
-                  value={projectName}
-                  fullWidth
-                />
-              </SimpleStepperStep>
-              <SimpleStepperStep title="Group Email">
-                <TextField
-                  variant="outlined"
-                  name="groupEmail"
-                  label="Group Email"
-                  helperText="The group email for the project."
-                  inputProps={{ 'aria-label': 'Group Email' }}
-                  onChange={e => setGroupEmail(e.target.value)}
-                  value={groupEmail}
-                  fullWidth
-                />
-              </SimpleStepperStep>
-              <SimpleStepperStep title="Project Description">
-                <TextField
-                  variant="outlined"
-                  name="projectDescription"
-                  label="Project Description"
-                  helperText="The description for the new project."
-                  inputProps={{ 'aria-label': 'Project Description' }}
-                  onChange={e => setProjectDescription(e.target.value)}
-                  value={projectDescription}
-                  fullWidth
-                />
+              <SimpleStepperStep title="Project Info">
+                <>
+                  <List>
+                    <ListItem>
+                      <TextField
+                        name="projectName"
+                        label="Project Name"
+                        helperText="The name of the new project."
+                        inputProps={{ 'aria-label': 'Project Name' }}
+                        onChange={e => setProjectName(e.target.value)}
+                        value={projectName}
+                        fullWidth
+                      />
+                    </ListItem>
+                    <ListItem title="Team Name">
+                      <TextField
+                        name="projectDescription"
+                        label="Project Description"
+                        helperText="The description for the new project. helper"
+                        inputProps={{
+                          'aria-label': 'Project Description input props',
+                        }}
+                        onChange={e => setProjectDescription(e.target.value)}
+                        value={projectDescription}
+                        fullWidth
+                      />
+                    </ListItem>
+                    {!createGroup && (
+                      <ListItem>
+                        <TextField
+                          name="groupEmail"
+                          label="Group Email"
+                          helperText="The group email for the project."
+                          inputProps={{ 'aria-label': 'Group Email' }}
+                          onChange={e => setGroupEmail(e.target.value)}
+                          value={groupEmail}
+                          fullWidth
+                        />
+                      </ListItem>
+                    )}
+                  </List>
+                </>
               </SimpleStepperStep>
               <SimpleStepperStep title="Environment">
                 <Select
@@ -270,18 +391,9 @@ export const Project: FC<{}> = () => {
                   onNext: () => onSubmit(metadata),
                 }}
               >
-                <StructuredMetadataTable metadata={metadata} />
+                {info(metadata)}
               </SimpleStepperStep>
             </SimpleStepper>
-          </InfoCard>
-        </Grid>
-        <Grid item xs={6} md={6}>
-          <InfoCard title="projects.tf">
-            <ProjectsTfTemplate />
-          </InfoCard>
-          <br />
-          <InfoCard title="subnets.tf">
-            <SubnetsTfTemplate />
           </InfoCard>
         </Grid>
       </Grid>
