@@ -17,7 +17,6 @@
 import os from 'os';
 import path from 'path';
 import parseGitUrl from 'git-url-parse';
-import { Repository, Cred } from 'nodegit';
 import fs from 'fs-extra';
 import { InputError, UrlReader, Git } from '@backstage/backend-common';
 import { Entity } from '@backstage/catalog-model';
@@ -142,36 +141,6 @@ export const checkoutGitRepository = async (
     token = privateToken || '';
   }
 
-  if (fs.existsSync(repositoryTmpPath)) {
-    try {
-      const repository = await Repository.open(repositoryTmpPath);
-
-      const currentBranchName = (
-        await repository.getCurrentBranch()
-      ).shorthand();
-
-      await repository.fetch('origin', {
-        callbacks: {
-          credentials: () => {
-            return Cred.userpassPlaintextNew(token as string, 'x-oauth-basic');
-          },
-        },
-      });
-
-      await repository.mergeBranches(
-        currentBranchName,
-        `origin/${currentBranchName}`,
-      );
-
-      return repositoryTmpPath;
-    } catch (e) {
-      logger.info(
-        `Found error "${e.message}" in cached repository "${repoUrl}" when getting latest changes. Removing cached repository.`,
-      );
-      fs.removeSync(repositoryTmpPath);
-    }
-  }
-
   // Initialize a git client
   let git = Git.fromAuth({ logger });
 
@@ -259,7 +228,11 @@ export const getLastCommitTimestamp = async (
     privateToken,
   );
 
-  const git = Git.fromAuth({ logger });
+  const git = Git.fromAuth({
+    username: privateToken,
+    password: 'x-oauth-basic',
+    logger,
+  });
   const sha = await git.resolveRef({ dir: repositoryLocation, ref: 'HEAD' });
   const commit = await git.readCommit({ dir: repositoryLocation, sha });
 
