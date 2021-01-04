@@ -16,9 +16,10 @@
 
 import { createApiRef } from '@backstage/core';
 import { PartialEntity } from '../util/types';
+import { GitHubIntegrationConfig } from '@backstage/integration';
 
 export const catalogImportApiRef = createApiRef<CatalogImportApi>({
-  id: 'plugin.catalogimport.service',
+  id: 'plugin.catalog-import.service',
   description: 'Used by the catalog import plugin to make requests',
 });
 
@@ -27,6 +28,7 @@ export interface CatalogImportApi {
     owner: string;
     repo: string;
     fileContent: string;
+    githubIntegrationConfig: GitHubIntegrationConfig;
   }): Promise<{ link: string; location: string }>;
   createRepositoryLocation(options: { location: string }): Promise<void>;
   generateEntityDefinitions(options: {

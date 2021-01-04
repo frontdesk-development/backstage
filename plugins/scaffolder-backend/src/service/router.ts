@@ -167,6 +167,7 @@ export async function createRouter(
               const publisher = publishers.get(ctx.entity);
               ctx.logger.info('Will now store the template');
               const pOptions: PublisherOptions = {
+                logger: ctx.logger,
                 values: ctx.values,
                 directory: ctx.resultDir,
                 token: token,

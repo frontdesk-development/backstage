@@ -5,10 +5,12 @@ metadata:
   description: Team A
 spec:
   type: team
+  profile:
+    # Intentional no displayName for testing
+    email: team-a@example.com
+    picture: https://example.com/groups/team-a.jpeg
   parent: backstage
-  ancestors: [backstage, infrastructure, acme-corp]
   children: []
-  descendants: []
 ---
 apiVersion: backstage.io/v1alpha1
 kind: User
@@ -16,7 +18,7 @@ metadata:
   name: breanna.davison
 spec:
   profile:
-    displayName: Breanna Davison
+    # Intentional no displayName for testing
     email: breanna-davison@example.com
     picture: https://example.com/staff/breanna.jpeg
   memberOf: [team-a]
