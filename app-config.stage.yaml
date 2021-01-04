@@ -70,8 +70,11 @@ gcpProjects:
 techdocs:
   storageUrl: http://frontdesk.sre-frontdesk.stage.europe-west4.tools.trv.cloud/api/techdocs/static/docs
   requestUrl: http://frontdesk.sre-frontdesk.stage.europe-west4.tools.trv.cloud/api/techdocs
+  builder: 'local'
   generators:
     techdocs: 'local'
+  publisher:
+    type: 'local'
 
 sentry:
   organization: trivago
