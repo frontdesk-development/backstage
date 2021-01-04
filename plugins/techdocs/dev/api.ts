@@ -14,13 +14,22 @@
  * limitations under the License.
  */
 import { EntityName } from '@backstage/catalog-model';
+import { OAuthApi } from '@backstage/core';
 import { TechDocsStorage } from '../src/api';
 
 export class TechDocsDevStorageApi implements TechDocsStorage {
   public apiOrigin: string;
+  private readonly githubAuthApi: OAuthApi;
 
-  constructor({ apiOrigin }: { apiOrigin: string }) {
+  constructor({
+    apiOrigin,
+    githubAuthApi,
+  }: {
+    apiOrigin: string;
+    githubAuthApi: OAuthApi;
+  }) {
     this.apiOrigin = apiOrigin;
+    this.githubAuthApi = githubAuthApi;
   }
 
   async getEntityDocs(entityId: EntityName, path: string) {
@@ -47,5 +56,9 @@ export class TechDocsDevStorageApi implements TechDocsStorage {
   getBaseUrl(oldBaseUrl: string, entityId: EntityName, path: string): string {
     const { name } = entityId;
     return new URL(oldBaseUrl, `${this.apiOrigin}/${name}/${path}`).toString();
+  }
+
+  async getToken(): Promise<string> {
+    return this.githubAuthApi.getAccessToken();
   }
 }
