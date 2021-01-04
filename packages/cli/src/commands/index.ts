@@ -47,6 +47,7 @@ export function registerCommands(program: CommanderStatic) {
   program
     .command('backend:__experimental__bundle__', { hidden: true })
     .description('Bundle all backend packages into dist-workspace')
+    .option('--build', 'Build packages before packing them into the image')
     .action(lazy(() => import('./backend/bundle').then(m => m.default)));
 
   program
@@ -55,7 +56,11 @@ export function registerCommands(program: CommanderStatic) {
     .helpOption(', --backstage-cli-help') // Let docker handle --help
     .option('--build', 'Build packages before packing them into the image')
     .description(
-      'Bundles the package into a docker image. All extra args are forwarded to docker image build',
+      // TODO: Add example use cases in Backstage documentation.
+      // For example, if a $NPM_TOKEN needs to be exposed, run `backend:build-image --secret
+      // id=NPM_TOKEN,src=/NPM_TOKEN.txt`.
+      'Bundles the package into a docker image. All extra args are forwarded to ' +
+        '`docker image build`.',
     )
     .action(lazy(() => import('./backend/buildImage').then(m => m.default)));
 
@@ -82,9 +87,9 @@ export function registerCommands(program: CommanderStatic) {
       'Create plugin with the backend dependencies as default',
     )
     .description('Creates a new plugin in the current repository')
-    .option('--scope <scope>', 'NPM scope')
-    .option('--npm-registry <URL>', 'NPM registry URL')
-    .option('--no-private', 'Public NPM Package')
+    .option('--scope <scope>', 'npm scope')
+    .option('--npm-registry <URL>', 'npm registry URL')
+    .option('--no-private', 'Public npm package')
     .action(
       lazy(() => import('./create-plugin/createPlugin').then(m => m.default)),
     );

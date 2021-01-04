@@ -17,6 +17,7 @@
 import {
   GitHubIntegrationConfig,
   readGitHubIntegrationConfigs,
+  getGitHubRequestOptions,
 } from '@backstage/integration';
 import fetch from 'cross-fetch';
 import parseGitUri from 'git-url-parse';
@@ -198,7 +199,7 @@ export class GithubUrlReader implements UrlReader {
       name: repoName,
       ref,
       protocol,
-      source,
+      resource,
       full_name,
       filepath,
     } = parseGitUri(url);
@@ -213,8 +214,9 @@ export class GithubUrlReader implements UrlReader {
     // TODO(Rugvip): use API to fetch URL instead
     const response = await fetch(
       new URL(
-        `${protocol}://${source}/${full_name}/archive/${ref}.tar.gz`,
+        `${protocol}://${resource}/${full_name}/archive/${ref}.tar.gz`,
       ).toString(),
+      getGitHubRequestOptions(this.config),
     );
     if (!response.ok) {
       const message = `Failed to read tree from ${url}, ${response.status} ${response.statusText}`;
