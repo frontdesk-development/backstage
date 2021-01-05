@@ -87,6 +87,9 @@ organization:
 jira:
   apiVersion: 2
 
+bridge:
+  url: https://trivago.bridgeapp.com
+
 # Reference documentation http://backstage.io/docs/features/techdocs/configuration
 techdocs:
   requestUrl: http://localhost:7000/api/techdocs

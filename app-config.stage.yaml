@@ -60,6 +60,9 @@ proxy:
 jira:
   apiVersion: 2
 
+bridge:
+  url: https://trivago.bridgeapp.com
+
 organization:
   name: trivago
 
