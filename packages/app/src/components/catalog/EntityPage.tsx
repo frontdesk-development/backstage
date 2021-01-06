@@ -66,7 +66,6 @@ import {
   GroupProfileCard,
   UserProfileCard,
 } from '@backstage/plugin-org';
-import { Router as SentryRouter } from '@backstage/plugin-sentry';
 import { EmbeddedDocsRouter as DocsRouter } from '@backstage/plugin-techdocs';
 import { Button, Grid } from '@material-ui/core';
 import {
@@ -85,10 +84,6 @@ import {
   PullRequestsStatsCard,
   Router as PullRequestsRouter,
 } from '@roadiehq/backstage-plugin-github-pull-requests';
-import {
-  isPluginApplicableToEntity as isPagerDutyAvailable,
-  PagerDutyCard,
-} from '@backstage/plugin-pagerduty';
 import {
   isPluginApplicableToEntity as isTravisCIAvailable,
   RecentTravisCIBuildsWidget,
@@ -176,11 +171,6 @@ const ComponentOverviewContent = ({ entity }: { entity: Entity }) => (
     <Grid item md={6}>
       <AboutCard entity={entity} variant="gridItem" />
     </Grid>
-    {isPagerDutyAvailable(entity) && (
-      <Grid item md={6}>
-        <PagerDutyCard entity={entity} />
-      </Grid>
-    )}
     <RecentCICDRunsSwitcher entity={entity} />
     {isGitHubAvailable(entity) && (
       <>
@@ -251,13 +241,6 @@ const ServiceEntityPage = ({ entity }: { entity: Entity }) => (
       title="Grafana"
       element={<GrafanaRouter entity={entity} />}
     />
-    {entity.metadata?.annotations?.['sentry.io/project-slug'] && (
-      <EntityPageLayout.Content
-        path="/sentry"
-        title="Sentry"
-        element={<SentryRouter entity={entity} />}
-      />
-    )}
     {entity.spec?.implementsApis && (
       <EntityPageLayout.Content
         path="/api/*"
@@ -308,11 +291,6 @@ const WebsiteEntityPage = ({ entity }: { entity: Entity }) => (
       path="/lighthouse/*"
       title="Lighthouse"
       element={<LighthouseRouter entity={entity} />}
-    />
-    <EntityPageLayout.Content
-      path="/sentry"
-      title="Sentry"
-      element={<SentryRouter entity={entity} />}
     />
     <EntityPageLayout.Content
       path="/docs/*"

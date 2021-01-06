@@ -30,7 +30,6 @@ import { providers } from './identityProviders';
 import { Router as CatalogRouter } from '@backstage/plugin-catalog';
 import { Router as DocsRouter } from '@backstage/plugin-techdocs';
 import { GraphiQLPage } from '@backstage/plugin-graphiql';
-import { Router as TechRadarRouter } from '@backstage/plugin-tech-radar';
 import { Router as LighthouseRouter } from '@backstage/plugin-lighthouse';
 import { Router as RegisterComponentRouter } from '@backstage/plugin-register-component';
 import { Router as SettingsRouter } from '@backstage/plugin-user-settings';
@@ -77,10 +76,6 @@ const AppRoutes = () => (
       element={<CatalogRouter EntityPage={EntityPage} />}
     />
     <Route path="/docs/*" element={<DocsRouter />} />
-    <Route
-      path="/tech-radar"
-      element={<TechRadarRouter width={1500} height={800} />}
-    />
     <Route path="/graphiql" element={<GraphiQLPage />} />
     <Route path="/lighthouse/*" element={<LighthouseRouter />} />
     <Route

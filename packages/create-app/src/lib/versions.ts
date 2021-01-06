@@ -45,11 +45,9 @@ import { version as pluginExplore } from '@backstage/plugin-explore/package.json
 import { version as pluginGithubActions } from '@backstage/plugin-github-actions/package.json';
 import { version as pluginLighthouse } from '@backstage/plugin-lighthouse/package.json';
 import { version as pluginProxyBackend } from '@backstage/plugin-proxy-backend/package.json';
-import { version as pluginRollbarBackend } from '@backstage/plugin-rollbar-backend/package.json';
 import { version as pluginScaffolder } from '@backstage/plugin-scaffolder/package.json';
 import { version as pluginScaffolderBackend } from '@backstage/plugin-scaffolder-backend/package.json';
 import { version as pluginSearch } from '@backstage/plugin-search/package.json';
-import { version as pluginTechRadar } from '@backstage/plugin-tech-radar/package.json';
 import { version as pluginTechdocs } from '@backstage/plugin-techdocs/package.json';
 import { version as pluginTechdocsBackend } from '@backstage/plugin-techdocs-backend/package.json';
 import { version as pluginUserSettings } from '@backstage/plugin-user-settings/package.json';
@@ -73,11 +71,9 @@ export const packageVersions = {
   '@backstage/plugin-github-actions': pluginGithubActions,
   '@backstage/plugin-lighthouse': pluginLighthouse,
   '@backstage/plugin-proxy-backend': pluginProxyBackend,
-  '@backstage/plugin-rollbar-backend': pluginRollbarBackend,
   '@backstage/plugin-scaffolder': pluginScaffolder,
   '@backstage/plugin-scaffolder-backend': pluginScaffolderBackend,
   '@backstage/plugin-search': pluginSearch,
-  '@backstage/plugin-tech-radar': pluginTechRadar,
   '@backstage/plugin-techdocs': pluginTechdocs,
   '@backstage/plugin-techdocs-backend': pluginTechdocsBackend,
   '@backstage/plugin-user-settings': pluginUserSettings,
