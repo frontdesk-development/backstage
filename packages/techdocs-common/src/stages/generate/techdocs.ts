@@ -108,7 +108,7 @@ export class TechdocsGenerator implements GeneratorBase {
             logStream,
           });
           this.logger.info(
-            `Removed ${resultDir}/backstage-repo from tresult folder`,
+            `Removed ${resultDir}/backstage-repo from result folder and ${directory} from /tmp`,
           );
           break;
         case 'docker':
