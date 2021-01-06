@@ -101,14 +101,14 @@ export class TechdocsGenerator implements GeneratorBase {
           );
           await runCommand({
             command: 'rm',
-            args: ['-rf', `${resultDir}/backstage-repo`, `${directory}`],
+            args: ['-rf', `${resultDir}/backstage-repo`],
             options: {
               cwd: directory,
             },
             logStream,
           });
           this.logger.info(
-            `Removed ${resultDir}/backstage-repo from result folder and ${directory} from /tmp`,
+            `Removed ${resultDir}/backstage-repo from result folder`,
           );
           break;
         case 'docker':
