@@ -19,7 +19,6 @@ import { Link, makeStyles } from '@material-ui/core';
 import HomeIcon from '@material-ui/icons/Home';
 import ExtensionIcon from '@material-ui/icons/Extension';
 import RuleIcon from '@material-ui/icons/AssignmentTurnedIn';
-import MapIcon from '@material-ui/icons/MyLocation';
 import LibraryBooks from '@material-ui/icons/LibraryBooks';
 import CreateComponentIcon from '@material-ui/icons/AddCircleOutline';
 import MoneyIcon from '@material-ui/icons/MonetizationOn';
@@ -86,7 +85,6 @@ const Root = ({ children }: PropsWithChildren<{}>) => (
       <SidebarItem icon={CreateComponentIcon} to="create" text="Create..." />
       {/* End global nav */}
       <SidebarDivider />
-      <SidebarItem icon={MapIcon} to="tech-radar" text="Tech Radar" />
       <SidebarItem icon={RuleIcon} to="lighthouse" text="Lighthouse" />
       <SidebarItem icon={MoneyIcon} to="cost-insights" text="Cost Insights" />
       <SidebarItem
