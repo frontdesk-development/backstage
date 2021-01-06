@@ -101,7 +101,7 @@ export class TechdocsGenerator implements GeneratorBase {
           );
           await runCommand({
             command: 'rm',
-            args: ['-rf', `${resultDir}/backstage-repo`],
+            args: ['-rf', `${resultDir}/backstage-repo`, `${directory}`],
             options: {
               cwd: directory,
             },
