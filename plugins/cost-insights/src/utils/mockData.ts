@@ -198,17 +198,17 @@ export const MockCostInsightsConfig: Partial<Config> = {
   getOptionalConfig: () => MockMetricsConfig as Config,
 };
 
-export function trendlineOf(aggregation: DateAggregation[]): Trendline {
-  const data: ReadonlyArray<DataPoint> = aggregation.map(a => [
-    Date.parse(a.date) / 1000,
-    a.amount,
-  ]);
-  const result = regression.linear(data, { precision: 5 });
-  return {
-    slope: result.equation[0],
-    intercept: result.equation[1],
-  };
-}
+// export function trendlineOf(aggregation: DateAggregation[]): Trendline {
+//   const data: ReadonlyArray<DataPoint> = aggregation.map(a => [
+//     Date.parse(a.date) / 1000,
+//     a.amount,
+//   ]);
+//   const result = regression.linear(data, { precision: 5 });
+//   return {
+//     slope: result.equation[0],
+//     intercept: result.equation[1],
+//   };
+// }
 
 export function changeOf(aggregation: DateAggregation[]): ChangeStatistic {
   const half = Math.ceil(aggregation.length / 2);
@@ -530,7 +530,7 @@ export const SampleBigQueryInsights: Entity = {
   entities: {
     dataset: [
       {
-        id: 'entity-a',
+        id: 'esteban',
         aggregation: [5_000, 10_000],
         change: {
           ratio: 1,
