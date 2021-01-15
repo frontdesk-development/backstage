@@ -15,14 +15,17 @@
  */
 import { createDevApp } from '@backstage/dev-utils';
 import { costInsightsApiRef } from '../src/api';
-import { ExampleCostInsightsClient } from '../src/client';
+import { CostInsightsClient } from '../src/api';
 import { plugin } from '../src/plugin';
+import { googleAuthApiRef } from '@backstage/core';
 
 createDevApp()
   .registerPlugin(plugin)
   .registerApi({
     api: costInsightsApiRef,
-    deps: {},
-    factory: () => new ExampleCostInsightsClient(),
+    deps: {
+      googleAuthApi: googleAuthApiRef,
+    },
+    factory: ({ googleAuthApi }) => new CostInsightsClient(googleAuthApi),
   })
   .render();

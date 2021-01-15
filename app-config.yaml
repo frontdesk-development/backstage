@@ -344,6 +344,11 @@ costInsights:
       default: true
     MSC:
       name: Monthly Subscribers
+  clientId:
+    $env: AUTH_GOOGLE_CLIENT_ID
+  clientSecret:
+    $env: AUTH_GOOGLE_CLIENT_SECRET
+
 homepage:
   clocks:
     - label: UTC

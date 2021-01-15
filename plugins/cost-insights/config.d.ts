@@ -48,5 +48,15 @@ interface Config {
         default?: boolean;
       };
     };
+    
+    /**
+     * @visibility frontend
+     */
+    clientId: string;
+
+    /**
+     * @visibility frontend
+     */
+    clientSecret: string;
   };
 }

@@ -15,3 +15,4 @@
  */
 
 export * from './CostInsightsApi';
+export * from './CostInsightsClient';
