@@ -54,7 +54,8 @@
     "react-use": "^15.3.3",
     "recharts": "^1.8.5",
     "regression": "^2.0.1",
-    "yup": "^0.29.3"
+    "yup": "^0.29.3",
+    "moize": "^5.4.7"
   },
   "devDependencies": {
     "@backstage/cli": "^0.4.4",

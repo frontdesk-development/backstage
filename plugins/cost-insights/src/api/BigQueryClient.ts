@@ -15,12 +15,15 @@
  */
 /* eslint-disable no-restricted-imports */
 
-// import { Memoize } from 'typescript-memoize/src/memoize-decorator';
+import moize from 'moize';
 import { BigQuery } from '@google-cloud/bigquery';
 
+const MAX_AGE = 1000 * 60 * 60 * 24; // 24 hours
 export class BigQueryClass {
   client: BigQuery;
-  hashTable: Map<string, { amount: number; date: string }[]>;
+  memoizedAll: any;
+  memoizedProject: any;
+
   constructor() {
     const credentials = {
       type: 'service_account',
@@ -44,7 +47,14 @@ export class BigQueryClass {
       credentials,
     };
     this.client = new BigQuery(login);
-    this.hashTable = new Map();
+    this.memoizedAll = moize(
+      async (query: string) => await this.runQuery(query),
+      { maxAge: MAX_AGE, updateExpire: true },
+    );
+    this.memoizedProject = moize(
+      async (query: string) => await this.runQuery(query),
+      { maxAge: MAX_AGE, updateExpire: true },
+    );
   }
 
   public async queryBigQuery(
@@ -83,24 +93,10 @@ export class BigQueryClass {
     }
 
     if (projectName) {
-      const hash = `${projectName};${newDate};${endDate}`;
-      // hash projectName,newDate,endDate into struct with value result of query and check if it exists before running it
-      const cacheResult = this.hashTable.get(hash);
-      if (cacheResult !== undefined) {
-        return cacheResult;
-      }
-      const result = this.runQueryForProject(projectName, newDate, endDate);
-      this.hashTable.set(hash, await result);
-      return result;
+      return this.runQueryForProject(projectName, newDate, endDate);
     }
-    const hash = `${newDate};${endDate}`;
-    const cacheResult = this.hashTable.get(hash);
-    if (cacheResult !== undefined) {
-      return cacheResult;
-    }
-    const result = this.runQueryForAll(newDate, endDate);
-    this.hashTable.set(hash, await result);
-    return result;
+
+    return this.runQueryForAll(newDate, endDate);
   }
 
   async runQueryForProject(
@@ -117,8 +113,7 @@ export class BigQueryClass {
     WHERE usage_start_time > TIMESTAMP(DATE "${newDate}") AND project.id = \"${projectName}\" AND usage_start_time < TIMESTAMP(DATE "${endDate}")
     GROUP BY date`;
 
-    const result = this.runQuery(query);
-    return result;
+    return this.memoizedProject(query);
   }
 
   async runQueryForAll(
@@ -134,8 +129,8 @@ export class BigQueryClass {
     WHERE usage_start_time > TIMESTAMP(DATE "${newDate}") AND usage_start_time < TIMESTAMP(DATE "${endDate}")
     GROUP BY date`;
 
-    const result = this.runQuery(query);
-    return result;
+    // console.log("After moize ALL: ",memoizedAll(query));
+    return this.memoizedAll(query);
   }
 
   public async runQuery(
