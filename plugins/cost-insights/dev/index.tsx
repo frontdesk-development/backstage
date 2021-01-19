@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 import { createDevApp } from '@backstage/dev-utils';
-import { costInsightsApiRef } from '../src/api';
-import { CostInsightsClient } from '../src/api';
+import { costInsightsApiRef, CostInsightsClient } from '../src/api';
 import { plugin } from '../src/plugin';
 import { googleAuthApiRef } from '@backstage/core';
 

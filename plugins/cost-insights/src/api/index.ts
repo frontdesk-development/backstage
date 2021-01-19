@@ -16,3 +16,4 @@
 
 export * from './CostInsightsApi';
 export * from './CostInsightsClient';
+export * from './BigQueryClient';
