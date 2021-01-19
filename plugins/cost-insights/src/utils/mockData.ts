@@ -15,17 +15,17 @@
  */
 
 import dayjs from 'dayjs';
-import regression, { DataPoint } from 'regression';
+// import regression, { DataPoint } from 'regression';
 import { Config } from '@backstage/config';
 import { ConfigApi } from '@backstage/core';
 import {
-  ChangeStatistic,
+  // ChangeStatistic,
   Duration,
   Entity,
   Product,
   ProductFilters,
   ProjectGrowthData,
-  Trendline,
+  // Trendline,
   UnlabeledDataflowAlertProject,
   UnlabeledDataflowData,
   DateAggregation,
@@ -210,19 +210,19 @@ export const MockCostInsightsConfig: Partial<Config> = {
 //   };
 // }
 
-export function changeOf(aggregation: DateAggregation[]): ChangeStatistic {
-  const half = Math.ceil(aggregation.length / 2);
-  const before = aggregation
-    .slice(0, half)
-    .reduce((sum, a) => sum + a.amount, 0);
-  const after = aggregation
-    .slice(half, aggregation.length)
-    .reduce((sum, a) => sum + a.amount, 0);
-  return {
-    ratio: (after - before) / before,
-    amount: after - before,
-  };
-}
+// export function changeOf(aggregation: DateAggregation[]): ChangeStatistic {
+//   const half = Math.ceil(aggregation.length / 2);
+//   const before = aggregation
+//     .slice(0, half)
+//     .reduce((sum, a) => sum + a.amount, 0);
+//   const after = aggregation
+//     .slice(half, aggregation.length)
+//     .reduce((sum, a) => sum + a.amount, 0);
+//   return {
+//     ratio: (after - before) / before,
+//     amount: after - before,
+//   };
+// }
 
 export function aggregationFor(
   intervals: string,

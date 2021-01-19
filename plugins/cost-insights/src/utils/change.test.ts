@@ -22,7 +22,8 @@ import {
   Duration,
   Cost,
 } from '../types';
-import { MockAggregatedDailyCosts, trendlineOf, changeOf } from './mockData';
+import { MockAggregatedDailyCosts } from './mockData';
+import { trendlineOf, changeOf } from '../api/CostInsightsClient';
 
 const GrowthMap = {
   [GrowthType.Negligible]: 'negligible growth',
