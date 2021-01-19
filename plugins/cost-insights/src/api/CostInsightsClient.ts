@@ -39,9 +39,12 @@ import {
 import { entityOf, getGroupedProducts } from '../utils/mockData';
 import { OAuthApi } from '@backstage/core';
 import regression, { DataPoint } from 'regression';
+import moize from 'moize';
 
 const BASE_URL =
   'https://content-cloudresourcemanager.googleapis.com/v1/projects';
+
+const MAX_AGE = 1000 * 60 * 10; // 10 min
 
 export function trendlineOf(aggregation: DateAggregation[]): Trendline {
   const data: ReadonlyArray<DataPoint> = aggregation.map(a => [
@@ -71,8 +74,13 @@ export function changeOf(aggregation: DateAggregation[]): ChangeStatistic {
 
 export class CostInsightsClient implements CostInsightsApi {
   bigQuery: BigQueryClass;
+  memoizedProjects: any;
   constructor(private readonly googleAuthApi: OAuthApi) {
     this.bigQuery = new BigQueryClass();
+    this.memoizedProjects = moize(
+      async (token: string) => await this.getProjects(token),
+      { maxAge: MAX_AGE, updateExpire: true },
+    );
   }
 
   private request(_: any, res: any): Promise<any> {
@@ -91,21 +99,25 @@ export class CostInsightsClient implements CostInsightsApi {
     return groups;
   }
 
-  async getGroupProjects(group: string): Promise<Project[]> {
+  async getProjects(token: string): Promise<any> {
     const response = await fetch(BASE_URL, {
       headers: {
         Accept: '*/*',
-        Authorization: `Bearer ${await this.getToken()}`,
+        Authorization: `Bearer ${token}`,
       },
     });
 
     if (!response.ok) {
       throw new Error(
-        `List request failed to ${BASE_URL} with ${response.status} ${response.statusText} for group ${group}`,
+        `List request failed to ${BASE_URL} with ${response.status} ${response.statusText}`,
       );
     }
 
-    const { projects } = await response.json();
+    return response.json();
+  }
+
+  async getGroupProjects(group: string): Promise<Project[]> {
+    const { projects } = await this.memoizedProjects(await this.getToken());
 
     const projectArray: Project[] = [];
 
