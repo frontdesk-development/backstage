@@ -31,6 +31,7 @@ export * from './MetricData';
 export * from './Metric';
 export * from './Product';
 export * from './Project';
+export * from './Label';
 export * from './Theme';
 export * from './Trendline';
 export * from './GcpConfig';

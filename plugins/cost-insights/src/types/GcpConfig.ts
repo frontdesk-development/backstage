@@ -14,21 +14,12 @@
  * limitations under the License.
  */
 
-import { Maybe } from './Maybe';
-import { Duration } from './Duration';
-
-export interface PageFilters {
-  group: Maybe<string>;
-  project: Maybe<string>;
-  duration: Duration;
-  metric: string | null;
-  tierLabel: Maybe<string>;
-  pilarLabel: Maybe<string>;
-}
-
-export type ProductFilters = Array<ProductPeriod>;
-
-export interface ProductPeriod {
-  duration: Duration;
-  productType: string;
-}
+export type GcpConfig = {
+  type: string;
+  projectId: string;
+  privateKeyId: string;
+  privateKey: string;
+  clientEmail: string;
+  clientId: string;
+  clientX509CertUrl: string;
+};
