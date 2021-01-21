@@ -17,6 +17,7 @@
 
 import moize from 'moize';
 import { BigQuery } from '@google-cloud/bigquery';
+import { GcpConfig } from '../types';
 
 const MAX_AGE = 1000 * 60 * 60 * 24; // 24 hours
 export class BigQueryClass {
@@ -25,28 +26,7 @@ export class BigQueryClass {
   memoizedProject: any;
 
   constructor() {
-    const credentials = {
-      type: 'service_account',
-      project_id: 'trv-shared-admin',
-      private_key_id: '73923439d3bb6b69f12610a37feab9b03323a67e',
-      private_key:
-        '-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDpXsz4q9sDlAT/\nu62SE6ZxIAhcFSUmQNhbKze0Earzm/IhyLrSnGUmolTUYRFvJkiiUdya2v7lqWjN\nGggNar3l+aASzzyk+l/vSQxOP09GzrTCitBhQ5zkrBCd0VwUoTABW7B/r/XKDupt\nJ6bXycE4IWjANfVg2zdOd8kmnjceucnxifkqE+PDyn0SSRivBdmKOJr39fkpB4Zo\nV+wPOdU5E55p/+RQr02msajQOT5HYimxZZPf3Kbyr6KrJ1jefGyzELmWsbkzWf6P\nX5jt9CBO2rFWATxMcMoYi5INkw/VbIFjd0tEM22bj3ChXURPPdwgkFUFsSIkJAmQ\n6kTvYTu7AgMBAAECggEAROHGfl+7dYLrNtCems9SAXIDBar4HCJnugE3n97XJrCQ\n94fYHPIsqQqhH07HZpdWORMQmmSpeABY/rEAT3WCN69GoEarD8cXKfnVuALX036P\nvBxdBVh/pr9i6DIzi6NIGB6IKig11D4y06UwieDzNy4lTRagJsaNvIt+w/dPLbH4\nnb0g5Dn1NJBXNmbEZK87vujeLQ0HwoE3d8j1RNUj/HtdmPX+S+eLILznwJe4joxh\n2/+z0wEKUWzZWco449rWkRqeMS38AGmGn/aG1DCUEfxXLL8UWR03KcndWkuGSiWS\nAfvyxR0679u/T/THdSwCW+SAWcnroH9ioD7CP3oyAQKBgQD7/POfopOACX71I68z\npBYzFnCoAx/+ghfGtkeYk7ODNeDLcO6/REKF9PLq4fHkQcelLYFt5l7IOq0zsAE6\n8yVVINPFNP2QjIm1+MC/Udbgo9jaL943aALGwHWSfqh2kiJxMCo7emu1j3viOF05\nx1Px+C/DN37io32D3+GM+0As0QKBgQDtFfePFTotVCkSiTOwzUUwiOT/KMbhrByB\nvy+0EU10t50y1hTcLtyzQdZYU3/6cRrUcakS4bY6y5th+gr6Xx2SObaBdaiM1A3O\n68eggi7tDazPMbM0AMhss1WjmxSEOZqTzlNZ4o3pbB7KLd58vdzmB617mEbta1SJ\nFZg/tKcSywKBgQDLXk7Qm0knoIJSHcaciuVPveCV+E+t/BhsS1hlD29lieouxqoo\nu1JlAle6sTej3GLgMGWw6Ke+OXznpjiX9vw+RAwlsKqkKohJ0MTeo5IkIpg1H0Tc\nupjjBxjcblRPvYkGiLTM4/Rhx7dXz92NcA2Tz5Xcm8FP8FqwP9OtEGmuwQKBgBX/\noM3c+V31Xi5DHtG76jybpyvp27Ja5vY/CC0cIeS/mM17wcnAa2gSptHhRZG2Zvfp\nZ/fBi8ge1lcb/WLH6pWD12Rhx3bxwio+BHLnQXVrfGppQSiFHhO//CVHIXs3YRlv\n3poLhIFxL9YwtWE7uMB7W+SI96PV/q0NnOfkWlBLAoGBAM4uvRaIojYu1o3OKmJM\nKM3nsBEZf39tldGT0yAWU/yvP6CnTEWp3oznFSgeGtUDV7ZKocEIivdVjp65ryav\nYK9Jxyxpg5zueIx+lhpUv+mxQ+HbwtGQEdjQEDQIVgazgIj8LnMgkAjhm2VUbOvw\nfgvwZtC9wInECNIGq3T/R1NZ\n-----END PRIVATE KEY-----\n',
-      client_email:
-        'frontdesk-billing@trv-shared-admin.iam.gserviceaccount.com',
-      client_id: '107953899698245323544',
-      auth_uri: 'https://accounts.google.com/o/oauth2/auth',
-      token_uri: 'https://oauth2.googleapis.com/token',
-      auth_provider_x509_cert_url: 'https://www.googleapis.com/oauth2/v1/certs',
-      client_x509_cert_url:
-        'https://www.googleapis.com/robot/v1/metadata/x509/frontdesk-billing%40trv-shared-admin.iam.gserviceaccount.com',
-    };
-
-    const projectId = 'trv-shared-admin';
-    const login = {
-      projectId,
-      credentials,
-    };
-    this.client = new BigQuery(login);
+    this.client = new BigQuery();
     this.memoizedAll = moize(
       async (query: string) => await this.runQuery(query),
       { maxAge: MAX_AGE, updateExpire: true },
@@ -57,6 +37,27 @@ export class BigQueryClass {
     );
   }
 
+  setConfig(gcpConfig: GcpConfig) {
+    const credentials = {
+      type: gcpConfig.type,
+      project_id: gcpConfig.projectId,
+      private_key_id: gcpConfig.privateKeyId,
+      private_key: gcpConfig.privateKey,
+      client_email: gcpConfig.clientEmail,
+      client_id: gcpConfig.clientId,
+      auth_uri: 'https://accounts.google.com/o/oauth2/auth',
+      token_uri: 'https://oauth2.googleapis.com/token',
+      auth_provider_x509_cert_url: 'https://www.googleapis.com/oauth2/v1/certs',
+      client_x509_cert_url: gcpConfig.clientX509CertUrl,
+    };
+
+    const projectId = gcpConfig.projectId;
+    const login = {
+      projectId,
+      credentials,
+    };
+    this.client = new BigQuery(login);
+  }
   public async queryBigQuery(
     intervals: string,
     projectName?: string,

@@ -27,15 +27,10 @@ import {
   Group,
   MetricData,
   Project,
-  // ProjectGrowthData,
-  // UnlabeledDataflowData,
   Trendline,
   ChangeStatistic,
+  GcpConfig,
 } from '../types';
-// import {
-//   ProjectGrowthAlert,
-//   UnlabeledDataflowAlert,
-// } from '../utils/alerts';
 import { entityOf, getGroupedProducts } from '../utils/mockData';
 import { OAuthApi } from '@backstage/core';
 import regression, { DataPoint } from 'regression';
@@ -81,6 +76,10 @@ export class CostInsightsClient implements CostInsightsApi {
       async (token: string) => await this.getProjects(token),
       { maxAge: MAX_AGE, updateExpire: true },
     );
+  }
+
+  setConfig(gcpConfig: GcpConfig) {
+    this.bigQuery.setConfig(gcpConfig);
   }
 
   private request(_: any, res: any): Promise<any> {

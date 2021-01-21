@@ -341,10 +341,19 @@ costInsights:
       default: true
     MSC:
       name: Monthly Subscribers
-  clientId:
-    $env: AUTH_GOOGLE_CLIENT_ID
-  clientSecret:
-    $env: AUTH_GOOGLE_CLIENT_SECRET
+  gcpConfig:
+    type: service_account
+    projectId: 'trv-shared-admin'
+    privateKeyId:
+      $env: COST_PRIVATE_KEY_ID 
+    privateKey:
+      $env: COST_PRIVATE_KEY 
+    clientEmail:
+      $env: COST_CLIENT_EMAIL 
+    clientId:
+      $env: COST_CLIENT_ID 
+    clientX509CertUrl:
+      $env: COST_CLIENT_X509 
 
 homepage:
   clocks:

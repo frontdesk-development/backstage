@@ -33,3 +33,4 @@ export * from './Product';
 export * from './Project';
 export * from './Theme';
 export * from './Trendline';
+export * from './GcpConfig';
