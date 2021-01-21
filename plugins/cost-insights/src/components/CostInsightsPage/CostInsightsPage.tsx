@@ -42,9 +42,19 @@ import {
   useLastCompleteBillingDate,
   useLoading,
 } from '../../hooks';
-import { Alert, Cost, Maybe, MetricData, Product, Project } from '../../types';
+import {
+  Alert,
+  Cost,
+  Maybe,
+  MetricData,
+  Product,
+  Project,
+  Label,
+} from '../../types';
 import { mapLoadingToProps } from './selector';
 import { ProjectSelect } from '../ProjectSelect';
+import { LabelTierSelect } from '../LabelTierSelect';
+import { LabelPilarSelect } from '../LabelPilarSelect';
 import { intervalsOf } from '../../utils/duration';
 import { useSubtleTypographyStyles } from '../../utils/styles';
 
@@ -57,6 +67,8 @@ export const CostInsightsPage = () => {
   const lastCompleteBillingDate = useLastCompleteBillingDate();
   const [currency, setCurrency] = useCurrency();
   const [projects, setProjects] = useState<Maybe<Project[]>>(null);
+  const [tierLabel, setTierLabels] = useState<Maybe<Label[]>>(null);
+  const [pilarLabel, setPilarLabels] = useState<Maybe<Label[]>>(null);
   const [products, setProducts] = useState<Maybe<Product[]>>(null);
   const [dailyCost, setDailyCost] = useState<Maybe<Cost>>(null);
   const [metricData, setMetricData] = useState<Maybe<MetricData>>(null);
@@ -95,6 +107,18 @@ export const CostInsightsPage = () => {
       project: project === 'all' ? null : project,
     });
 
+  const setTier = (tier: Maybe<string>) =>
+    setPageFilters({
+      ...pageFilters,
+      tierLabel: tier === 'all' ? null : tier,
+    });
+
+  const setPilar = (pilar: Maybe<string>) =>
+    setPageFilters({
+      ...pageFilters,
+      pilarLabel: pilar === 'all' ? null : pilar,
+    });
+
   useEffect(() => {
     async function getInsights() {
       setError(null);
@@ -107,11 +131,15 @@ export const CostInsightsPage = () => {
           );
           const [
             fetchedProjects,
+            fetchedTierLabels,
+            fetchedPilarLabels,
             fetchedAlerts,
             fetchedMetricData,
             fetchedDailyCost,
           ] = await Promise.all([
             client.getGroupProjects(pageFilters.group),
+            client.getTierLabels(pageFilters.group),
+            client.getPilarLabels(pageFilters.group),
             client.getAlerts(pageFilters.group),
             pageFilters.metric
               ? client.getDailyMetricData(pageFilters.metric, intervals)
@@ -121,6 +149,8 @@ export const CostInsightsPage = () => {
               : client.getGroupDailyCost(pageFilters.group, intervals),
           ]);
           setProjects(fetchedProjects);
+          setTierLabels(fetchedTierLabels);
+          setPilarLabels(fetchedPilarLabels);
           setAlerts(fetchedAlerts);
           setMetricData(fetchedMetricData);
           setDailyCost(fetchedDailyCost);
@@ -187,6 +217,16 @@ export const CostInsightsPage = () => {
 
   const onProjectSelect = (project: Maybe<string>) => {
     setProject(project);
+    dispatchLoadingReset(loadingActions);
+  };
+
+  const onTierLabelSelect = (tierLabel: Maybe<string>) => {
+    setTier(tierLabel);
+    dispatchLoadingReset(loadingActions);
+  };
+
+  const onPilarLabelSelect = (pilarLabel: Maybe<string>) => {
+    setPilar(pilarLabel);
     dispatchLoadingReset(loadingActions);
   };
 
@@ -267,6 +307,22 @@ export const CostInsightsPage = () => {
                 <CostOverviewBanner />
               </Grid>
               <Grid item xs>
+                <Grid container direction="row">
+                  <Box px={3}>
+                    <LabelTierSelect
+                      label={pageFilters.tierLabel}
+                      labels={tierLabel || []}
+                      onSelect={onTierLabelSelect}
+                    />
+                  </Box>
+                  <Box>
+                    <LabelPilarSelect
+                      label={pageFilters.pilarLabel}
+                      labels={pilarLabel || []}
+                      onSelect={onPilarLabelSelect}
+                    />
+                  </Box>
+                </Grid>
                 <Box px={3} py={6}>
                   {!!dailyCost.aggregation.length && (
                     <CostOverviewCard

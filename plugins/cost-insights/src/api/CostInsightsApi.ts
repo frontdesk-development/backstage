@@ -24,6 +24,7 @@ import {
   Maybe,
   MetricData,
   GcpConfig,
+  Label,
 } from '../types';
 
 export type ProductInsightsOptions = {
@@ -76,6 +77,16 @@ export type CostInsightsApi = {
    * choose whether they see all costs for a group, or those from a particular owned project.
    */
   getGroupProjects(group: string): Promise<Project[]>;
+
+  /**
+   * Get a list of Tier labels that belong to this group.
+   */
+  getTierLabels(group: string): Promise<Label[]>;
+
+  /**
+   * Get a list of Pilar labels that belong to this group.
+   */
+  getPilarLabels(group: string): Promise<Label[]>;
 
   /**
    * Get daily cost aggregations for a given group and interval timeframe.

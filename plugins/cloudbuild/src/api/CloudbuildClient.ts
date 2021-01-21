@@ -47,10 +47,10 @@ export class CloudbuildClient implements CloudbuildApi {
   }
   async listWorkflowRuns({
     projectId,
-    triggerId,
+    triggerName,
   }: {
     projectId: string;
-    triggerId?: string;
+    triggerName?: string;
   }): Promise<ActionsListWorkflowRunsForRepoResponseData> {
     const triggerIds = await fetch(
       `https://cloudbuild.googleapis.com/v1/projects/${encodeURIComponent(
@@ -72,8 +72,17 @@ export class CloudbuildClient implements CloudbuildApi {
       mapsTrigger.set(trigger.id, trigger);
     }
 
+    let triggerId: string = '';
+    if (triggerName) {
+      triggers.triggers.forEach(trigger => {
+        if (trigger.name === triggerName) {
+          triggerId = trigger.id;
+        }
+      });
+    }
+
     let workflowRuns: Response;
-    if (typeof triggerId !== 'undefined' && triggerId) {
+    if (triggerId !== '') {
       workflowRuns = await fetch(
         `https://cloudbuild.googleapis.com/v1/projects/${encodeURIComponent(
           projectId,
@@ -163,37 +172,6 @@ export class CloudbuildClient implements CloudbuildApi {
     const build: ActionsGetWorkflowResponseData = await workflow.json();
 
     return build;
-  }
-
-  async getTriggerId({
-    projectId,
-    triggerName,
-  }: {
-    projectId: string;
-    triggerName: string;
-  }): Promise<string> {
-    const triggerIds = await fetch(
-      `https://cloudbuild.googleapis.com/v1/projects/${encodeURIComponent(
-        projectId,
-      )}/triggers`,
-      {
-        headers: new Headers({
-          Accept: '*/*',
-          Authorization: `Bearer ${await this.getToken()}`,
-        }),
-      },
-    );
-
-    const triggers: BuildTriggerList = await triggerIds.json();
-
-    let triggerId: string = '';
-    triggers.triggers.forEach(trigger => {
-      if (trigger.name === triggerName) {
-        triggerId = trigger.id;
-      }
-    });
-
-    return triggerId;
   }
 
   async getToken(): Promise<string> {

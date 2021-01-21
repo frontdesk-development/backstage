@@ -23,7 +23,6 @@ import { useWorkflowRuns } from '../useWorkflowRuns';
 import { WorkflowRunStatus } from '../WorkflowRunStatus';
 import SyncIcon from '@material-ui/icons/Sync';
 import { useProjectName } from '../useProjectName';
-import { useTriggerId } from '../useTriggerId';
 import { Entity } from '@backstage/catalog-model';
 import { Substitutions, BuildTrigger } from '../../api/types';
 import { buildRouteRef } from '../../plugin';
@@ -167,7 +166,8 @@ export const WorkflowRunsTableView = ({
 
 export const WorkflowRunsTable = ({ entity }: { entity: Entity }) => {
   const { value: projectName, loading } = useProjectName(entity);
-  let { value: triggerName } = useTriggerId(entity);
+  let triggerName =
+    entity?.metadata.annotations?.['google.com/cloudbuild-trigger-name'];
   const [projectId] = (projectName ?? '/').split('/');
 
   if (triggerName === undefined) {

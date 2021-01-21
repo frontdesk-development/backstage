@@ -212,7 +212,7 @@ catalog:
       target: https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/acme-corp.yaml
 
     # trivago terraform template
-    - type: github
+    - type: url 
       target: https://github.com/frontdesk-development/cookiecutter-gcp-cicd/blob/master/template.yaml 
 
 

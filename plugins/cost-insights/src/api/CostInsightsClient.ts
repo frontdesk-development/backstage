@@ -30,6 +30,7 @@ import {
   Trendline,
   ChangeStatistic,
   GcpConfig,
+  Label,
 } from '../types';
 import { entityOf, getGroupedProducts } from '../utils/mockData';
 import { OAuthApi } from '@backstage/core';
@@ -125,7 +126,40 @@ export class CostInsightsClient implements CostInsightsApi {
       const project: Project = { id: projects[key].projectId };
       projectArray[y] = project;
     });
+
     return projectArray;
+  }
+
+  async getTierLabels(group: string): Promise<Project[]> {
+    // const { labels } = await this.memoizedProjects(await this.getToken());
+
+    const labelArray: Label[] = [];
+
+    // Object.keys(labels).forEach(function (key) {
+    //   const y: number = +key;
+    //   const label: Label = { id: labels[key].projectId };
+    //   labelArray[y] = label;
+    // });
+
+    labelArray.push({ id: 'tier-label' });
+
+    return labelArray;
+  }
+
+  async getPilarLabels(group: string): Promise<Project[]> {
+    // const { labels } = await this.memoizedProjects(await this.getToken());
+
+    const labelArray: Label[] = [];
+
+    // Object.keys(labels).forEach(function (key) {
+    //   const y: number = +key;
+    //   const label: Label = { id: labels[key].projectId };
+    //   labelArray[y] = label;
+    // });
+
+    labelArray.push({ id: 'pilar-label' });
+
+    return labelArray;
   }
 
   async getToken(): Promise<string> {
