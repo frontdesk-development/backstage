@@ -18,7 +18,7 @@ import { useAsync } from 'react-use';
 import { Entity } from '@backstage/catalog-model';
 
 export const CLOUDBUILD_ANNOTATION_TRIGGER_NAME =
-  'google.com/cloudbuild-trigger-name;';
+  'google.com/cloudbuild-trigger-name';
 
 export const useTriggerId = (entity: Entity) => {
   const { value, loading, error } = useAsync(async () => {

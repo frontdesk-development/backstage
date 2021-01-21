@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { useState } from 'react';
-import { useAsyncRetry, useAsync } from 'react-use';
+import { useAsyncRetry } from 'react-use';
 import { WorkflowRun } from './WorkflowRunsTable/WorkflowRunsTable';
 import { cloudbuildApiRef } from '../api/CloudbuildApi';
 import { useApi, errorApiRef } from '@backstage/core';
@@ -34,18 +34,13 @@ export function useWorkflowRuns({
   const [page, setPage] = useState(0);
   const [pageSize, setPageSize] = useState(5);
 
-  const { value: triggerId } = useAsync(
-    () => api.getTriggerId({ projectId, triggerName }),
-    [projectId, triggerName],
-  );
-
   const { loading, value: runs, retry, error } = useAsyncRetry<
     WorkflowRun[]
   >(async () => {
     return api
       .listWorkflowRuns({
         projectId,
-        triggerId,
+        triggerName,
       })
       .then(
         (
