@@ -23,7 +23,7 @@ import React, {
 } from 'react';
 import { configApiRef, useApi } from '@backstage/core';
 import { Config as BackstageConfig } from '@backstage/config';
-import { Currency, Icon, Metric, Product } from '../types';
+import { Currency, Icon, Metric, Product, GcpConfig } from '../types';
 import { getIcon } from '../utils/navigation';
 import { validateMetrics } from '../utils/config';
 import { defaultCurrencies } from '../utils/currency';
@@ -54,6 +54,7 @@ export type ConfigContextProps = {
   icons: Icon[];
   engineerCost: number;
   currencies: Currency[];
+  gcpConfig: GcpConfig;
 };
 
 export const ConfigContext = createContext<ConfigContextProps | undefined>(
@@ -66,6 +67,15 @@ const defaultState: ConfigContextProps = {
   icons: [],
   engineerCost: 0,
   currencies: defaultCurrencies,
+  gcpConfig: {
+    type: '',
+    projectId: '',
+    privateKeyId: '',
+    privateKey: '',
+    clientEmail: '',
+    clientId: '',
+    clientX509CertUrl: '',
+  },
 };
 
 export const ConfigProvider = ({ children }: PropsWithChildren<{}>) => {
@@ -110,11 +120,38 @@ export const ConfigProvider = ({ children }: PropsWithChildren<{}>) => {
       return c.getNumber('costInsights.engineerCost');
     }
 
+    function getGCPConfig(): GcpConfig {
+      const gcpConfig: GcpConfig = {
+        type: '',
+        projectId: '',
+        privateKeyId: '',
+        privateKey: '',
+        clientEmail: '',
+        clientId: '',
+        clientX509CertUrl: '',
+      };
+
+      gcpConfig.type = c.getString('costInsights.gcpConfig.type');
+      gcpConfig.projectId = c.getString('costInsights.gcpConfig.projectId');
+      gcpConfig.privateKeyId = c.getString(
+        'costInsights.gcpConfig.privateKeyId',
+      );
+      gcpConfig.privateKey = c.getString('costInsights.gcpConfig.privateKey');
+      gcpConfig.clientEmail = c.getString('costInsights.gcpConfig.clientEmail');
+      gcpConfig.clientId = c.getString('costInsights.gcpConfig.clientId');
+      gcpConfig.clientX509CertUrl = c.getString(
+        'costInsights.gcpConfig.clientX509CertUrl',
+      );
+
+      return gcpConfig;
+    }
+
     function getConfig() {
       const products = getProducts();
       const metrics = getMetrics();
       const engineerCost = getEngineerCost();
       const icons = getIcons();
+      const gcpConfig = getGCPConfig();
 
       validateMetrics(metrics);
 
@@ -124,6 +161,7 @@ export const ConfigProvider = ({ children }: PropsWithChildren<{}>) => {
         products,
         engineerCost,
         icons,
+        gcpConfig,
       }));
 
       setLoading(false);

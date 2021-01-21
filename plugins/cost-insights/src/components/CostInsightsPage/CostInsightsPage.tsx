@@ -52,6 +52,7 @@ export const CostInsightsPage = () => {
   const classes = useSubtleTypographyStyles();
   const client = useApi(costInsightsApiRef);
   const config = useConfig();
+  client.setConfig(config.gcpConfig);
   const groups = useGroups();
   const lastCompleteBillingDate = useLastCompleteBillingDate();
   const [currency, setCurrency] = useCurrency();

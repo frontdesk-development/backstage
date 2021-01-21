@@ -48,15 +48,42 @@ interface Config {
         default?: boolean;
       };
     };
-    
-    /**
-     * @visibility frontend
-     */
-    clientId: string;
 
-    /**
-     * @visibility frontend
-     */
-    clientSecret: string;
+    gcpConfig: {
+      /**
+       * @visibility frontend
+       */
+      type: string;
+
+      /**
+       * @visibility frontend
+       */
+      projectId: string;
+
+      /**
+       * @visibility frontend
+       */
+      privateKeyId: string;
+
+      /**
+       * @visibility frontend
+       */
+      privateKey: string;
+
+      /**
+       * @visibility frontend
+       */
+      clientEmail: string;
+
+      /**
+       * @visibility frontend
+       */
+      clientId: string;
+
+      /**
+       * @visibility frontend
+       */
+      clientX509CertUrl: string;
+    };
   };
 }

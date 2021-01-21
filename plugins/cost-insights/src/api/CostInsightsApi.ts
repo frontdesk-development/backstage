@@ -23,6 +23,7 @@ import {
   Project,
   Maybe,
   MetricData,
+  GcpConfig,
 } from '../types';
 
 export type ProductInsightsOptions = {
@@ -48,6 +49,11 @@ export type ProductInsightsOptions = {
 };
 
 export type CostInsightsApi = {
+  /**
+   * Set the gcp config parameters from the app-config
+   * @param gcpConfig
+   */
+  setConfig(gcpConfig: GcpConfig): void;
   /**
    * Get the most current date for which billing data is complete, in YYYY-MM-DD format. This helps
    * define the intervals used in other API methods to avoid showing incomplete cost. The costs for
