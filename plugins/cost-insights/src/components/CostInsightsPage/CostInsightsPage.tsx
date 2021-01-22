@@ -138,8 +138,8 @@ export const CostInsightsPage = () => {
             fetchedDailyCost,
           ] = await Promise.all([
             client.getGroupProjects(pageFilters.group),
-            client.getTierLabels(pageFilters.group),
-            client.getPilarLabels(pageFilters.group),
+            client.getTierLabels(pageFilters.project),
+            client.getPilarLabels(pageFilters.project),
             client.getAlerts(pageFilters.group),
             pageFilters.metric
               ? client.getDailyMetricData(pageFilters.metric, intervals)

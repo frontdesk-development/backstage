@@ -76,17 +76,17 @@ export type CostInsightsApi = {
    * similar concept in billing accounts). These act as filters for the displayed costs, users can
    * choose whether they see all costs for a group, or those from a particular owned project.
    */
-  getGroupProjects(group: string): Promise<Project[]>;
+  getGroupProjects(projectId?: string): Promise<Project[]>;
 
   /**
    * Get a list of Tier labels that belong to this group.
    */
-  getTierLabels(group: string): Promise<Label[]>;
+  getTierLabels(projectId?: Maybe<string>): Promise<Label[]>;
 
   /**
    * Get a list of Pilar labels that belong to this group.
    */
-  getPilarLabels(group: string): Promise<Label[]>;
+  getPilarLabels(group: Maybe<string>): Promise<Label[]>;
 
   /**
    * Get daily cost aggregations for a given group and interval timeframe.

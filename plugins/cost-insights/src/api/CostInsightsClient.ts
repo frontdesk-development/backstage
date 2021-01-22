@@ -130,60 +130,16 @@ export class CostInsightsClient implements CostInsightsApi {
     return projectArray;
   }
 
-  async getTierLabels(group: string): Promise<Project[]> {
-    // const { labels } = await this.memoizedProjects(await this.getToken());
+  async getTierLabels(projectId: string): Promise<Project[]> {
+    const labels = await this.bigQuery.getTierLabels(projectId);
 
-    const labelArray: Label[] = [];
-
-    // Object.keys(labels).forEach(function (key) {
-    //   const y: number = +key;
-    //   const label: Label = { id: labels[key].projectId };
-    //   labelArray[y] = label;
-    // });
-
-    labelArray.push({ id: 'tier-label' });
-
-    return labelArray;
+    return labels;
   }
 
-  async getPilarLabels(group: string): Promise<Project[]> {
-    // const { labels } = await this.memoizedProjects(await this.getToken());
+  async getPilarLabels(projectId: string): Promise<Project[]> {
+    const labels = await this.bigQuery.getPilarLabels(projectId);
 
-    const labelArray: Label[] = [];
-
-    // Object.keys(labels).forEach(function (key) {
-    //   const y: number = +key;
-    //   const label: Label = { id: labels[key].projectId };
-    //   labelArray[y] = label;
-    // });
-
-    labelArray.push({ id: 'pilar-label' });
-
-    return labelArray;
-  }
-
-  async getToken(): Promise<string> {
-    return this.googleAuthApi.getAccessToken(
-      'https://www.googleapis.com/auth/cloud-platform',
-    );
-  }
-
-  async getDailyMetricData(
-    metric: string,
-    intervals: string,
-  ): Promise<MetricData> {
-    const aggregation: { amount: number; date: string }[] = [];
-    const cost: MetricData = await this.request(
-      { metric, intervals },
-      {
-        format: 'number',
-        aggregation: aggregation,
-        change: changeOf(aggregation),
-        trendline: trendlineOf(aggregation),
-      },
-    );
-
-    return cost;
+    return labels;
   }
 
   async getGroupDailyCost(group: string, intervals: string): Promise<Cost> {
@@ -228,6 +184,30 @@ export class CostInsightsClient implements CostInsightsApi {
     );
 
     return projectDailyCost;
+  }
+
+  async getToken(): Promise<string> {
+    return this.googleAuthApi.getAccessToken(
+      'https://www.googleapis.com/auth/cloud-platform',
+    );
+  }
+
+  async getDailyMetricData(
+    metric: string,
+    intervals: string,
+  ): Promise<MetricData> {
+    const aggregation: { amount: number; date: string }[] = [];
+    const cost: MetricData = await this.request(
+      { metric, intervals },
+      {
+        format: 'number',
+        aggregation: aggregation,
+        change: changeOf(aggregation),
+        trendline: trendlineOf(aggregation),
+      },
+    );
+
+    return cost;
   }
 
   async getProductInsights(options2: ProductInsightsOptions): Promise<Entity> {

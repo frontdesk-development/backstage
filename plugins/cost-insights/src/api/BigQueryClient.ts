@@ -17,22 +17,22 @@
 
 import moize from 'moize';
 import { BigQuery } from '@google-cloud/bigquery';
-import { GcpConfig } from '../types';
+import { GcpConfig, Label } from '../types';
 
 const MAX_AGE = 1000 * 60 * 60 * 24; // 24 hours
 export class BigQueryClass {
   client: BigQuery;
-  memoizedAll: any;
-  memoizedProject: any;
+  memoizedQuery: any;
+  memoizedLabelQuery: any;
 
   constructor() {
     this.client = new BigQuery();
-    this.memoizedAll = moize(
+    this.memoizedQuery = moize(
       async (query: string) => await this.runQuery(query),
       { maxAge: MAX_AGE, updateExpire: true },
     );
-    this.memoizedProject = moize(
-      async (query: string) => await this.runQuery(query),
+    this.memoizedLabelQuery = moize(
+      async (query: string) => await this.runLabelQuery(query),
       { maxAge: MAX_AGE, updateExpire: true },
     );
   }
@@ -58,6 +58,7 @@ export class BigQueryClass {
     };
     this.client = new BigQuery(login);
   }
+
   public async queryBigQuery(
     intervals: string,
     projectName?: string,
@@ -114,7 +115,7 @@ export class BigQueryClass {
     WHERE usage_start_time > TIMESTAMP(DATE "${newDate}") AND project.id = \"${projectName}\" AND usage_start_time < TIMESTAMP(DATE "${endDate}")
     GROUP BY date`;
 
-    return this.memoizedProject(query);
+    return this.memoizedQuery(query);
   }
 
   async runQueryForAll(
@@ -130,8 +131,34 @@ export class BigQueryClass {
     WHERE usage_start_time > TIMESTAMP(DATE "${newDate}") AND usage_start_time < TIMESTAMP(DATE "${endDate}")
     GROUP BY date`;
 
-    // console.log("After moize ALL: ",memoizedAll(query));
-    return this.memoizedAll(query);
+    return this.memoizedQuery(query);
+  }
+
+  async getTierLabels(projectName?: string): Promise<Label[]> {
+    let query = `SELECT 
+      DISTINCT(l.value) FROM \`billing.gcp_billing_export_v1_01241D_E5B8D7_0F597A\`, UNNEST(project.labels) as l
+      WHERE (l.key="trv-tier")`;
+    if (projectName) {
+      query = `SELECT 
+      DISTINCT(l.value) FROM \`billing.gcp_billing_export_v1_01241D_E5B8D7_0F597A\`, UNNEST(project.labels) as l
+      WHERE (l.key="trv-tier" AND project.id = \"${projectName}\")`;
+    }
+
+    return await this.memoizedLabelQuery(query);
+  }
+
+  async getPilarLabels(projectName?: string): Promise<Label[]> {
+    let query = `SELECT 
+      DISTINCT(l.value) FROM \`billing.gcp_billing_export_v1_01241D_E5B8D7_0F597A\`, UNNEST(project.labels) as l
+      WHERE (l.key="trv-pilar")`;
+
+    if (projectName) {
+      query = `SELECT 
+      DISTINCT(l.value) FROM \`billing.gcp_billing_export_v1_01241D_E5B8D7_0F597A\`, UNNEST(project.labels) as l
+      WHERE (l.key="trv-pilar" AND project.id = \"${projectName}\")`;
+    }
+
+    return await this.memoizedLabelQuery(query);
   }
 
   public async runQuery(
@@ -166,5 +193,25 @@ export class BigQueryClass {
     }));
 
     return aggregation;
+  }
+
+  public async runLabelQuery(query: string): Promise<Label[]> {
+    const client = this.client;
+    const options = {
+      query: query,
+      // Location must match that of the dataset(s) referenced in the query.
+      location: 'EU',
+      useQueryCache: true,
+    };
+
+    const [job] = await client.createQueryJob(options);
+
+    const [rows] = await job.getQueryResults();
+
+    const labels: Label[] = rows.map((label: { value: string }) => ({
+      id: label.value,
+    }));
+
+    return labels;
   }
 }
