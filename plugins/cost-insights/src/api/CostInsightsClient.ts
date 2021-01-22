@@ -93,6 +93,45 @@ export class CostInsightsClient implements CostInsightsApi {
     );
   }
 
+  getSqlWhereStatement(pageFilters: PageFilters): string {
+    let whereClouse = ' ';
+    if (pageFilters.pillarLabel) {
+      if (whereClouse.length === 1) {
+        whereClouse = 'AND ';
+      }
+      whereClouse = `${whereClouse}(SELECT value FROM UNNEST(project.labels) WHERE key = \"trv-pillar\")=\"${pageFilters.pillarLabel}\"`;
+    }
+
+    if (pageFilters.productLabel) {
+      if (whereClouse.length > 0) {
+        whereClouse = `${whereClouse}AND `;
+      }
+      whereClouse = `${whereClouse}(SELECT value FROM UNNEST(project.labels) WHERE key = \"trv-product\")=\"${pageFilters.productLabel}\"`;
+    }
+
+    if (pageFilters.domainLabel) {
+      if (whereClouse.length > 0) {
+        whereClouse = `${whereClouse}AND `;
+      }
+      whereClouse = `${whereClouse}(SELECT value FROM UNNEST(project.labels) WHERE key = \"trv-domain\")=\"${pageFilters.domainLabel}\"`;
+    }
+
+    if (pageFilters.teamLabel) {
+      if (whereClouse.length > 0) {
+        whereClouse = `${whereClouse}AND `;
+      }
+      whereClouse = `${whereClouse}(SELECT value FROM UNNEST(project.labels) WHERE key = \"trv-team\")=\"${pageFilters.teamLabel}\"`;
+    }
+
+    if (pageFilters.tierLabel) {
+      if (whereClouse.length > 0) {
+        whereClouse = `${whereClouse}AND `;
+      }
+      whereClouse = `${whereClouse}(SELECT value FROM UNNEST(project.labels) WHERE key = \"trv-tier\")=\"${pageFilters.tierLabel}\"`;
+    }
+    return whereClouse;
+  }
+
   async getUserGroups(userId: string): Promise<Group[]> {
     const groups: Group[] = await this.request({ userId }, [{ id: 'trivago' }]);
 
@@ -131,32 +170,27 @@ export class CostInsightsClient implements CostInsightsApi {
   }
 
   async getTierLabels(projectId: string): Promise<Project[]> {
-    const labels = await this.bigQuery.getTierLabels(projectId);
-
+    const labels = await this.bigQuery.getLabels('trv-tier', projectId);
     return labels;
   }
 
-  async getPilarLabels(projectId: string): Promise<Project[]> {
-    const labels = await this.bigQuery.getPilarLabels(projectId);
-
+  async getPillarLabels(projectId: string): Promise<Project[]> {
+    const labels = await this.bigQuery.getLabels('trv-pillar', projectId);
     return labels;
   }
 
   async getDomainLabels(projectId: string): Promise<Project[]> {
-    const labels = await this.bigQuery.getDomainLabels(projectId);
-
+    const labels = await this.bigQuery.getLabels('trv-domain', projectId);
     return labels;
   }
 
   async getProductLabels(projectId: string): Promise<Project[]> {
-    const labels = await this.bigQuery.getProductLabels(projectId);
-
+    const labels = await this.bigQuery.getLabels('trv-product', projectId);
     return labels;
   }
 
   async getTeamLabels(projectId: string): Promise<Project[]> {
-    const labels = await this.bigQuery.getTeamLabels(projectId);
-
+    const labels = await this.bigQuery.getLabels('trv-team', projectId);
     return labels;
   }
 
@@ -164,46 +198,16 @@ export class CostInsightsClient implements CostInsightsApi {
     pageFilters: PageFilters,
     intervals: string,
   ): Promise<Cost> {
-    let whereClouse = ' ';
-    if (pageFilters.pilarLabel) {
-      if (whereClouse.length === 1) {
-        whereClouse = 'AND ';
-      }
-      whereClouse = `${whereClouse}(SELECT value FROM UNNEST(project.labels) WHERE key = \"trv-pillar\")=\"${pageFilters.pilarLabel}\"`;
-    }
-
-    if (pageFilters.productLabel) {
-      if (whereClouse.length > 0) {
-        whereClouse = `${whereClouse}AND `;
-      }
-      whereClouse = `${whereClouse}(SELECT value FROM UNNEST(project.labels) WHERE key = \"trv-product\")=\"${pageFilters.productLabel}\"`;
-    }
-
-    if (pageFilters.domainLabel) {
-      if (whereClouse.length > 0) {
-        whereClouse = `${whereClouse}AND `;
-      }
-      whereClouse = `${whereClouse}(SELECT value FROM UNNEST(project.labels) WHERE key = \"trv-domain\")=\"${pageFilters.domainLabel}\"`;
-    }
-
-    if (pageFilters.teamLabel) {
-      if (whereClouse.length > 0) {
-        whereClouse = `${whereClouse}AND `;
-      }
-      whereClouse = `${whereClouse}(SELECT value FROM UNNEST(project.labels) WHERE key = \"trv-team\")=\"${pageFilters.teamLabel}\"`;
-    }
-
-    if (pageFilters.tierLabel) {
-      if (whereClouse.length > 0) {
-        whereClouse = `${whereClouse}AND `;
-      }
-      whereClouse = `${whereClouse}(SELECT value FROM UNNEST(project.labels) WHERE key = \"trv-tier\")=\"${pageFilters.tierLabel}\"`;
-    }
+    const whereStatement = this.getSqlWhereStatement(pageFilters);
 
     const aggregation: {
       amount: number;
       date: string;
-    }[] = await this.bigQuery.queryBigQuery(intervals, undefined, whereClouse);
+    }[] = await this.bigQuery.queryBigQuery(
+      intervals,
+      undefined,
+      whereStatement,
+    );
 
     // const aggregation: {amount: number, date: string}[] = []
     const groupDailyCost: Cost = await this.request(
@@ -225,48 +229,18 @@ export class CostInsightsClient implements CostInsightsApi {
     pageFilters: PageFilters,
     intervals: string,
   ): Promise<Cost> {
-    let whereClouse = ' ';
-    if (pageFilters.pilarLabel) {
-      if (whereClouse.length === 1) {
-        whereClouse = 'AND ';
-      }
-      whereClouse = `${whereClouse}(SELECT value FROM UNNEST(project.labels) WHERE key = \"trv-pillar\")=\"${pageFilters.pilarLabel}\"`;
-    }
-
-    if (pageFilters.productLabel) {
-      if (whereClouse.length > 0) {
-        whereClouse = `${whereClouse}AND `;
-      }
-      whereClouse = `${whereClouse}(SELECT value FROM UNNEST(project.labels) WHERE key = \"trv-product\")=\"${pageFilters.productLabel}\"`;
-    }
-
-    if (pageFilters.domainLabel) {
-      if (whereClouse.length > 0) {
-        whereClouse = `${whereClouse}AND `;
-      }
-      whereClouse = `${whereClouse}(SELECT value FROM UNNEST(project.labels) WHERE key = \"trv-domain\")=\"${pageFilters.domainLabel}\"`;
-    }
-
-    if (pageFilters.teamLabel) {
-      if (whereClouse.length > 0) {
-        whereClouse = `${whereClouse}AND `;
-      }
-      whereClouse = `${whereClouse}(SELECT value FROM UNNEST(project.labels) WHERE key = \"trv-team\")=\"${pageFilters.teamLabel}\"`;
-    }
-
-    if (pageFilters.tierLabel) {
-      if (whereClouse.length > 0) {
-        whereClouse = `${whereClouse}AND `;
-      }
-      whereClouse = `${whereClouse}(SELECT value FROM UNNEST(project.labels) WHERE key = \"trv-tier\")=\"${pageFilters.tierLabel}\"`;
-    }
+    const whereStatement = this.getSqlWhereStatement(pageFilters);
 
     if (pageFilters.project) {
       const project = pageFilters.project;
       const aggregation: {
         amount: number;
         date: string;
-      }[] = await this.bigQuery.queryBigQuery(intervals, project, whereClouse);
+      }[] = await this.bigQuery.queryBigQuery(
+        intervals,
+        project,
+        whereStatement,
+      );
 
       const projectDailyCost: Cost = await this.request(
         { project, intervals },

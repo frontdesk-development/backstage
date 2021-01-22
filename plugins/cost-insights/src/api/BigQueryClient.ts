@@ -154,70 +154,14 @@ export class BigQueryClass {
     return this.memoizedQuery(query);
   }
 
-  async getTierLabels(projectName?: string): Promise<Label[]> {
+  async getLabels(label: string, projectName?: string) {
     let query = `SELECT 
       DISTINCT(l.value) FROM \`billing.gcp_billing_export_v1_01241D_E5B8D7_0F597A\`, UNNEST(project.labels) as l
-      WHERE (l.key="trv-tier")`;
+      WHERE (l.key="${label}")`;
     if (projectName) {
       query = `SELECT 
       DISTINCT(l.value) FROM \`billing.gcp_billing_export_v1_01241D_E5B8D7_0F597A\`, UNNEST(project.labels) as l
       WHERE (l.key="trv-tier" AND project.id = \"${projectName}\")`;
-    }
-
-    return await this.memoizedLabelQuery(query);
-  }
-
-  async getPilarLabels(projectName?: string): Promise<Label[]> {
-    let query = `SELECT 
-      DISTINCT(l.value) FROM \`billing.gcp_billing_export_v1_01241D_E5B8D7_0F597A\`, UNNEST(project.labels) as l
-      WHERE (l.key="trv-pillar")`;
-
-    if (projectName) {
-      query = `SELECT 
-      DISTINCT(l.value) FROM \`billing.gcp_billing_export_v1_01241D_E5B8D7_0F597A\`, UNNEST(project.labels) as l
-      WHERE (l.key="trv-pillar" AND project.id = \"${projectName}\")`;
-    }
-
-    return await this.memoizedLabelQuery(query);
-  }
-
-  async getDomainLabels(projectName?: string): Promise<Label[]> {
-    let query = `SELECT 
-      DISTINCT(l.value) FROM \`billing.gcp_billing_export_v1_01241D_E5B8D7_0F597A\`, UNNEST(project.labels) as l
-      WHERE (l.key="trv-domain")`;
-
-    if (projectName) {
-      query = `SELECT 
-      DISTINCT(l.value) FROM \`billing.gcp_billing_export_v1_01241D_E5B8D7_0F597A\`, UNNEST(project.labels) as l
-      WHERE (l.key="trv-domain" AND project.id = \"${projectName}\")`;
-    }
-
-    return await this.memoizedLabelQuery(query);
-  }
-
-  async getProductLabels(projectName?: string): Promise<Label[]> {
-    let query = `SELECT 
-      DISTINCT(l.value) FROM \`billing.gcp_billing_export_v1_01241D_E5B8D7_0F597A\`, UNNEST(project.labels) as l
-      WHERE (l.key="trv-product")`;
-
-    if (projectName) {
-      query = `SELECT 
-      DISTINCT(l.value) FROM \`billing.gcp_billing_export_v1_01241D_E5B8D7_0F597A\`, UNNEST(project.labels) as l
-      WHERE (l.key="trv-product" AND project.id = \"${projectName}\")`;
-    }
-
-    return await this.memoizedLabelQuery(query);
-  }
-
-  async getTeamLabels(projectName?: string): Promise<Label[]> {
-    let query = `SELECT 
-      DISTINCT(l.value) FROM \`billing.gcp_billing_export_v1_01241D_E5B8D7_0F597A\`, UNNEST(project.labels) as l
-      WHERE (l.key="trv-team")`;
-
-    if (projectName) {
-      query = `SELECT 
-      DISTINCT(l.value) FROM \`billing.gcp_billing_export_v1_01241D_E5B8D7_0F597A\`, UNNEST(project.labels) as l
-      WHERE (l.key="trv-team" AND project.id = \"${projectName}\")`;
     }
 
     return await this.memoizedLabelQuery(query);

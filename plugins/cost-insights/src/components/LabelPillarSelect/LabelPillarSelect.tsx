@@ -18,17 +18,17 @@ import { MenuItem, Select } from '@material-ui/core';
 import { Maybe, Label } from '../../types';
 import { useSelectStyles as useStyles } from '../../utils/styles';
 
-type LabelPilarSelectProps = {
+type LabelPillarSelectProps = {
   label: Maybe<string>;
   labels: Array<Label>;
   onSelect: (label: Maybe<string>) => void;
 };
 
-export const LabelPilarSelect = ({
+export const LabelPillarSelect = ({
   label,
   labels,
   onSelect,
-}: LabelPilarSelectProps) => {
+}: LabelPillarSelectProps) => {
   const classes = useStyles();
 
   const labelOptions = labels
@@ -40,10 +40,10 @@ export const LabelPilarSelect = ({
   };
 
   const renderValue = (value: unknown) => {
-    const pilar = value as string;
+    const pillar = value as string;
     return (
-      <b data-testid={`selected-${pilar}`}>
-        {pilar === 'all' ? 'All pilars' : pilar}
+      <b data-testid={`selected-${pillar}`}>
+        {pillar === 'all' ? 'All pillars' : pillar}
       </b>
     );
   };
@@ -64,7 +64,7 @@ export const LabelPilarSelect = ({
           value={lab.id}
           data-testid={`option-${lab.id}`}
         >
-          {lab.id === 'all' ? 'All pilars' : lab.id}
+          {lab.id === 'all' ? 'All pillars' : lab.id}
         </MenuItem>
       ))}
     </Select>

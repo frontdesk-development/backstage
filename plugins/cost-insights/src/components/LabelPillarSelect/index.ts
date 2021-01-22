@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export { LabelPilarSelect } from './LabelPilarSelect';
+export { LabelPillarSelect } from './LabelPillarSelect';

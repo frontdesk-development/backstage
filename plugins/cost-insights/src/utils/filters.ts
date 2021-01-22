@@ -22,7 +22,7 @@ export function getDefaultPageFilters(groups: Group[]): PageFilters {
     project: null,
     duration: Duration.P90D,
     metric: null,
-    pilarLabel: null,
+    pillarLabel: null,
     tierLabel: null,
     domainLabel: null,
     productLabel: null,

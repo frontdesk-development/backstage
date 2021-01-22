@@ -54,7 +54,7 @@ import {
 import { mapLoadingToProps } from './selector';
 import { ProjectSelect } from '../ProjectSelect';
 import { LabelTierSelect } from '../LabelTierSelect';
-import { LabelPilarSelect } from '../LabelPilarSelect';
+import { LabelPillarSelect } from '../LabelPillarSelect';
 import { LabelDomainSelect } from '../LabelDomainSelect';
 import { LabelProductSelect } from '../LabelProductSelect';
 import { LabelTeamSelect } from '../LabelTeamSelect';
@@ -71,7 +71,7 @@ export const CostInsightsPage = () => {
   const [currency, setCurrency] = useCurrency();
   const [projects, setProjects] = useState<Maybe<Project[]>>(null);
   const [tierLabel, setTierLabels] = useState<Maybe<Label[]>>(null);
-  const [pilarLabel, setPilarLabels] = useState<Maybe<Label[]>>(null);
+  const [pillarLabel, setPillarLabels] = useState<Maybe<Label[]>>(null);
   const [domainLabel, setDomainLabels] = useState<Maybe<Label[]>>(null);
   const [productLabel, setProductLabels] = useState<Maybe<Label[]>>(null);
   const [teamLabel, setTeamLabels] = useState<Maybe<Label[]>>(null);
@@ -119,10 +119,10 @@ export const CostInsightsPage = () => {
       tierLabel: tier === 'all' ? null : tier,
     });
 
-  const setPilar = (pilar: Maybe<string>) =>
+  const setPillar = (pillar: Maybe<string>) =>
     setPageFilters({
       ...pageFilters,
-      pilarLabel: pilar === 'all' ? null : pilar,
+      pillarLabel: pillar === 'all' ? null : pillar,
     });
 
   const setTeam = (team: Maybe<string>) =>
@@ -156,7 +156,7 @@ export const CostInsightsPage = () => {
           const [
             fetchedProjects,
             fetchedTierLabels,
-            fetchedPilarLabels,
+            fetchedPillarLabels,
             fetchedDomainLabels,
             fetchedProductLabels,
             fetchedTeamLabels,
@@ -166,7 +166,7 @@ export const CostInsightsPage = () => {
           ] = await Promise.all([
             client.getGroupProjects(pageFilters.group),
             client.getTierLabels(pageFilters.project),
-            client.getPilarLabels(pageFilters.project),
+            client.getPillarLabels(pageFilters.project),
             client.getDomainLabels(pageFilters.project),
             client.getProductLabels(pageFilters.project),
             client.getTeamLabels(pageFilters.project),
@@ -180,7 +180,7 @@ export const CostInsightsPage = () => {
           ]);
           setProjects(fetchedProjects);
           setTierLabels(fetchedTierLabels);
-          setPilarLabels(fetchedPilarLabels);
+          setPillarLabels(fetchedPillarLabels);
           setDomainLabels(fetchedDomainLabels);
           setProductLabels(fetchedProductLabels);
           setTeamLabels(fetchedTeamLabels);
@@ -258,8 +258,8 @@ export const CostInsightsPage = () => {
     dispatchLoadingReset(loadingActions);
   };
 
-  const onPilarLabelSelect = (pilarLabel: Maybe<string>) => {
-    setPilar(pilarLabel);
+  const onPillarLabelSelect = (pillarLabel: Maybe<string>) => {
+    setPillar(pillarLabel);
     dispatchLoadingReset(loadingActions);
   };
 
@@ -326,10 +326,10 @@ export const CostInsightsPage = () => {
         />
       </Box>
       <Box mr={1}>
-        <LabelPilarSelect
-          label={pageFilters.pilarLabel}
-          labels={pilarLabel || []}
-          onSelect={onPilarLabelSelect}
+        <LabelPillarSelect
+          label={pageFilters.pillarLabel}
+          labels={pillarLabel || []}
+          onSelect={onPillarLabelSelect}
         />
       </Box>
       <Box mr={1}>

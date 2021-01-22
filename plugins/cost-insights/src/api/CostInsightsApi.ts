@@ -85,22 +85,22 @@ export type CostInsightsApi = {
   getTierLabels(projectId?: Maybe<string>): Promise<Label[]>;
 
   /**
-   * Get a list of Pilar labels that belong to this group.
+   * Get a list of Pillar labels that belong to this group.
    */
-  getPilarLabels(group: Maybe<string>): Promise<Label[]>;
+  getPillarLabels(group: Maybe<string>): Promise<Label[]>;
 
   /**
-   * Get a list of Pilar labels that belong to this group.
+   * Get a list of Domain labels that belong to this group.
    */
   getDomainLabels(group: Maybe<string>): Promise<Label[]>;
 
   /**
-   * Get a list of Pilar labels that belong to this group.
+   * Get a list of Product labels that belong to this group.
    */
   getProductLabels(group: Maybe<string>): Promise<Label[]>;
 
   /**
-   * Get a list of Pilar labels that belong to this group.
+   * Get a list of Team labels that belong to this group.
    */
   getTeamLabels(group: Maybe<string>): Promise<Label[]>;
   /**

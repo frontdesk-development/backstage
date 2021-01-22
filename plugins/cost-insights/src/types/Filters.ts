@@ -23,7 +23,7 @@ export interface PageFilters {
   duration: Duration;
   metric: string | null;
   tierLabel: Maybe<string>;
-  pilarLabel: Maybe<string>;
+  pillarLabel: Maybe<string>;
   domainLabel: Maybe<string>;
   productLabel: Maybe<string>;
   teamLabel: Maybe<string>;
