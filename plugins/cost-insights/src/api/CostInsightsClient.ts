@@ -30,7 +30,7 @@ import {
   Trendline,
   ChangeStatistic,
   GcpConfig,
-  Label,
+  PageFilters,
 } from '../types';
 import { entityOf, getGroupedProducts } from '../utils/mockData';
 import { OAuthApi } from '@backstage/core';
@@ -116,7 +116,7 @@ export class CostInsightsClient implements CostInsightsApi {
     return response.json();
   }
 
-  async getGroupProjects(group: string): Promise<Project[]> {
+  async getGroupProjects(_group: string): Promise<Project[]> {
     const { projects } = await this.memoizedProjects(await this.getToken());
 
     const projectArray: Project[] = [];
@@ -142,15 +142,72 @@ export class CostInsightsClient implements CostInsightsApi {
     return labels;
   }
 
-  async getGroupDailyCost(group: string, intervals: string): Promise<Cost> {
+  async getDomainLabels(projectId: string): Promise<Project[]> {
+    const labels = await this.bigQuery.getDomainLabels(projectId);
+
+    return labels;
+  }
+
+  async getProductLabels(projectId: string): Promise<Project[]> {
+    const labels = await this.bigQuery.getProductLabels(projectId);
+
+    return labels;
+  }
+
+  async getTeamLabels(projectId: string): Promise<Project[]> {
+    const labels = await this.bigQuery.getTeamLabels(projectId);
+
+    return labels;
+  }
+
+  async getGroupDailyCost(
+    pageFilters: PageFilters,
+    intervals: string,
+  ): Promise<Cost> {
+    let whereClouse = ' ';
+    if (pageFilters.pilarLabel) {
+      if (whereClouse.length === 1) {
+        whereClouse = 'AND ';
+      }
+      whereClouse = `${whereClouse}(SELECT value FROM UNNEST(project.labels) WHERE key = \"trv-pillar\")=\"${pageFilters.pilarLabel}\"`;
+    }
+
+    if (pageFilters.productLabel) {
+      if (whereClouse.length > 0) {
+        whereClouse = `${whereClouse}AND `;
+      }
+      whereClouse = `${whereClouse}(SELECT value FROM UNNEST(project.labels) WHERE key = \"trv-product\")=\"${pageFilters.productLabel}\"`;
+    }
+
+    if (pageFilters.domainLabel) {
+      if (whereClouse.length > 0) {
+        whereClouse = `${whereClouse}AND `;
+      }
+      whereClouse = `${whereClouse}(SELECT value FROM UNNEST(project.labels) WHERE key = \"trv-domain\")=\"${pageFilters.domainLabel}\"`;
+    }
+
+    if (pageFilters.teamLabel) {
+      if (whereClouse.length > 0) {
+        whereClouse = `${whereClouse}AND `;
+      }
+      whereClouse = `${whereClouse}(SELECT value FROM UNNEST(project.labels) WHERE key = \"trv-team\")=\"${pageFilters.teamLabel}\"`;
+    }
+
+    if (pageFilters.tierLabel) {
+      if (whereClouse.length > 0) {
+        whereClouse = `${whereClouse}AND `;
+      }
+      whereClouse = `${whereClouse}(SELECT value FROM UNNEST(project.labels) WHERE key = \"trv-tier\")=\"${pageFilters.tierLabel}\"`;
+    }
+
     const aggregation: {
       amount: number;
       date: string;
-    }[] = await this.bigQuery.queryBigQuery(intervals);
+    }[] = await this.bigQuery.queryBigQuery(intervals, undefined, whereClouse);
 
     // const aggregation: {amount: number, date: string}[] = []
     const groupDailyCost: Cost = await this.request(
-      { group, intervals },
+      { group: 'trivago', intervals },
       {
         aggregation: aggregation,
         change: changeOf(aggregation),
@@ -164,26 +221,71 @@ export class CostInsightsClient implements CostInsightsApi {
     return groupDailyCost;
   }
 
-  async getProjectDailyCost(project: string, intervals: string): Promise<Cost> {
-    const aggregation: {
-      amount: number;
-      date: string;
-    }[] = await this.bigQuery.queryBigQuery(intervals, project);
+  async getProjectDailyCost(
+    pageFilters: PageFilters,
+    intervals: string,
+  ): Promise<Cost> {
+    let whereClouse = ' ';
+    if (pageFilters.pilarLabel) {
+      if (whereClouse.length === 1) {
+        whereClouse = 'AND ';
+      }
+      whereClouse = `${whereClouse}(SELECT value FROM UNNEST(project.labels) WHERE key = \"trv-pillar\")=\"${pageFilters.pilarLabel}\"`;
+    }
 
-    const projectDailyCost: Cost = await this.request(
-      { project, intervals },
-      {
-        id: project,
-        aggregation: aggregation,
-        change: changeOf(aggregation),
-        trendline: trendlineOf(aggregation),
-        // Optional field on Cost which needs to be supplied in order to see
-        // the product breakdown view in the top panel.
-        groupedCosts: getGroupedProducts(intervals),
-      },
-    );
+    if (pageFilters.productLabel) {
+      if (whereClouse.length > 0) {
+        whereClouse = `${whereClouse}AND `;
+      }
+      whereClouse = `${whereClouse}(SELECT value FROM UNNEST(project.labels) WHERE key = \"trv-product\")=\"${pageFilters.productLabel}\"`;
+    }
 
-    return projectDailyCost;
+    if (pageFilters.domainLabel) {
+      if (whereClouse.length > 0) {
+        whereClouse = `${whereClouse}AND `;
+      }
+      whereClouse = `${whereClouse}(SELECT value FROM UNNEST(project.labels) WHERE key = \"trv-domain\")=\"${pageFilters.domainLabel}\"`;
+    }
+
+    if (pageFilters.teamLabel) {
+      if (whereClouse.length > 0) {
+        whereClouse = `${whereClouse}AND `;
+      }
+      whereClouse = `${whereClouse}(SELECT value FROM UNNEST(project.labels) WHERE key = \"trv-team\")=\"${pageFilters.teamLabel}\"`;
+    }
+
+    if (pageFilters.tierLabel) {
+      if (whereClouse.length > 0) {
+        whereClouse = `${whereClouse}AND `;
+      }
+      whereClouse = `${whereClouse}(SELECT value FROM UNNEST(project.labels) WHERE key = \"trv-tier\")=\"${pageFilters.tierLabel}\"`;
+    }
+
+    if (pageFilters.project) {
+      const project = pageFilters.project;
+      const aggregation: {
+        amount: number;
+        date: string;
+      }[] = await this.bigQuery.queryBigQuery(intervals, project, whereClouse);
+
+      const projectDailyCost: Cost = await this.request(
+        { project, intervals },
+        {
+          id: project,
+          aggregation: aggregation,
+          change: changeOf(aggregation),
+          trendline: trendlineOf(aggregation),
+          // Optional field on Cost which needs to be supplied in order to see
+          // the product breakdown view in the top panel.
+          groupedCosts: getGroupedProducts(intervals),
+        },
+      );
+
+      return projectDailyCost;
+    }
+
+    const cost: Cost = { id: '', aggregation: [{ amount: 0, date: '' }] };
+    return cost;
   }
 
   async getToken(): Promise<string> {

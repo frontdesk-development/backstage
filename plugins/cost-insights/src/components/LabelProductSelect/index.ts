@@ -14,24 +14,4 @@
  * limitations under the License.
  */
 
-import { Maybe } from './Maybe';
-import { Duration } from './Duration';
-
-export interface PageFilters {
-  group: Maybe<string>;
-  project: Maybe<string>;
-  duration: Duration;
-  metric: string | null;
-  tierLabel: Maybe<string>;
-  pilarLabel: Maybe<string>;
-  domainLabel: Maybe<string>;
-  productLabel: Maybe<string>;
-  teamLabel: Maybe<string>;
-}
-
-export type ProductFilters = Array<ProductPeriod>;
-
-export interface ProductPeriod {
-  duration: Duration;
-  productType: string;
-}
+export { LabelProductSelect } from './LabelProductSelect';

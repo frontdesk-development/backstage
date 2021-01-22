@@ -55,6 +55,9 @@ import { mapLoadingToProps } from './selector';
 import { ProjectSelect } from '../ProjectSelect';
 import { LabelTierSelect } from '../LabelTierSelect';
 import { LabelPilarSelect } from '../LabelPilarSelect';
+import { LabelDomainSelect } from '../LabelDomainSelect';
+import { LabelProductSelect } from '../LabelProductSelect';
+import { LabelTeamSelect } from '../LabelTeamSelect';
 import { intervalsOf } from '../../utils/duration';
 import { useSubtleTypographyStyles } from '../../utils/styles';
 
@@ -69,6 +72,9 @@ export const CostInsightsPage = () => {
   const [projects, setProjects] = useState<Maybe<Project[]>>(null);
   const [tierLabel, setTierLabels] = useState<Maybe<Label[]>>(null);
   const [pilarLabel, setPilarLabels] = useState<Maybe<Label[]>>(null);
+  const [domainLabel, setDomainLabels] = useState<Maybe<Label[]>>(null);
+  const [productLabel, setProductLabels] = useState<Maybe<Label[]>>(null);
+  const [teamLabel, setTeamLabels] = useState<Maybe<Label[]>>(null);
   const [products, setProducts] = useState<Maybe<Product[]>>(null);
   const [dailyCost, setDailyCost] = useState<Maybe<Cost>>(null);
   const [metricData, setMetricData] = useState<Maybe<MetricData>>(null);
@@ -119,6 +125,24 @@ export const CostInsightsPage = () => {
       pilarLabel: pilar === 'all' ? null : pilar,
     });
 
+  const setTeam = (team: Maybe<string>) =>
+    setPageFilters({
+      ...pageFilters,
+      teamLabel: team === 'all' ? null : team,
+    });
+
+  const setProduct = (product: Maybe<string>) =>
+    setPageFilters({
+      ...pageFilters,
+      productLabel: product === 'all' ? null : product,
+    });
+
+  const setDomain = (domain: Maybe<string>) =>
+    setPageFilters({
+      ...pageFilters,
+      domainLabel: domain === 'all' ? null : domain,
+    });
+
   useEffect(() => {
     async function getInsights() {
       setError(null);
@@ -133,6 +157,9 @@ export const CostInsightsPage = () => {
             fetchedProjects,
             fetchedTierLabels,
             fetchedPilarLabels,
+            fetchedDomainLabels,
+            fetchedProductLabels,
+            fetchedTeamLabels,
             fetchedAlerts,
             fetchedMetricData,
             fetchedDailyCost,
@@ -140,17 +167,23 @@ export const CostInsightsPage = () => {
             client.getGroupProjects(pageFilters.group),
             client.getTierLabels(pageFilters.project),
             client.getPilarLabels(pageFilters.project),
+            client.getDomainLabels(pageFilters.project),
+            client.getProductLabels(pageFilters.project),
+            client.getTeamLabels(pageFilters.project),
             client.getAlerts(pageFilters.group),
             pageFilters.metric
               ? client.getDailyMetricData(pageFilters.metric, intervals)
               : null,
             pageFilters.project
-              ? client.getProjectDailyCost(pageFilters.project, intervals)
-              : client.getGroupDailyCost(pageFilters.group, intervals),
+              ? client.getProjectDailyCost(pageFilters, intervals)
+              : client.getGroupDailyCost(pageFilters, intervals),
           ]);
           setProjects(fetchedProjects);
           setTierLabels(fetchedTierLabels);
           setPilarLabels(fetchedPilarLabels);
+          setDomainLabels(fetchedDomainLabels);
+          setProductLabels(fetchedProductLabels);
+          setTeamLabels(fetchedTeamLabels);
           setAlerts(fetchedAlerts);
           setMetricData(fetchedMetricData);
           setDailyCost(fetchedDailyCost);
@@ -230,6 +263,21 @@ export const CostInsightsPage = () => {
     dispatchLoadingReset(loadingActions);
   };
 
+  const onDomainLabelSelect = (domainLabel: Maybe<string>) => {
+    setDomain(domainLabel);
+    dispatchLoadingReset(loadingActions);
+  };
+
+  const onProductLabelSelect = (productLabel: Maybe<string>) => {
+    setProduct(productLabel);
+    dispatchLoadingReset(loadingActions);
+  };
+
+  const onTeamLabelSelect = (teamLabel: Maybe<string>) => {
+    setTeam(teamLabel);
+    dispatchLoadingReset(loadingActions);
+  };
+
   const CostOverviewBanner = () => (
     <Box
       px={3}
@@ -257,6 +305,52 @@ export const CostInsightsPage = () => {
           project={pageFilters.project}
           projects={projects || []}
           onSelect={onProjectSelect}
+        />
+      </Box>
+    </Box>
+  );
+
+  const LabelsBanner = () => (
+    <Box
+      px={3}
+      display="flex"
+      justifyContent="flex-end"
+      alignItems="center"
+      minHeight={40}
+    >
+      <Box mr={1}>
+        <LabelTierSelect
+          label={pageFilters.tierLabel}
+          labels={tierLabel || []}
+          onSelect={onTierLabelSelect}
+        />
+      </Box>
+      <Box mr={1}>
+        <LabelPilarSelect
+          label={pageFilters.pilarLabel}
+          labels={pilarLabel || []}
+          onSelect={onPilarLabelSelect}
+        />
+      </Box>
+      <Box mr={1}>
+        <LabelDomainSelect
+          label={pageFilters.domainLabel}
+          labels={domainLabel || []}
+          onSelect={onDomainLabelSelect}
+        />
+      </Box>
+      <Box mr={1}>
+        <LabelProductSelect
+          label={pageFilters.productLabel}
+          labels={productLabel || []}
+          onSelect={onProductLabelSelect}
+        />
+      </Box>
+      <Box>
+        <LabelTeamSelect
+          label={pageFilters.teamLabel}
+          labels={teamLabel || []}
+          onSelect={onTeamLabelSelect}
         />
       </Box>
     </Box>
@@ -307,23 +401,8 @@ export const CostInsightsPage = () => {
                 <CostOverviewBanner />
               </Grid>
               <Grid item xs>
-                <Grid container direction="row">
-                  <Box px={3}>
-                    <LabelTierSelect
-                      label={pageFilters.tierLabel}
-                      labels={tierLabel || []}
-                      onSelect={onTierLabelSelect}
-                    />
-                  </Box>
-                  <Box>
-                    <LabelPilarSelect
-                      label={pageFilters.pilarLabel}
-                      labels={pilarLabel || []}
-                      onSelect={onPilarLabelSelect}
-                    />
-                  </Box>
-                </Grid>
-                <Box px={3} py={6}>
+                <LabelsBanner />
+                <Box px={3} py={6} pt={2}>
                   {!!dailyCost.aggregation.length && (
                     <CostOverviewCard
                       dailyCostData={dailyCost}

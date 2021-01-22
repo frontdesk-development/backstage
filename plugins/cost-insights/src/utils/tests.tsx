@@ -64,6 +64,11 @@ export const MockFilterProvider = ({
       project: null,
       duration: Duration.P90D,
       metric: null,
+      pilarLabel: null,
+      tierLabel: null,
+      domainLabel: null,
+      productLabel: null,
+      teamLabel: null,
     },
     productFilters: [],
     setPageFilters: jest.fn(),
@@ -110,6 +115,15 @@ export const MockConfigProvider = ({
     icons: [],
     engineerCost: 0,
     currencies: [],
+    gcpConfig: {
+      type: '',
+      clientEmail: '',
+      clientId: '',
+      clientX509CertUrl: '',
+      privateKey: '',
+      privateKeyId: '',
+      projectId: '',
+    },
   };
   return (
     <ConfigContext.Provider value={{ ...defaultContext, ...context }}>
@@ -216,6 +230,12 @@ export const MockCostInsightsApiProvider = ({
     getProductInsights: jest.fn(),
     getProjectDailyCost: jest.fn(),
     getUserGroups: jest.fn(),
+    getPilarLabels: jest.fn(),
+    getTierLabels: jest.fn(),
+    setConfig: jest.fn(),
+    getDomainLabels: jest.fn(),
+    getProductLabels: jest.fn(),
+    getTeamLabels: jest.fn(),
   };
 
   // TODO: defaultConfigApiRef: ConfigApiRef

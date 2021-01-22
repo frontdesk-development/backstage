@@ -25,6 +25,7 @@ import {
   MetricData,
   GcpConfig,
   Label,
+  PageFilters,
 } from '../types';
 
 export type ProductInsightsOptions = {
@@ -89,6 +90,20 @@ export type CostInsightsApi = {
   getPilarLabels(group: Maybe<string>): Promise<Label[]>;
 
   /**
+   * Get a list of Pilar labels that belong to this group.
+   */
+  getDomainLabels(group: Maybe<string>): Promise<Label[]>;
+
+  /**
+   * Get a list of Pilar labels that belong to this group.
+   */
+  getProductLabels(group: Maybe<string>): Promise<Label[]>;
+
+  /**
+   * Get a list of Pilar labels that belong to this group.
+   */
+  getTeamLabels(group: Maybe<string>): Promise<Label[]>;
+  /**
    * Get daily cost aggregations for a given group and interval timeframe.
    *
    * The return type includes an array of daily cost aggregations as well as statistics about the
@@ -99,11 +114,11 @@ export type CostInsightsApi = {
    * The rate of change in this comparison allows teams to reason about their cost growth (or
    * reduction) and compare it to metrics important to the business.
    *
-   * @param group The group id from getUserGroups or query parameters
+   * @param pageFilters The group id from getUserGroups or query parameters
    * @param intervals An ISO 8601 repeating interval string, such as R2/P30D/2020-09-01
    *   https://en.wikipedia.org/wiki/ISO_8601#Repeating_intervals
    */
-  getGroupDailyCost(group: string, intervals: string): Promise<Cost>;
+  getGroupDailyCost(pageFilters: PageFilters, intervals: string): Promise<Cost>;
 
   /**
    * Get daily cost aggregations for a given billing entity (project in GCP, AWS has a similar
@@ -117,11 +132,14 @@ export type CostInsightsApi = {
    * The rate of change in this comparison allows teams to reason about the project's cost growth
    * (or reduction) and compare it to metrics important to the business.
    *
-   * @param project The project id from getGroupProjects or query parameters
+   * @param pageFilters The project id from getGroupProjects or query parameters
    * @param intervals An ISO 8601 repeating interval string, such as R2/P30D/2020-09-01
    *   https://en.wikipedia.org/wiki/ISO_8601#Repeating_intervals
    */
-  getProjectDailyCost(project: string, intervals: string): Promise<Cost>;
+  getProjectDailyCost(
+    pageFilters: PageFilters,
+    intervals: string,
+  ): Promise<Cost>;
 
   /**
    * Get aggregations for a particular metric and interval timeframe. Teams

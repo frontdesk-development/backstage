@@ -62,6 +62,7 @@ export class BigQueryClass {
   public async queryBigQuery(
     intervals: string,
     projectName?: string,
+    whereClouse?: string,
   ): Promise<{ amount: number; date: string }[]> {
     const splitInterval = intervals.split('/');
 
@@ -95,7 +96,19 @@ export class BigQueryClass {
     }
 
     if (projectName) {
+      if (whereClouse) {
+        return this.runQueryForProject(
+          projectName,
+          newDate,
+          endDate,
+          whereClouse,
+        );
+      }
       return this.runQueryForProject(projectName, newDate, endDate);
+    }
+
+    if (whereClouse) {
+      return this.runQueryForAll(newDate, endDate, whereClouse);
     }
 
     return this.runQueryForAll(newDate, endDate);
@@ -105,15 +118,19 @@ export class BigQueryClass {
     projectName: string,
     newDate: string,
     endDate: string,
+    whereClouse?: string,
   ): Promise<{ amount: number; date: string }[]> {
     const query = `SELECT
-    CONCAT(EXTRACT(YEAR FROM usage_start_time AT TIME ZONE "UTC"),'-', 
+      CONCAT(EXTRACT(YEAR FROM usage_start_time AT TIME ZONE "UTC"),'-', 
          EXTRACT(MONTH FROM usage_start_time AT TIME ZONE "UTC"),'-', 
          EXTRACT(DAY FROM usage_start_time AT TIME ZONE "UTC")) as date
-    ,SUM(cost) as amount
-    FROM \`billing.gcp_billing_export_v1_01241D_E5B8D7_0F597A\` 
-    WHERE usage_start_time > TIMESTAMP(DATE "${newDate}") AND project.id = \"${projectName}\" AND usage_start_time < TIMESTAMP(DATE "${endDate}")
-    GROUP BY date`;
+      ,SUM(cost) as amount
+      FROM \`billing.gcp_billing_export_v1_01241D_E5B8D7_0F597A\`
+      WHERE usage_start_time > TIMESTAMP(DATE "${newDate}") 
+        AND project.id = \"${projectName}\" 
+        AND usage_start_time < TIMESTAMP(DATE "${endDate}") 
+        ${whereClouse}
+      GROUP BY date`;
 
     return this.memoizedQuery(query);
   }
@@ -121,15 +138,18 @@ export class BigQueryClass {
   async runQueryForAll(
     newDate: string,
     endDate: string,
+    whereClouse?: string,
   ): Promise<{ amount: number; date: string }[]> {
     const query = `SELECT
-    CONCAT(EXTRACT(YEAR FROM usage_start_time AT TIME ZONE "UTC"),'-', 
+      CONCAT(EXTRACT(YEAR FROM usage_start_time AT TIME ZONE "UTC"),'-', 
          EXTRACT(MONTH FROM usage_start_time AT TIME ZONE "UTC"),'-', 
          EXTRACT(DAY FROM usage_start_time AT TIME ZONE "UTC")) as date
-    ,SUM(cost) as amount
-    FROM \`billing.gcp_billing_export_v1_01241D_E5B8D7_0F597A\` 
-    WHERE usage_start_time > TIMESTAMP(DATE "${newDate}") AND usage_start_time < TIMESTAMP(DATE "${endDate}")
-    GROUP BY date`;
+      ,SUM(cost) as amount
+      FROM \`billing.gcp_billing_export_v1_01241D_E5B8D7_0F597A\` 
+      WHERE usage_start_time > TIMESTAMP(DATE "${newDate}") 
+        AND usage_start_time < TIMESTAMP(DATE "${endDate}")
+        ${whereClouse}
+      GROUP BY date`;
 
     return this.memoizedQuery(query);
   }
@@ -150,12 +170,54 @@ export class BigQueryClass {
   async getPilarLabels(projectName?: string): Promise<Label[]> {
     let query = `SELECT 
       DISTINCT(l.value) FROM \`billing.gcp_billing_export_v1_01241D_E5B8D7_0F597A\`, UNNEST(project.labels) as l
-      WHERE (l.key="trv-pilar")`;
+      WHERE (l.key="trv-pillar")`;
 
     if (projectName) {
       query = `SELECT 
       DISTINCT(l.value) FROM \`billing.gcp_billing_export_v1_01241D_E5B8D7_0F597A\`, UNNEST(project.labels) as l
-      WHERE (l.key="trv-pilar" AND project.id = \"${projectName}\")`;
+      WHERE (l.key="trv-pillar" AND project.id = \"${projectName}\")`;
+    }
+
+    return await this.memoizedLabelQuery(query);
+  }
+
+  async getDomainLabels(projectName?: string): Promise<Label[]> {
+    let query = `SELECT 
+      DISTINCT(l.value) FROM \`billing.gcp_billing_export_v1_01241D_E5B8D7_0F597A\`, UNNEST(project.labels) as l
+      WHERE (l.key="trv-domain")`;
+
+    if (projectName) {
+      query = `SELECT 
+      DISTINCT(l.value) FROM \`billing.gcp_billing_export_v1_01241D_E5B8D7_0F597A\`, UNNEST(project.labels) as l
+      WHERE (l.key="trv-domain" AND project.id = \"${projectName}\")`;
+    }
+
+    return await this.memoizedLabelQuery(query);
+  }
+
+  async getProductLabels(projectName?: string): Promise<Label[]> {
+    let query = `SELECT 
+      DISTINCT(l.value) FROM \`billing.gcp_billing_export_v1_01241D_E5B8D7_0F597A\`, UNNEST(project.labels) as l
+      WHERE (l.key="trv-product")`;
+
+    if (projectName) {
+      query = `SELECT 
+      DISTINCT(l.value) FROM \`billing.gcp_billing_export_v1_01241D_E5B8D7_0F597A\`, UNNEST(project.labels) as l
+      WHERE (l.key="trv-product" AND project.id = \"${projectName}\")`;
+    }
+
+    return await this.memoizedLabelQuery(query);
+  }
+
+  async getTeamLabels(projectName?: string): Promise<Label[]> {
+    let query = `SELECT 
+      DISTINCT(l.value) FROM \`billing.gcp_billing_export_v1_01241D_E5B8D7_0F597A\`, UNNEST(project.labels) as l
+      WHERE (l.key="trv-team")`;
+
+    if (projectName) {
+      query = `SELECT 
+      DISTINCT(l.value) FROM \`billing.gcp_billing_export_v1_01241D_E5B8D7_0F597A\`, UNNEST(project.labels) as l
+      WHERE (l.key="trv-team" AND project.id = \"${projectName}\")`;
     }
 
     return await this.memoizedLabelQuery(query);
