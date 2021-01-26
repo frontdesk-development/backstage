@@ -59,11 +59,7 @@ export class BigQueryClass {
     this.client = new BigQuery(login);
   }
 
-  public async queryBigQuery(
-    intervals: string,
-    projectName?: string,
-    whereClouse?: string,
-  ): Promise<{ amount: number; date: string }[]> {
+  parseIntervals(intervals: string): { newDate: string; endDate: string } {
     const splitInterval = intervals.split('/');
 
     const endDate = splitInterval[2];
@@ -71,6 +67,7 @@ export class BigQueryClass {
     let newYear = +endDateSplit[0];
 
     let month = +endDateSplit[1];
+    const day = +endDateSplit[2];
     if (splitInterval[0] === 'R2') {
       if (splitInterval[1] === 'P90D') {
         month = month - 6;
@@ -90,10 +87,20 @@ export class BigQueryClass {
 
     let newDate = '';
     if (month < 10) {
-      newDate = `${newYear}-0${month}-01`;
+      newDate = `${newYear}-0${month}-${day}`;
     } else {
-      newDate = `${newYear}-${month}-01`;
+      newDate = `${newYear}-${month}-${day}`;
     }
+
+    return { newDate, endDate };
+  }
+
+  public async queryBigQuery(
+    intervals: string,
+    projectName?: string,
+    whereClouse?: string,
+  ): Promise<{ amount: number; date: string }[]> {
+    const { endDate, newDate } = this.parseIntervals(intervals);
 
     if (projectName) {
       if (whereClouse) {
@@ -121,9 +128,7 @@ export class BigQueryClass {
     whereClouse?: string,
   ): Promise<{ amount: number; date: string }[]> {
     const query = `SELECT
-      CONCAT(EXTRACT(YEAR FROM usage_start_time AT TIME ZONE "UTC"),'-', 
-         EXTRACT(MONTH FROM usage_start_time AT TIME ZONE "UTC"),'-', 
-         EXTRACT(DAY FROM usage_start_time AT TIME ZONE "UTC")) as date
+    CONCAT(EXTRACT(DATE FROM usage_start_time AT TIME ZONE "UTC"),'') as date
       ,SUM(cost) as amount
       FROM \`billing.gcp_billing_export_v1_01241D_E5B8D7_0F597A\`
       WHERE usage_start_time > TIMESTAMP(DATE "${newDate}") 
@@ -141,9 +146,7 @@ export class BigQueryClass {
     whereClouse?: string,
   ): Promise<{ amount: number; date: string }[]> {
     const query = `SELECT
-      CONCAT(EXTRACT(YEAR FROM usage_start_time AT TIME ZONE "UTC"),'-', 
-         EXTRACT(MONTH FROM usage_start_time AT TIME ZONE "UTC"),'-', 
-         EXTRACT(DAY FROM usage_start_time AT TIME ZONE "UTC")) as date
+    CONCAT(EXTRACT(DATE FROM usage_start_time AT TIME ZONE "UTC"),'') as date
       ,SUM(cost) as amount
       FROM \`billing.gcp_billing_export_v1_01241D_E5B8D7_0F597A\` 
       WHERE usage_start_time > TIMESTAMP(DATE "${newDate}") 
@@ -167,6 +170,42 @@ export class BigQueryClass {
     return await this.memoizedLabelQuery(query);
   }
 
+  public async getComponent(
+    component: string,
+    intervals: string,
+    projectName?: string,
+    whereClouse?: string,
+  ): Promise<{ amount: number; date: string }[]> {
+    const { endDate, newDate } = this.parseIntervals(intervals);
+
+    let query = `SELECT
+      CONCAT(EXTRACT(DATE FROM usage_start_time AT TIME ZONE "UTC"),'') as date
+      ,SUM(cost) as amount
+      FROM \`billing.gcp_billing_export_v1_01241D_E5B8D7_0F597A\` 
+      WHERE usage_start_time > TIMESTAMP(DATE "${newDate}") 
+        AND usage_start_time < TIMESTAMP(DATE "${endDate}")
+        AND service.description = "${component}"
+        ${whereClouse}
+      GROUP BY date
+      ORDER BY date`;
+
+    if (projectName) {
+      query = `SELECT
+        CONCAT(EXTRACT(DATE FROM usage_start_time AT TIME ZONE "UTC"),'') as date
+        ,SUM(cost) as amount
+        FROM \`billing.gcp_billing_export_v1_01241D_E5B8D7_0F597A\` 
+        WHERE usage_start_time > TIMESTAMP(DATE "${newDate}") 
+          AND usage_start_time < TIMESTAMP(DATE "${endDate}")
+          AND project.id = \"${projectName}\" 
+          AND service.description = "${component}"
+          ${whereClouse}
+        GROUP BY date
+        ORDER BY date`;
+    }
+
+    return await this.memoizedQuery(query);
+  }
+
   public async runQuery(
     query: string,
   ): Promise<{ amount: number; date: string }[]> {
@@ -182,20 +221,10 @@ export class BigQueryClass {
 
     const [rows] = await job.getQueryResults();
 
-    rows.forEach(row => {
-      const newDate = row.date.split('-');
-      if (newDate[1] < 10) {
-        newDate[1] = `0${newDate[1]}`;
-      }
-      if (newDate[2] < 10) {
-        newDate[2] = `0${newDate[2]}`;
-      }
-      row.date = newDate.join('-');
-    });
-
     const aggregation: { amount: number; date: string }[] = rows.map(entry => ({
       date: entry.date,
-      amount: Math.round(entry.amount),
+      // amount: Math.round(entry.amount),
+      amount: entry.amount,
     }));
 
     return aggregation;

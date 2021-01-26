@@ -32,7 +32,6 @@ import {
   GcpConfig,
   PageFilters,
 } from '../types';
-import { entityOf, getGroupedProducts } from '../utils/mockData';
 import { OAuthApi } from '@backstage/core';
 import regression, { DataPoint } from 'regression';
 import moize from 'moize';
@@ -209,7 +208,6 @@ export class CostInsightsClient implements CostInsightsApi {
       whereStatement,
     );
 
-    // const aggregation: {amount: number, date: string}[] = []
     const groupDailyCost: Cost = await this.request(
       { group: 'trivago', intervals },
       {
@@ -218,13 +216,121 @@ export class CostInsightsClient implements CostInsightsApi {
         trendline: trendlineOf(aggregation),
         // Optional field on Cost which needs to be supplied in order to see
         // the product breakdown view in the top panel.
-        groupedCosts: getGroupedProducts(intervals),
+        groupedCosts: await this.getGroupedProducts(
+          intervals,
+          undefined,
+          whereStatement,
+        ),
       },
     );
 
     return groupDailyCost;
   }
 
+  async getData(
+    id: string,
+    intervals: string,
+    projectName?: string,
+    whereClouse?: string,
+  ): Promise<DateAggregation[]> {
+    const groupedCosts = await this.bigQuery.getComponent(
+      id,
+      intervals,
+      projectName,
+      whereClouse,
+    );
+
+    return groupedCosts;
+  }
+
+  getGroupedProducts = async (
+    intervals: string,
+    projectName?: string,
+    whereClouse?: string,
+  ) => [
+    {
+      id: 'Cloud Dataflow',
+      aggregation: await this.getData(
+        'Cloud Dataflow',
+        intervals,
+        projectName,
+        whereClouse,
+      ),
+    },
+    {
+      id: 'Compute Engine',
+      aggregation: await this.getData(
+        'Compute Engine',
+        intervals,
+        projectName,
+        whereClouse,
+      ),
+    },
+    {
+      id: 'Cloud Storage',
+      aggregation: await this.getData(
+        'Cloud Storage',
+        intervals,
+        projectName,
+        whereClouse,
+      ),
+    },
+    {
+      id: 'BigQuery',
+      aggregation: await this.getData(
+        'BigQuery',
+        intervals,
+        projectName,
+        whereClouse,
+      ),
+    },
+    {
+      id: 'Cloud SQL',
+      aggregation: await this.getData(
+        'Cloud SQL',
+        intervals,
+        projectName,
+        whereClouse,
+      ),
+    },
+    {
+      id: 'Cloud Spanner',
+      aggregation: await this.getData(
+        'Cloud Spanner',
+        intervals,
+        projectName,
+        whereClouse,
+      ),
+    },
+    {
+      id: 'Cloud Pub/Sub',
+      aggregation: await this.getData(
+        'Cloud Spanner',
+        intervals,
+        projectName,
+        whereClouse,
+      ),
+    },
+    {
+      id: 'Cloud Bigtable',
+      aggregation: await this.getData(
+        'Cloud Bigtable',
+        intervals,
+        projectName,
+        whereClouse,
+      ),
+    },
+    {
+      id: 'Stackdriver Logging',
+      aggregation: await this.getData(
+        'Stackdriver Logging',
+        intervals,
+        projectName,
+        whereClouse,
+      ),
+    },
+  ];
+  // Stackdriver Logging
   async getProjectDailyCost(
     pageFilters: PageFilters,
     intervals: string,
@@ -251,7 +357,11 @@ export class CostInsightsClient implements CostInsightsApi {
           trendline: trendlineOf(aggregation),
           // Optional field on Cost which needs to be supplied in order to see
           // the product breakdown view in the top panel.
-          groupedCosts: getGroupedProducts(intervals),
+          groupedCosts: await this.getGroupedProducts(
+            intervals,
+            project,
+            whereStatement,
+          ),
         },
       );
 
@@ -289,11 +399,170 @@ export class CostInsightsClient implements CostInsightsApi {
   async getProductInsights(options2: ProductInsightsOptions): Promise<Entity> {
     const productInsights: Entity = await this.request(
       options2,
-      entityOf(options2.product),
+      this.entityOf(options2.product),
     );
 
     return productInsights;
   }
+
+  entityOf(product: string): Entity {
+    switch (product) {
+      case 'computeEngine':
+        return this.SampleComputeEngineInsights;
+      // case 'cloudDataflow':
+      //   return SampleCloudDataflowInsights;
+      // case 'cloudStorage':
+      //   return SampleCloudStorageInsights;
+      // case 'bigQuery':
+      //   return SampleBigQueryInsights;
+      // case 'events':
+      //   return SampleEventsInsights;
+      default:
+        throw new Error(
+          `Cannot get insights for ${product}. Make sure product matches product property in app-info.yaml`,
+        );
+    }
+  }
+
+  SampleComputeEngineInsights: Entity = {
+    id: 'computeEngine',
+    aggregation: [80_000, 90_000],
+    change: {
+      ratio: 0.125,
+      amount: 10_000,
+    },
+    entities: {
+      service: [
+        {
+          id: 'entity-a',
+          aggregation: [20_000, 10_000],
+          change: {
+            ratio: -0.5,
+            amount: -10_000,
+          },
+          entities: {
+            SKU: [
+              {
+                id: 'Sample SKU A',
+                aggregation: [4_000, 2_000],
+                change: {
+                  ratio: -0.5,
+                  amount: -2_000,
+                },
+                entities: {},
+              },
+              {
+                id: 'Sample SKU B',
+                aggregation: [7_000, 6_000],
+                change: {
+                  ratio: -0.14285714285714285,
+                  amount: -1_000,
+                },
+                entities: {},
+              },
+              {
+                id: 'Sample SKU C',
+                aggregation: [9_000, 2_000],
+                change: {
+                  ratio: -0.7777777777777778,
+                  amount: -7000,
+                },
+                entities: {},
+              },
+            ],
+            deployment: [
+              {
+                id: 'Compute Engine',
+                aggregation: [7_000, 6_000],
+                change: {
+                  ratio: -0.5,
+                  amount: -2_000,
+                },
+                entities: {},
+              },
+              {
+                id: 'Kubernetes',
+                aggregation: [4_000, 2_000],
+                change: {
+                  ratio: -0.14285714285714285,
+                  amount: -1_000,
+                },
+                entities: {},
+              },
+            ],
+          },
+        },
+        {
+          id: 'entity-b',
+          aggregation: [10_000, 20_000],
+          change: {
+            ratio: 1,
+            amount: 10_000,
+          },
+          entities: {
+            SKU: [
+              {
+                id: 'Sample SKU A',
+                aggregation: [1_000, 2_000],
+                change: {
+                  ratio: 1,
+                  amount: 1_000,
+                },
+                entities: {},
+              },
+              {
+                id: 'Sample SKU B',
+                aggregation: [4_000, 8_000],
+                change: {
+                  ratio: 1,
+                  amount: 4_000,
+                },
+                entities: {},
+              },
+              {
+                id: 'Sample SKU C',
+                aggregation: [5_000, 10_000],
+                change: {
+                  ratio: 1,
+                  amount: 5_000,
+                },
+                entities: {},
+              },
+            ],
+            deployment: [
+              {
+                id: 'Compute Engine',
+                aggregation: [7_000, 6_000],
+                change: {
+                  ratio: -0.5,
+                  amount: -2_000,
+                },
+                entities: {},
+              },
+              {
+                id: 'Kubernetes',
+                aggregation: [4_000, 2_000],
+                change: {
+                  ratio: -0.14285714285714285,
+                  amount: -1_000,
+                },
+                entities: {},
+              },
+            ],
+          },
+        },
+        {
+          id: 'entity-c',
+          aggregation: [0, 10_000],
+          change: {
+            ratio: 10_000,
+            amount: 10_000,
+          },
+          entities: {},
+        },
+      ],
+    },
+  };
 
   async getAlerts(group: string): Promise<Alert[]> {
     // const projectGrowthData: ProjectGrowthData = {
@@ -338,4 +607,23 @@ export class CostInsightsClient implements CostInsightsApi {
 
     return alerts;
   }
+
+  // entityOf(product: string): Entity {
+  //   switch (product) {
+  //     case 'computeEngine':
+  //       return SampleComputeEngineInsights;
+  //     case 'cloudDataflow':
+  //       return SampleCloudDataflowInsights;
+  //     case 'cloudStorage':
+  //       return SampleCloudStorageInsights;
+  //     case 'bigQuery':
+  //       return SampleBigQueryInsights;
+  //     case 'events':
+  //       return SampleEventsInsights;
+  //     default:
+  //       throw new Error(
+  //         `Cannot get insights for ${product}. Make sure product matches product property in app-info.yaml`,
+  //       );
+  //   }
+  // }
 }

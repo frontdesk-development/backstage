@@ -53,7 +53,7 @@ export type CostOverviewByProductChartProps = {
   costsByProduct: Cost[];
 };
 
-const LOW_COST_THRESHOLD = 0.1;
+const LOW_COST_THRESHOLD = 0.001;
 
 export const CostOverviewByProductChart = ({
   costsByProduct,

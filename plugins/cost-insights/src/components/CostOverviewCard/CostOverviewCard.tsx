@@ -92,7 +92,6 @@ export const CostOverviewCard = ({
 
   // Metrics can only be selected on the total cost graph
   const showMetricSelect = config.metrics.length && tabIndex === 0;
-
   return (
     <Card style={{ position: 'relative' }}>
       <ScrollAnchor behavior="smooth" top={-20} />
