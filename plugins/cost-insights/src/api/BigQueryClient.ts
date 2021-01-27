@@ -171,36 +171,35 @@ export class BigQueryClass {
   }
 
   public async getComponent(
-    component: string,
     intervals: string,
     projectName?: string,
     whereClouse?: string,
-  ): Promise<{ amount: number; date: string }[]> {
+  ): Promise<{ amount: number; date: string; description: string }[]> {
     const { endDate, newDate } = this.parseIntervals(intervals);
 
     let query = `SELECT
       CONCAT(EXTRACT(DATE FROM usage_start_time AT TIME ZONE "UTC"),'') as date
       ,SUM(cost) as amount
+      ,service.description
       FROM \`billing.gcp_billing_export_v1_01241D_E5B8D7_0F597A\` 
       WHERE usage_start_time > TIMESTAMP(DATE "${newDate}") 
         AND usage_start_time < TIMESTAMP(DATE "${endDate}")
-        AND service.description = "${component}"
         ${whereClouse}
-      GROUP BY date
-      ORDER BY date`;
+      GROUP BY service.description, date
+      ORDER BY service.description, date`;
 
     if (projectName) {
       query = `SELECT
         CONCAT(EXTRACT(DATE FROM usage_start_time AT TIME ZONE "UTC"),'') as date
         ,SUM(cost) as amount
+        ,service.description
         FROM \`billing.gcp_billing_export_v1_01241D_E5B8D7_0F597A\` 
         WHERE usage_start_time > TIMESTAMP(DATE "${newDate}") 
           AND usage_start_time < TIMESTAMP(DATE "${endDate}")
           AND project.id = \"${projectName}\" 
-          AND service.description = "${component}"
           ${whereClouse}
-        GROUP BY date
-        ORDER BY date`;
+        GROUP BY service.description, date
+        ORDER BY service.description, date`;
     }
 
     return await this.memoizedQuery(query);
@@ -208,7 +207,7 @@ export class BigQueryClass {
 
   public async runQuery(
     query: string,
-  ): Promise<{ amount: number; date: string }[]> {
+  ): Promise<{ amount: number; date: string; description: string }[]> {
     const client = this.client;
     const options = {
       query: query,
@@ -221,10 +220,14 @@ export class BigQueryClass {
 
     const [rows] = await job.getQueryResults();
 
-    const aggregation: { amount: number; date: string }[] = rows.map(entry => ({
+    const aggregation: {
+      amount: number;
+      date: string;
+      description: string;
+    }[] = rows.map(entry => ({
       date: entry.date,
-      // amount: Math.round(entry.amount),
       amount: entry.amount,
+      description: entry.description,
     }));
 
     return aggregation;

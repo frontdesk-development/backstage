@@ -55,7 +55,8 @@
     "recharts": "^1.8.5",
     "regression": "^2.0.1",
     "yup": "^0.29.3",
-    "moize": "^5.4.7"
+    "moize": "^5.4.7",
+    "lodash": "^4.17.20"
   },
   "devDependencies": {
     "@backstage/cli": "^0.4.4",

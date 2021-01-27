@@ -31,10 +31,12 @@ import {
   ChangeStatistic,
   GcpConfig,
   PageFilters,
+  AllResultsComponents,
 } from '../types';
 import { OAuthApi } from '@backstage/core';
 import regression, { DataPoint } from 'regression';
 import moize from 'moize';
+import _ from 'lodash';
 
 const BASE_URL =
   'https://content-cloudresourcemanager.googleapis.com/v1/projects';
@@ -228,109 +230,38 @@ export class CostInsightsClient implements CostInsightsApi {
   }
 
   async getData(
-    id: string,
     intervals: string,
     projectName?: string,
     whereClouse?: string,
-  ): Promise<DateAggregation[]> {
+  ): Promise<AllResultsComponents[]> {
     const groupedCosts = await this.bigQuery.getComponent(
-      id,
       intervals,
       projectName,
       whereClouse,
     );
 
-    return groupedCosts;
+    const groupByDescription = _.groupBy(groupedCosts, 'description');
+
+    const allResults = new Array<AllResultsComponents>();
+    for (const description in groupByDescription) {
+      if (groupByDescription.hasOwnProperty(description)) {
+        const item: AllResultsComponents = {
+          id: description,
+          aggregation: groupByDescription[description],
+        };
+        allResults.push(item);
+      }
+    }
+
+    return allResults;
   }
 
   getGroupedProducts = async (
     intervals: string,
     projectName?: string,
     whereClouse?: string,
-  ) => [
-    {
-      id: 'Cloud Dataflow',
-      aggregation: await this.getData(
-        'Cloud Dataflow',
-        intervals,
-        projectName,
-        whereClouse,
-      ),
-    },
-    {
-      id: 'Compute Engine',
-      aggregation: await this.getData(
-        'Compute Engine',
-        intervals,
-        projectName,
-        whereClouse,
-      ),
-    },
-    {
-      id: 'Cloud Storage',
-      aggregation: await this.getData(
-        'Cloud Storage',
-        intervals,
-        projectName,
-        whereClouse,
-      ),
-    },
-    {
-      id: 'BigQuery',
-      aggregation: await this.getData(
-        'BigQuery',
-        intervals,
-        projectName,
-        whereClouse,
-      ),
-    },
-    {
-      id: 'Cloud SQL',
-      aggregation: await this.getData(
-        'Cloud SQL',
-        intervals,
-        projectName,
-        whereClouse,
-      ),
-    },
-    {
-      id: 'Cloud Spanner',
-      aggregation: await this.getData(
-        'Cloud Spanner',
-        intervals,
-        projectName,
-        whereClouse,
-      ),
-    },
-    {
-      id: 'Cloud Pub/Sub',
-      aggregation: await this.getData(
-        'Cloud Spanner',
-        intervals,
-        projectName,
-        whereClouse,
-      ),
-    },
-    {
-      id: 'Cloud Bigtable',
-      aggregation: await this.getData(
-        'Cloud Bigtable',
-        intervals,
-        projectName,
-        whereClouse,
-      ),
-    },
-    {
-      id: 'Stackdriver Logging',
-      aggregation: await this.getData(
-        'Stackdriver Logging',
-        intervals,
-        projectName,
-        whereClouse,
-      ),
-    },
-  ];
-  // Stackdriver Logging
+  ) => await this.getData(intervals, projectName, whereClouse);
+
   async getProjectDailyCost(
     pageFilters: PageFilters,
     intervals: string,

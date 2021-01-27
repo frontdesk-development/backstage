@@ -63,8 +63,8 @@ export const CostOverviewCard = ({
     { id: 'overview', label: 'Total cost', title: 'Cloud Cost' },
     {
       id: 'breakdown',
-      label: 'Breakdown by product',
-      title: 'Cloud Cost By Product',
+      label: 'Breakdown by resource',
+      title: 'Cloud Cost By Resource',
     },
   ];
 

@@ -35,3 +35,4 @@ export * from './Label';
 export * from './Theme';
 export * from './Trendline';
 export * from './GcpConfig';
+export * from './AllResultsComponents';
