@@ -229,20 +229,44 @@ export class CostInsightsClient implements CostInsightsApi {
     return groupDailyCost;
   }
 
+  getEmptyAmountArray = function (start: Date, end: Date) {
+    let arr = [];
+    let dt: Date;
+    for (arr = [], dt = start; dt <= end; dt.setDate(dt.getDate() + 1)) {
+      const item = {
+        date: dt.toISOString().slice(0, 10),
+        amount: 0,
+        description: '',
+      };
+      arr.push(item);
+    }
+    return arr;
+  };
+
   async getData(
     intervals: string,
     projectName?: string,
     whereClouse?: string,
   ): Promise<AllResultsComponents[]> {
+    const { endDate, startDate } = this.bigQuery.parseIntervals(intervals);
+
+    const arr = this.getEmptyAmountArray(
+      new Date(startDate),
+      new Date(endDate),
+    );
+
     const groupedCosts = await this.bigQuery.getComponent(
       intervals,
       projectName,
       whereClouse,
     );
 
+    const allResults = new Array<AllResultsComponents>();
+
+    allResults.push({ id: 'empty', aggregation: arr });
+
     const groupByDescription = _.groupBy(groupedCosts, 'description');
 
-    const allResults = new Array<AllResultsComponents>();
     for (const description in groupByDescription) {
       if (groupByDescription.hasOwnProperty(description)) {
         const item: AllResultsComponents = {

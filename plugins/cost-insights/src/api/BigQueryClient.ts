@@ -59,7 +59,9 @@ export class BigQueryClass {
     this.client = new BigQuery(login);
   }
 
-  parseIntervals(intervals: string): { newDate: string; endDate: string } {
+  public parseIntervals(
+    intervals: string,
+  ): { startDate: string; endDate: string } {
     const splitInterval = intervals.split('/');
 
     const endDate = splitInterval[2];
@@ -85,14 +87,14 @@ export class BigQueryClass {
       }
     }
 
-    let newDate = '';
+    let startDate = '';
     if (month < 10) {
-      newDate = `${newYear}-0${month}-${day}`;
+      startDate = `${newYear}-0${month}-${day}`;
     } else {
-      newDate = `${newYear}-${month}-${day}`;
+      startDate = `${newYear}-${month}-${day}`;
     }
 
-    return { newDate, endDate };
+    return { startDate, endDate };
   }
 
   public async queryBigQuery(
@@ -100,30 +102,30 @@ export class BigQueryClass {
     projectName?: string,
     whereClouse?: string,
   ): Promise<{ amount: number; date: string }[]> {
-    const { endDate, newDate } = this.parseIntervals(intervals);
+    const { endDate, startDate } = this.parseIntervals(intervals);
 
     if (projectName) {
       if (whereClouse) {
         return this.runQueryForProject(
           projectName,
-          newDate,
+          startDate,
           endDate,
           whereClouse,
         );
       }
-      return this.runQueryForProject(projectName, newDate, endDate);
+      return this.runQueryForProject(projectName, startDate, endDate);
     }
 
     if (whereClouse) {
-      return this.runQueryForAll(newDate, endDate, whereClouse);
+      return this.runQueryForAll(startDate, endDate, whereClouse);
     }
 
-    return this.runQueryForAll(newDate, endDate);
+    return this.runQueryForAll(startDate, endDate);
   }
 
   async runQueryForProject(
     projectName: string,
-    newDate: string,
+    startDate: string,
     endDate: string,
     whereClouse?: string,
   ): Promise<{ amount: number; date: string }[]> {
@@ -131,7 +133,7 @@ export class BigQueryClass {
     CONCAT(EXTRACT(DATE FROM usage_start_time AT TIME ZONE "UTC"),'') as date
       ,SUM(cost) as amount
       FROM \`billing.gcp_billing_export_v1_01241D_E5B8D7_0F597A\`
-      WHERE usage_start_time > TIMESTAMP(DATE "${newDate}") 
+      WHERE usage_start_time > TIMESTAMP(DATE "${startDate}") 
         AND project.id = \"${projectName}\" 
         AND usage_start_time < TIMESTAMP(DATE "${endDate}") 
         ${whereClouse}
@@ -141,7 +143,7 @@ export class BigQueryClass {
   }
 
   async runQueryForAll(
-    newDate: string,
+    startDate: string,
     endDate: string,
     whereClouse?: string,
   ): Promise<{ amount: number; date: string }[]> {
@@ -149,7 +151,7 @@ export class BigQueryClass {
     CONCAT(EXTRACT(DATE FROM usage_start_time AT TIME ZONE "UTC"),'') as date
       ,SUM(cost) as amount
       FROM \`billing.gcp_billing_export_v1_01241D_E5B8D7_0F597A\` 
-      WHERE usage_start_time > TIMESTAMP(DATE "${newDate}") 
+      WHERE usage_start_time > TIMESTAMP(DATE "${startDate}") 
         AND usage_start_time < TIMESTAMP(DATE "${endDate}")
         ${whereClouse}
       GROUP BY date`;
@@ -164,7 +166,7 @@ export class BigQueryClass {
     if (projectName) {
       query = `SELECT 
       DISTINCT(l.value) FROM \`billing.gcp_billing_export_v1_01241D_E5B8D7_0F597A\`, UNNEST(project.labels) as l
-      WHERE (l.key="trv-tier" AND project.id = \"${projectName}\")`;
+      WHERE (l.key="${label}" AND project.id = \"${projectName}\")`;
     }
 
     return await this.memoizedLabelQuery(query);
@@ -175,14 +177,14 @@ export class BigQueryClass {
     projectName?: string,
     whereClouse?: string,
   ): Promise<{ amount: number; date: string; description: string }[]> {
-    const { endDate, newDate } = this.parseIntervals(intervals);
+    const { endDate, startDate } = this.parseIntervals(intervals);
 
     let query = `SELECT
       CONCAT(EXTRACT(DATE FROM usage_start_time AT TIME ZONE "UTC"),'') as date
       ,SUM(cost) as amount
       ,service.description
       FROM \`billing.gcp_billing_export_v1_01241D_E5B8D7_0F597A\` 
-      WHERE usage_start_time > TIMESTAMP(DATE "${newDate}") 
+      WHERE usage_start_time > TIMESTAMP(DATE "${startDate}") 
         AND usage_start_time < TIMESTAMP(DATE "${endDate}")
         ${whereClouse}
       GROUP BY service.description, date
@@ -194,7 +196,7 @@ export class BigQueryClass {
         ,SUM(cost) as amount
         ,service.description
         FROM \`billing.gcp_billing_export_v1_01241D_E5B8D7_0F597A\` 
-        WHERE usage_start_time > TIMESTAMP(DATE "${newDate}") 
+        WHERE usage_start_time > TIMESTAMP(DATE "${startDate}") 
           AND usage_start_time < TIMESTAMP(DATE "${endDate}")
           AND project.id = \"${projectName}\" 
           ${whereClouse}
