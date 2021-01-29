@@ -123,6 +123,7 @@ export const MockConfigProvider = ({
       privateKey: '',
       privateKeyId: '',
       projectId: '',
+      billingTable: '',
     },
   };
   return (

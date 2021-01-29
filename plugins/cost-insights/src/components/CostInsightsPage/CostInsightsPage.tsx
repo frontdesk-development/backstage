@@ -22,14 +22,14 @@ import { costInsightsApiRef } from '../../api';
 import { AlertActionCardList } from '../AlertActionCardList';
 import { AlertInsights } from '../AlertInsights';
 import { CostInsightsLayout } from '../CostInsightsLayout';
-import { CopyUrlToClipboard } from '../CopyUrlToClipboard';
+// import { CopyUrlToClipboard } from '../CopyUrlToClipboard';
 import { CurrencySelect } from '../CurrencySelect';
-import { WhyCostsMatter } from '../WhyCostsMatter';
+// import { WhyCostsMatter } from '../WhyCostsMatter';
 import {
-  CostInsightsHeader,
+  // CostInsightsHeader,
   CostInsightsHeaderNoGroups,
 } from '../CostInsightsHeader';
-import { CostInsightsNavigation } from '../CostInsightsNavigation';
+// import { CostInsightsNavigation } from '../CostInsightsNavigation';
 import { CostOverviewCard } from '../CostOverviewCard';
 import { ProductInsights } from '../ProductInsights';
 /* https://github.com/backstage/backstage/issues/2574 */
@@ -47,7 +47,7 @@ import {
   Cost,
   Maybe,
   MetricData,
-  Product,
+  // Product,
   Project,
   Label,
 } from '../../types';
@@ -75,7 +75,7 @@ export const CostInsightsPage = () => {
   const [domainLabel, setDomainLabels] = useState<Maybe<Label[]>>(null);
   const [productLabel, setProductLabels] = useState<Maybe<Label[]>>(null);
   const [teamLabel, setTeamLabels] = useState<Maybe<Label[]>>(null);
-  const [products, setProducts] = useState<Maybe<Product[]>>(null);
+  // const [product, setProducts] = useState<Maybe<Product[]>>(null);
   const [dailyCost, setDailyCost] = useState<Maybe<Cost>>(null);
   const [metricData, setMetricData] = useState<Maybe<MetricData>>(null);
   const [alerts, setAlerts] = useState<Maybe<Alert[]>>(null);
@@ -227,17 +227,17 @@ export const CostInsightsPage = () => {
   if (!pageFilters.group) {
     return (
       <CostInsightsLayout groups={groups}>
-        <Box textAlign="right">
-          <CopyUrlToClipboard />
-          {/* <CostInsightsSupportButton /> */}
-        </Box>
+        {/* <Box textAlign="right"> */}
+        {/* <CopyUrlToClipboard /> */}
+        {/* <CostInsightsSupportButton /> */}
+        {/* </Box> */}
         <Container maxWidth="lg">
           <CostInsightsHeaderNoGroups />
         </Container>
-        <Divider />
-        <Container maxWidth="lg">
+        {/* <Divider /> */}
+        {/* <Container maxWidth="lg">
           <WhyCostsMatter />
-        </Container>
+        </Container> */}
       </CostInsightsLayout>
     );
   }
@@ -359,14 +359,14 @@ export const CostInsightsPage = () => {
   return (
     <CostInsightsLayout groups={groups}>
       <Grid container wrap="nowrap">
-        <Grid item>
+        {/* <Grid item>
           <Box position="sticky" top={20}>
             <CostInsightsNavigation
               products={products}
               alerts={alerts.length}
             />
           </Box>
-        </Grid>
+        </Grid> */}
         <Grid item xs>
           <Box
             display="flex"
@@ -374,19 +374,19 @@ export const CostInsightsPage = () => {
             justifyContent="flex-end"
             mb={2}
           >
-            <CopyUrlToClipboard />
+            {/* <CopyUrlToClipboard /> */}
             {/* <CostInsightsSupportButton /> */}
           </Box>
           <Container maxWidth="lg" disableGutters>
             <Grid container direction="column">
-              <Grid item xs>
+              {/* <Grid item xs>
                 <CostInsightsHeader
                   owner={pageFilters.group}
                   groups={groups}
                   hasCostData={!!dailyCost.aggregation.length}
                   alerts={alerts.length}
                 />
-              </Grid>
+              </Grid> */}
               {!!alerts.length && (
                 <>
                   <Grid item xs>
@@ -409,7 +409,7 @@ export const CostInsightsPage = () => {
                       metricData={metricData}
                     />
                   )}
-                  <WhyCostsMatter />
+                  {/* <WhyCostsMatter /> */}
                 </Box>
               </Grid>
               <Grid item xs>
@@ -426,7 +426,8 @@ export const CostInsightsPage = () => {
                     group={pageFilters.group}
                     project={pageFilters.project}
                     products={config.products}
-                    onLoaded={setProducts}
+                    onLoaded={() => undefined}
+                    // onLoaded={setProducts}
                   />
                 </Box>
               </Grid>

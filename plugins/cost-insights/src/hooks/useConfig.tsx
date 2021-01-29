@@ -75,6 +75,7 @@ const defaultState: ConfigContextProps = {
     clientEmail: '',
     clientId: '',
     clientX509CertUrl: '',
+    billingTable: '',
   },
 };
 
@@ -129,6 +130,7 @@ export const ConfigProvider = ({ children }: PropsWithChildren<{}>) => {
         clientEmail: '',
         clientId: '',
         clientX509CertUrl: '',
+        billingTable: '',
       };
 
       gcpConfig.type = c.getString('costInsights.gcpConfig.type');
@@ -141,6 +143,9 @@ export const ConfigProvider = ({ children }: PropsWithChildren<{}>) => {
       gcpConfig.clientId = c.getString('costInsights.gcpConfig.clientId');
       gcpConfig.clientX509CertUrl = c.getString(
         'costInsights.gcpConfig.clientX509CertUrl',
+      );
+      gcpConfig.billingTable = c.getString(
+        'costInsights.gcpConfig.billingTable',
       );
 
       return gcpConfig;

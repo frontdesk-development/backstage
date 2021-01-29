@@ -84,6 +84,11 @@ interface Config {
        * @visibility frontend
        */
       clientX509CertUrl: string;
+
+      /**
+       * @visibility frontend
+       */
+      billingTable: string;
     };
   };
 }

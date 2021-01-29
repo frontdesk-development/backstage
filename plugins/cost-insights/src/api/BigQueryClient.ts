@@ -24,9 +24,11 @@ export class BigQueryClass {
   client: BigQuery;
   memoizedQuery: any;
   memoizedLabelQuery: any;
+  billingTable: string;
 
   constructor() {
     this.client = new BigQuery();
+    this.billingTable = '';
     this.memoizedQuery = moize(
       async (query: string) => await this.runQuery(query),
       { maxAge: MAX_AGE, updateExpire: true },
@@ -57,6 +59,7 @@ export class BigQueryClass {
       credentials,
     };
     this.client = new BigQuery(login);
+    this.billingTable = gcpConfig.billingTable;
   }
 
   public parseIntervals(
@@ -132,7 +135,7 @@ export class BigQueryClass {
     const query = `SELECT
     CONCAT(EXTRACT(DATE FROM usage_start_time AT TIME ZONE "UTC"),'') as date
       ,SUM(cost) as amount
-      FROM \`billing.gcp_billing_export_v1_01241D_E5B8D7_0F597A\`
+      FROM \`${this.billingTable}\`
       WHERE usage_start_time > TIMESTAMP(DATE "${startDate}") 
         AND project.id = \"${projectName}\" 
         AND usage_start_time < TIMESTAMP(DATE "${endDate}") 
@@ -150,7 +153,7 @@ export class BigQueryClass {
     const query = `SELECT
     CONCAT(EXTRACT(DATE FROM usage_start_time AT TIME ZONE "UTC"),'') as date
       ,SUM(cost) as amount
-      FROM \`billing.gcp_billing_export_v1_01241D_E5B8D7_0F597A\` 
+      FROM \`${this.billingTable}\` 
       WHERE usage_start_time > TIMESTAMP(DATE "${startDate}") 
         AND usage_start_time < TIMESTAMP(DATE "${endDate}")
         ${whereClouse}
@@ -161,11 +164,11 @@ export class BigQueryClass {
 
   async getLabels(label: string, projectName?: string) {
     let query = `SELECT 
-      DISTINCT(l.value) FROM \`billing.gcp_billing_export_v1_01241D_E5B8D7_0F597A\`, UNNEST(project.labels) as l
+      DISTINCT(l.value) FROM \`${this.billingTable}\`, UNNEST(project.labels) as l
       WHERE (l.key="${label}")`;
     if (projectName) {
       query = `SELECT 
-      DISTINCT(l.value) FROM \`billing.gcp_billing_export_v1_01241D_E5B8D7_0F597A\`, UNNEST(project.labels) as l
+      DISTINCT(l.value) FROM \`${this.billingTable}\`, UNNEST(project.labels) as l
       WHERE (l.key="${label}" AND project.id = \"${projectName}\")`;
     }
 
@@ -183,7 +186,7 @@ export class BigQueryClass {
       CONCAT(EXTRACT(DATE FROM usage_start_time AT TIME ZONE "UTC"),'') as date
       ,SUM(cost) as amount
       ,service.description
-      FROM \`billing.gcp_billing_export_v1_01241D_E5B8D7_0F597A\` 
+      FROM \`${this.billingTable}\` 
       WHERE usage_start_time > TIMESTAMP(DATE "${startDate}") 
         AND usage_start_time < TIMESTAMP(DATE "${endDate}")
         ${whereClouse}
@@ -195,7 +198,7 @@ export class BigQueryClass {
         CONCAT(EXTRACT(DATE FROM usage_start_time AT TIME ZONE "UTC"),'') as date
         ,SUM(cost) as amount
         ,service.description
-        FROM \`billing.gcp_billing_export_v1_01241D_E5B8D7_0F597A\` 
+        FROM \`${this.billingTable}\` 
         WHERE usage_start_time > TIMESTAMP(DATE "${startDate}") 
           AND usage_start_time < TIMESTAMP(DATE "${endDate}")
           AND project.id = \"${projectName}\" 

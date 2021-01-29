@@ -22,4 +22,5 @@ export type GcpConfig = {
   clientEmail: string;
   clientId: string;
   clientX509CertUrl: string;
+  billingTable: string;
 };
