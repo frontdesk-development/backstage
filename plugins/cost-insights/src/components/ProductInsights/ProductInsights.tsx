@@ -15,12 +15,14 @@
  */
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Box, Typography } from '@material-ui/core';
+// import { Box, Typography } from '@material-ui/core';
+import { Box } from '@material-ui/core';
 import { default as Alert } from '@material-ui/lab/Alert';
 import { useApi } from '@backstage/core';
 import { costInsightsApiRef } from '../../api';
-import { ProductInsightsCardList } from '../ProductInsightsCard/ProductInsightsCardList';
-import { Duration, Entity, Maybe, Product } from '../../types';
+// import { ProductInsightsCardList } from '../ProductInsightsCard/ProductInsightsCardList';
+// import { Duration, Entity, Maybe, Product } from '../../types';
+import { Maybe, Product } from '../../types';
 import { intervalsOf, DEFAULT_DURATION } from '../../utils/duration';
 import {
   DefaultLoadingAction,
@@ -66,20 +68,20 @@ export const ProductInsights = ({
   const dispatchLoadingProducts = useCallback(dispatchLoading, []);
   /* eslint-enable react-hooks/exhaustive-deps */
 
-  const onSelectAsyncMemo = useCallback(
-    async function onSelectAsync(
-      product: Product,
-      duration: Duration,
-    ): Promise<Entity> {
-      return client.getProductInsights({
-        group: group,
-        project: project,
-        product: product.kind,
-        intervals: intervalsOf(duration, lastCompleteBillingDate),
-      });
-    },
-    [client, group, project, lastCompleteBillingDate],
-  );
+  // const onSelectAsyncMemo = useCallback(
+  //   async function onSelectAsync(
+  //     product: Product,
+  //     duration: Duration,
+  //   ): Promise<Entity> {
+  //     return client.getProductInsights({
+  //       group: group,
+  //       project: project,
+  //       product: product.kind,
+  //       intervals: intervalsOf(duration, lastCompleteBillingDate),
+  //     });
+  //   },
+  //   [client, group, project, lastCompleteBillingDate],
+  // );
 
   useEffect(() => {
     async function getAllProductInsights(
@@ -136,19 +138,12 @@ export const ProductInsights = ({
 
   return (
     <Box px={3} py={6}>
-      <Box mt={0} mb={5} textAlign="center">
+      {/* <Box mt={0} mb={5} textAlign="center">
         <Typography variant="h4" gutterBottom>
           Your team's product usage
         </Typography>
-      </Box>
-      {error ? (
-        <Alert severity="error">{error.message}</Alert>
-      ) : (
-        <ProductInsightsCardList
-          initialStates={initialStates}
-          onSelectAsync={onSelectAsyncMemo}
-        />
-      )}
+      </Box> */}
+      {error && <Alert severity="error">{error.message}</Alert>}
     </Box>
   );
 };

@@ -14,18 +14,4 @@
  * limitations under the License.
  */
 
-import { Duration, Group, PageFilters } from '../types';
-
-export function getDefaultPageFilters(groups: Group[]): PageFilters {
-  return {
-    group: groups.length ? groups[0].id : null,
-    project: null,
-    duration: Duration.P90D,
-    metric: null,
-    pillarLabel: null,
-    tierLabel: null,
-    domainLabel: null,
-    productLabel: null,
-    teamLabel: null,
-  };
-}
+export { LabelTierSelect } from './LabelTierSelect';

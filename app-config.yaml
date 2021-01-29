@@ -201,9 +201,6 @@ catalog:
     # Example component for github-actions
     - type: url
       target: https://github.com/backstage/backstage/blob/master/plugins/github-actions/examples/sample.yaml
-    # Example component for techdocs
-    - type: url
-      target: https://github.com/backstage/backstage/blob/master/plugins/techdocs-backend/examples/documented-component/documented-component.yaml
     # Backstage example APIs
     - type: url
       target: https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/all-apis.yaml
@@ -215,7 +212,7 @@ catalog:
       target: https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/acme-corp.yaml
 
     # trivago terraform template
-    - type: github
+    - type: url 
       target: https://github.com/frontdesk-development/cookiecutter-gcp-cicd/blob/master/template.yaml 
 
 
@@ -326,24 +323,23 @@ costInsights:
     computeEngine:
       name: Compute Engine
       icon: compute
-    cloudDataflow:
-      name: Cloud Dataflow
-      icon: data
-    cloudStorage:
-      name: Cloud Storage
-      icon: storage
-    bigQuery:
-      name: BigQuery
-      icon: search
-    events:
-      name: Events
-      icon: data
   metrics:
-    DAU:
-      name: Daily Active Users
-      default: true
-    MSC:
-      name: Monthly Subscribers
+  gcpConfig:
+    type: service_account
+    projectId: 'trv-shared-admin'
+    privateKeyId:
+      $env: COST_PRIVATE_KEY_ID 
+    privateKey:
+      $env: COST_PRIVATE_KEY 
+    clientEmail:
+      $env: COST_CLIENT_EMAIL 
+    clientId:
+      $env: COST_CLIENT_ID 
+    clientX509CertUrl:
+      $env: COST_CLIENT_X509 
+    billingTable:
+      $env: BILLING_TABLE
+
 homepage:
   clocks:
     - label: UTC

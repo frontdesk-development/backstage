@@ -63,8 +63,8 @@ export const CostOverviewCard = ({
     { id: 'overview', label: 'Total cost', title: 'Cloud Cost' },
     {
       id: 'breakdown',
-      label: 'Breakdown by product',
-      title: 'Cloud Cost By Product',
+      label: 'Breakdown by resource',
+      title: 'Cloud Cost By Resource',
     },
   ];
 
@@ -92,7 +92,6 @@ export const CostOverviewCard = ({
 
   // Metrics can only be selected on the total cost graph
   const showMetricSelect = config.metrics.length && tabIndex === 0;
-
   return (
     <Card style={{ position: 'relative' }}>
       <ScrollAnchor behavior="smooth" top={-20} />

@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 
-import { createPlugin, createRouteRef } from '@backstage/core';
+import { createPlugin, createRouteRef, createApiFactory, googleAuthApiRef } from '@backstage/core';
 import { CostInsightsPage } from './components/CostInsightsPage';
 import { ProjectGrowthInstructionsPage } from './components/ProjectGrowthInstructionsPage';
 import { LabelDataflowInstructionsPage } from './components/LabelDataflowInstructionsPage';
+import { costInsightsApiRef, CostInsightsClient } from './api'
+
 
 export const rootRouteRef = createRouteRef({
   path: '/cost-insights',
@@ -36,6 +38,17 @@ export const unlabeledDataflowAlertRef = createRouteRef({
 
 export const plugin = createPlugin({
   id: 'cost-insights',
+  apis: [
+    createApiFactory({
+      api: costInsightsApiRef,
+      deps: {
+        googleAuthApi: googleAuthApiRef,
+      },
+      factory({ googleAuthApi }) {
+        return new CostInsightsClient(googleAuthApi);
+      },
+    }),
+  ],
   register({ router, featureFlags }) {
     router.addRoute(rootRouteRef, CostInsightsPage);
     router.addRoute(projectGrowthAlertRef, ProjectGrowthInstructionsPage);

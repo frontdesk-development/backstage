@@ -23,6 +23,9 @@ import {
   Project,
   Maybe,
   MetricData,
+  GcpConfig,
+  Label,
+  PageFilters,
 } from '../types';
 
 export type ProductInsightsOptions = {
@@ -49,6 +52,11 @@ export type ProductInsightsOptions = {
 
 export type CostInsightsApi = {
   /**
+   * Set the gcp config parameters from the app-config
+   * @param gcpConfig
+   */
+  setConfig(gcpConfig: GcpConfig): void;
+  /**
    * Get the most current date for which billing data is complete, in YYYY-MM-DD format. This helps
    * define the intervals used in other API methods to avoid showing incomplete cost. The costs for
    * today, for example, will not be complete. This ideally comes from the cloud provider.
@@ -69,8 +77,32 @@ export type CostInsightsApi = {
    * similar concept in billing accounts). These act as filters for the displayed costs, users can
    * choose whether they see all costs for a group, or those from a particular owned project.
    */
-  getGroupProjects(group: string): Promise<Project[]>;
+  getGroupProjects(projectId?: string): Promise<Project[]>;
 
+  /**
+   * Get a list of Tier labels that belong to this group.
+   */
+  getTierLabels(projectId?: Maybe<string>): Promise<Label[]>;
+
+  /**
+   * Get a list of Pillar labels that belong to this group.
+   */
+  getPillarLabels(group: Maybe<string>): Promise<Label[]>;
+
+  /**
+   * Get a list of Domain labels that belong to this group.
+   */
+  getDomainLabels(group: Maybe<string>): Promise<Label[]>;
+
+  /**
+   * Get a list of Product labels that belong to this group.
+   */
+  getProductLabels(group: Maybe<string>): Promise<Label[]>;
+
+  /**
+   * Get a list of Team labels that belong to this group.
+   */
+  getTeamLabels(group: Maybe<string>): Promise<Label[]>;
   /**
    * Get daily cost aggregations for a given group and interval timeframe.
    *
@@ -82,11 +114,11 @@ export type CostInsightsApi = {
    * The rate of change in this comparison allows teams to reason about their cost growth (or
    * reduction) and compare it to metrics important to the business.
    *
-   * @param group The group id from getUserGroups or query parameters
+   * @param pageFilters The group id from getUserGroups or query parameters
    * @param intervals An ISO 8601 repeating interval string, such as R2/P30D/2020-09-01
    *   https://en.wikipedia.org/wiki/ISO_8601#Repeating_intervals
    */
-  getGroupDailyCost(group: string, intervals: string): Promise<Cost>;
+  getGroupDailyCost(pageFilters: PageFilters, intervals: string): Promise<Cost>;
 
   /**
    * Get daily cost aggregations for a given billing entity (project in GCP, AWS has a similar
@@ -100,11 +132,14 @@ export type CostInsightsApi = {
    * The rate of change in this comparison allows teams to reason about the project's cost growth
    * (or reduction) and compare it to metrics important to the business.
    *
-   * @param project The project id from getGroupProjects or query parameters
+   * @param pageFilters The project id from getGroupProjects or query parameters
    * @param intervals An ISO 8601 repeating interval string, such as R2/P30D/2020-09-01
    *   https://en.wikipedia.org/wiki/ISO_8601#Repeating_intervals
    */
-  getProjectDailyCost(project: string, intervals: string): Promise<Cost>;
+  getProjectDailyCost(
+    pageFilters: PageFilters,
+    intervals: string,
+  ): Promise<Cost>;
 
   /**
    * Get aggregations for a particular metric and interval timeframe. Teams

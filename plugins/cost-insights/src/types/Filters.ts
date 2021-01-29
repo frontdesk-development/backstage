@@ -22,6 +22,11 @@ export interface PageFilters {
   project: Maybe<string>;
   duration: Duration;
   metric: string | null;
+  tierLabel: Maybe<string>;
+  pillarLabel: Maybe<string>;
+  domainLabel: Maybe<string>;
+  productLabel: Maybe<string>;
+  teamLabel: Maybe<string>;
 }
 
 export type ProductFilters = Array<ProductPeriod>;
