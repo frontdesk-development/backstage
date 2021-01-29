@@ -180,18 +180,19 @@ costInsights:
     computeEngine:
       name: Compute Engine
       icon: compute
-    cloudDataflow:
-      name: Cloud Dataflow
-      icon: data
-    cloudStorage:
-      name: Cloud Storage
-      icon: storage
-    bigQuery:
-      name: Big Query
-      icon: search
   metrics:
-    dailyCost:
-      name: Your Company's Daily Cost
-    DAU:
-      name: Cost Per DAU
-
+  gcpConfig:
+    type: service_account
+    projectId: 'trv-shared-admin'
+    privateKeyId:
+      $env: COST_PRIVATE_KEY_ID 
+    privateKey:
+      $env: COST_PRIVATE_KEY 
+    clientEmail:
+      $env: COST_CLIENT_EMAIL 
+    clientId:
+      $env: COST_CLIENT_ID 
+    clientX509CertUrl:
+      $env: COST_CLIENT_X509 
+    billingTable:
+      $env: BILLING_TABLE
