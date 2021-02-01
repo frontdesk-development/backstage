@@ -20,6 +20,7 @@ import {
   createApiFactory,
   googleAuthApiRef,
   configApiRef,
+  discoveryApiRef,
 } from '@backstage/core';
 import { CostInsightsPage } from './components/CostInsightsPage';
 import { ProjectGrowthInstructionsPage } from './components/ProjectGrowthInstructionsPage';
@@ -48,10 +49,8 @@ export const plugin = createPlugin({
       api: costInsightsApiRef,
       deps: {
         googleAuthApi: googleAuthApiRef,
-        configApi: configApiRef,
       },
-      factory: ({ googleAuthApi, configApi }) =>
-        new CostInsightsClient(googleAuthApi, configApi),
+      factory: ({ googleAuthApi }) => new CostInsightsClient(googleAuthApi),
     }),
   ],
   register({ router, featureFlags }) {

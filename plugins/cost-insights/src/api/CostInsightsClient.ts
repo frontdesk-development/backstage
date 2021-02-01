@@ -16,7 +16,6 @@
 /* eslint-disable no-restricted-imports */
 
 import dayjs from 'dayjs';
-import { Config } from '@backstage/config';
 import { CostInsightsApi, ProductInsightsOptions } from './CostInsightsApi';
 import { BigQueryClass } from './BigQueryClient';
 import {
@@ -30,11 +29,10 @@ import {
   Project,
   Trendline,
   ChangeStatistic,
-  GcpConfig,
   PageFilters,
   AllResultsComponents,
 } from '../types';
-import { OAuthApi } from '@backstage/core';
+import { OAuthApi, DiscoveryApi } from '@backstage/core';
 import regression, { DataPoint } from 'regression';
 import moize from 'moize';
 import _ from 'lodash';
@@ -73,29 +71,17 @@ export function changeOf(aggregation: DateAggregation[]): ChangeStatistic {
 export class CostInsightsClient implements CostInsightsApi {
   bigQuery: BigQueryClass;
   memoizedProjects: any;
-  gcpConfig: GcpConfig;
-  constructor(private readonly googleAuthApi: OAuthApi, configApi: Config) {
-    const config = configApi.getConfig('costInsights.gcpConfig');
-    console.log("Config: ",config);
-    this.gcpConfig = {
-      type: config.getString('type'),
-      projectId: config.getString('projectId'),
-      privateKeyId: config.getString('privateKeyId'),
-      privateKey: config.getString('privateKey'),
-      clientEmail: config.getString('clientEmail'),
-      clientId: config.getString('clientId'),
-      clientX509CertUrl: config.getString('clientX509CertUrl'),
-      billingTable: config.getString('billingTable'),
-    };
-    this.bigQuery = new BigQueryClass(this.gcpConfig);
+
+  constructor(private readonly googleAuthApi: OAuthApi) {
+    this.bigQuery = new BigQueryClass();
     this.memoizedProjects = moize(
       async (token: string) => await this.getProjects(token),
       { maxAge: MAX_AGE, updateExpire: true },
     );
   }
 
-  setConfig(gcpConfig: GcpConfig) {
-    this.bigQuery.setConfig(gcpConfig);
+  setConfig() {
+    this.bigQuery.setConfig();
   }
 
   private request(_: any, res: any): Promise<any> {

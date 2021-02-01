@@ -66,6 +66,11 @@ export const CostInsightsPage = () => {
   const client = useApi(costInsightsApiRef);
   const config = useConfig();
   const groups = useGroups();
+  const [bigQueryConfig, setBigQueryConfig] = useState(false);
+  if (!bigQueryConfig) {
+    client.setConfig();
+    setBigQueryConfig(true);
+  }
   const lastCompleteBillingDate = useLastCompleteBillingDate();
   const [currency, setCurrency] = useCurrency();
   const [projects, setProjects] = useState<Maybe<Project[]>>(null);

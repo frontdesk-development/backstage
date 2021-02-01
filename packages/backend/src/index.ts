@@ -38,6 +38,7 @@ import healthcheck from './plugins/healthcheck';
 import auth from './plugins/auth';
 import catalog from './plugins/catalog';
 import kubernetes from './plugins/kubernetes';
+import costInsights from './plugins/cost-insights';
 import scaffolder from './plugins/scaffolder';
 import proxy from './plugins/proxy';
 import techdocs from './plugins/techdocs';
@@ -75,6 +76,9 @@ async function main() {
   const proxyEnv = useHotMemoize(module, () => createEnv('proxy'));
   const techdocsEnv = useHotMemoize(module, () => createEnv('techdocs'));
   const kubernetesEnv = useHotMemoize(module, () => createEnv('kubernetes'));
+  const costInsightsEnv = useHotMemoize(module, () =>
+    createEnv('costInsights'),
+  );
   const graphqlEnv = useHotMemoize(module, () => createEnv('graphql'));
   const appEnv = useHotMemoize(module, () => createEnv('app'));
 
@@ -84,6 +88,7 @@ async function main() {
   apiRouter.use('/auth', await auth(authEnv));
   apiRouter.use('/techdocs', await techdocs(techdocsEnv));
   apiRouter.use('/kubernetes', await kubernetes(kubernetesEnv));
+  apiRouter.use('/cost-insights-backend', await costInsights(costInsightsEnv));
   apiRouter.use('/proxy', await proxy(proxyEnv));
   apiRouter.use('/graphql', await graphql(graphqlEnv));
   apiRouter.use(notFoundHandler());

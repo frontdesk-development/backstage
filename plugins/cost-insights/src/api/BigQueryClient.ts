@@ -25,28 +25,22 @@ export class BigQueryClass {
   memoizedQuery: any;
   memoizedLabelQuery: any;
   billingTable: string;
+  memoizeGetConfig: any;
+  gcpConfig: GcpConfig;
 
-  constructor(config: GcpConfig) {
-    const credentials = {
-      type: config.type,
-      project_id: config.projectId,
-      private_key_id: config.privateKeyId,
-      private_key: config.privateKey,
-      client_email: config.clientEmail,
-      client_id: config.clientId,
-      auth_uri: 'https://accounts.google.com/o/oauth2/auth',
-      token_uri: 'https://oauth2.googleapis.com/token',
-      auth_provider_x509_cert_url: 'https://www.googleapis.com/oauth2/v1/certs',
-      client_x509_cert_url: config.clientX509CertUrl,
+  constructor() {
+    this.gcpConfig = {
+      billingTable: '',
+      clientEmail: '',
+      clientId: '',
+      clientX509CertUrl: '',
+      privateKey: '',
+      privateKeyId: '',
+      projectId: '',
+      type: '',
     };
-
-    const projectId = config.projectId;
-    const login = {
-      projectId,
-      credentials,
-    };
-    this.client = new BigQuery(login);
-    this.billingTable = config.billingTable;
+    this.client = new BigQuery();
+    this.billingTable = '';
 
     this.memoizedQuery = moize(
       async (query: string) => await this.runQuery(query),
@@ -58,7 +52,11 @@ export class BigQueryClass {
     );
   }
 
-  setConfig(gcpConfig: GcpConfig) {
+  async setConfig() {
+    const response = await fetch(
+      'http://localhost:7000/api/cost-insights-backend/config',
+    );
+    const gcpConfig: GcpConfig = (await response.json()) as GcpConfig;
     const credentials = {
       type: gcpConfig.type,
       project_id: gcpConfig.projectId,
