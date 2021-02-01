@@ -19,6 +19,7 @@ import {
   githubAuthApiRef,
   googleAuthApiRef,
   createApiFactory,
+  configApiRef,
 } from '@backstage/core';
 
 import {
@@ -52,8 +53,9 @@ export const apis = [
   }),
 
   createApiFactory({
-    api: costInsightsApiRef, 
-    deps: { googleAuthApi: googleAuthApiRef },
-    factory: ({googleAuthApi}) => new CostInsightsClient(googleAuthApi),
-  })
+    api: costInsightsApiRef,
+    deps: { googleAuthApi: googleAuthApiRef, configApi: configApiRef },
+    factory: ({ googleAuthApi, configApi }) =>
+      new CostInsightsClient(googleAuthApi, configApi),
+  }),
 ];

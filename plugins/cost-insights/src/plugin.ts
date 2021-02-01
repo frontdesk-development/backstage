@@ -14,12 +14,17 @@
  * limitations under the License.
  */
 
-import { createPlugin, createRouteRef, createApiFactory, googleAuthApiRef } from '@backstage/core';
+import {
+  createPlugin,
+  createRouteRef,
+  createApiFactory,
+  googleAuthApiRef,
+  configApiRef,
+} from '@backstage/core';
 import { CostInsightsPage } from './components/CostInsightsPage';
 import { ProjectGrowthInstructionsPage } from './components/ProjectGrowthInstructionsPage';
 import { LabelDataflowInstructionsPage } from './components/LabelDataflowInstructionsPage';
-import { costInsightsApiRef, CostInsightsClient } from './api'
-
+import { costInsightsApiRef, CostInsightsClient } from './api';
 
 export const rootRouteRef = createRouteRef({
   path: '/cost-insights',
@@ -43,10 +48,10 @@ export const plugin = createPlugin({
       api: costInsightsApiRef,
       deps: {
         googleAuthApi: googleAuthApiRef,
+        configApi: configApiRef,
       },
-      factory({ googleAuthApi }) {
-        return new CostInsightsClient(googleAuthApi);
-      },
+      factory: ({ googleAuthApi, configApi }) =>
+        new CostInsightsClient(googleAuthApi, configApi),
     }),
   ],
   register({ router, featureFlags }) {

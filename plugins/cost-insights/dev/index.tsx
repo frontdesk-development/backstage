@@ -16,7 +16,7 @@
 import { createDevApp } from '@backstage/dev-utils';
 import { costInsightsApiRef, CostInsightsClient } from '../src/api';
 import { plugin } from '../src/plugin';
-import { googleAuthApiRef } from '@backstage/core';
+import { googleAuthApiRef, configApiRef } from '@backstage/core';
 
 createDevApp()
   .registerPlugin(plugin)
@@ -24,7 +24,9 @@ createDevApp()
     api: costInsightsApiRef,
     deps: {
       googleAuthApi: googleAuthApiRef,
+      configApi: configApiRef,
     },
-    factory: ({ googleAuthApi }) => new CostInsightsClient(googleAuthApi),
+    factory: ({ googleAuthApi, configApi }) =>
+      new CostInsightsClient(googleAuthApi, configApi),
   })
   .render();
