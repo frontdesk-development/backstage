@@ -23,7 +23,7 @@ import React, {
 } from 'react';
 import { configApiRef, useApi } from '@backstage/core';
 import { Config as BackstageConfig } from '@backstage/config';
-import { Currency, Icon, Metric, Product, GcpConfig } from '../types';
+import { Currency, Icon, Metric, Product } from '../types';
 import { getIcon } from '../utils/navigation';
 import { validateMetrics } from '../utils/config';
 import { defaultCurrencies } from '../utils/currency';
@@ -54,7 +54,6 @@ export type ConfigContextProps = {
   icons: Icon[];
   engineerCost: number;
   currencies: Currency[];
-  gcpConfig: GcpConfig;
 };
 
 export const ConfigContext = createContext<ConfigContextProps | undefined>(
@@ -67,16 +66,6 @@ const defaultState: ConfigContextProps = {
   icons: [],
   engineerCost: 0,
   currencies: defaultCurrencies,
-  gcpConfig: {
-    type: '',
-    projectId: '',
-    privateKeyId: '',
-    privateKey: '',
-    clientEmail: '',
-    clientId: '',
-    clientX509CertUrl: '',
-    billingTable: '',
-  },
 };
 
 export const ConfigProvider = ({ children }: PropsWithChildren<{}>) => {
@@ -121,28 +110,11 @@ export const ConfigProvider = ({ children }: PropsWithChildren<{}>) => {
       return c.getNumber('costInsights.engineerCost');
     }
 
-    function getGCPConfig(): GcpConfig {
-      const config = c.getConfig('costInsights.gcpConfig');
-      const gcpConfig: GcpConfig = {
-        type: config.getString('type'),
-        projectId: config.getString('projectId'),
-        privateKeyId: config.getString('privateKeyId'),
-        privateKey: config.getString('privateKey'),
-        clientEmail: config.getString('clientEmail'),
-        clientId: config.getString('clientId'),
-        clientX509CertUrl: config.getString('clientX509CertUrl'),
-        billingTable: config.getString('billingTable'),
-      };
-
-      return gcpConfig;
-    }
-
     function getConfig() {
       const products = getProducts();
       const metrics = getMetrics();
       const engineerCost = getEngineerCost();
       const icons = getIcons();
-      const gcpConfig = getGCPConfig();
 
       validateMetrics(metrics);
 
@@ -152,7 +124,6 @@ export const ConfigProvider = ({ children }: PropsWithChildren<{}>) => {
         products,
         engineerCost,
         icons,
-        gcpConfig,
       }));
 
       setLoading(false);

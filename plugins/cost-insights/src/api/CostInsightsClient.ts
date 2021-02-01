@@ -76,6 +76,7 @@ export class CostInsightsClient implements CostInsightsApi {
   gcpConfig: GcpConfig;
   constructor(private readonly googleAuthApi: OAuthApi, configApi: Config) {
     const config = configApi.getConfig('costInsights.gcpConfig');
+    console.log("Config: ",config);
     this.gcpConfig = {
       type: config.getString('type'),
       projectId: config.getString('projectId'),

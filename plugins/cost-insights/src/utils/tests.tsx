@@ -115,16 +115,6 @@ export const MockConfigProvider = ({
     icons: [],
     engineerCost: 0,
     currencies: [],
-    gcpConfig: {
-      type: '',
-      clientEmail: '',
-      clientId: '',
-      clientX509CertUrl: '',
-      privateKey: '',
-      privateKeyId: '',
-      projectId: '',
-      billingTable: '',
-    },
   };
   return (
     <ConfigContext.Provider value={{ ...defaultContext, ...context }}>
