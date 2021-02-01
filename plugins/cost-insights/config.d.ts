@@ -49,46 +49,46 @@ interface Config {
       };
     };
 
-    gcpConfig: {
+    gcpConfig?: {
       /**
        * @visibility frontend
        */
-      type: string;
+      type?: string;
 
       /**
        * @visibility frontend
        */
-      projectId: string;
+      projectId?: string;
 
       /**
        * @visibility frontend
        */
-      privateKeyId: string;
+      privateKeyId?: string;
 
       /**
        * @visibility frontend
        */
-      privateKey: string;
+      privateKey?: string;
 
       /**
        * @visibility frontend
        */
-      clientEmail: string;
+      clientEmail?: string;
 
       /**
        * @visibility frontend
        */
-      clientId: string;
+      clientId?: string;
 
       /**
        * @visibility frontend
        */
-      clientX509CertUrl: string;
+      clientX509CertUrl?: string;
 
       /**
        * @visibility frontend
        */
-      billingTable: string;
+      billingTable?: string;
     };
   };
 }

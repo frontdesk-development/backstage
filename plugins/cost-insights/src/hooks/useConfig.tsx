@@ -133,20 +133,21 @@ export const ConfigProvider = ({ children }: PropsWithChildren<{}>) => {
         billingTable: '',
       };
 
-      gcpConfig.type = c.getString('costInsights.gcpConfig.type');
-      gcpConfig.projectId = c.getString('costInsights.gcpConfig.projectId');
-      gcpConfig.privateKeyId = c.getString(
-        'costInsights.gcpConfig.privateKeyId',
-      );
-      gcpConfig.privateKey = c.getString('costInsights.gcpConfig.privateKey');
-      gcpConfig.clientEmail = c.getString('costInsights.gcpConfig.clientEmail');
-      gcpConfig.clientId = c.getString('costInsights.gcpConfig.clientId');
-      gcpConfig.clientX509CertUrl = c.getString(
-        'costInsights.gcpConfig.clientX509CertUrl',
-      );
-      gcpConfig.billingTable = c.getString(
-        'costInsights.gcpConfig.billingTable',
-      );
+      gcpConfig.type = c.getOptionalString('costInsights.gcpConfig.type') ?? '';
+      gcpConfig.projectId =
+        c.getOptionalString('costInsights.gcpConfig.projectId') ?? '';
+      gcpConfig.privateKeyId =
+        c.getOptionalString('costInsights.gcpConfig.privateKeyId') ?? '';
+      gcpConfig.privateKey =
+        c.getOptionalString('costInsights.gcpConfig.privateKey') ?? '';
+      gcpConfig.clientEmail =
+        c.getOptionalString('costInsights.gcpConfig.clientEmail') ?? '';
+      gcpConfig.clientId =
+        c.getOptionalString('costInsights.gcpConfig.clientId') ?? '';
+      gcpConfig.clientX509CertUrl =
+        c.getOptionalString('costInsights.gcpConfig.clientX509CertUrl') ?? '';
+      gcpConfig.billingTable =
+        c.getOptionalString('costInsights.gcpConfig.billingTable') ?? '';
 
       return gcpConfig;
     }
