@@ -18,6 +18,7 @@
 import moize from 'moize';
 import { BigQuery } from '@google-cloud/bigquery';
 import { GcpConfig, Label } from '../types';
+import { ConfigApi } from '@backstage/core';
 
 const MAX_AGE = 1000 * 60 * 60 * 24; // 24 hours
 export class BigQueryClass {
@@ -27,8 +28,10 @@ export class BigQueryClass {
   billingTable: string;
   memoizeGetConfig: any;
   gcpConfig: GcpConfig;
+  private readonly configApi: ConfigApi;
 
-  constructor() {
+  constructor(configApi: ConfigApi) {
+    this.configApi = configApi;
     this.gcpConfig = {
       billingTable: '',
       clientEmail: '',
@@ -53,9 +56,10 @@ export class BigQueryClass {
   }
 
   async setConfig() {
-    const response = await fetch(
-      'http://localhost:7000/api/cost-insights-backend/config',
-    );
+    const url = this.configApi.getString('backend.baseUrl');
+    const completeUrl = `${url}/api/cost-insights-backend/config`;
+    const response = await fetch(completeUrl);
+
     const gcpConfig: GcpConfig = (await response.json()) as GcpConfig;
     const credentials = {
       type: gcpConfig.type,

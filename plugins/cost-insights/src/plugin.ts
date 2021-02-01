@@ -20,26 +20,13 @@ import {
   createApiFactory,
   googleAuthApiRef,
   configApiRef,
-  discoveryApiRef,
 } from '@backstage/core';
 import { CostInsightsPage } from './components/CostInsightsPage';
-import { ProjectGrowthInstructionsPage } from './components/ProjectGrowthInstructionsPage';
-import { LabelDataflowInstructionsPage } from './components/LabelDataflowInstructionsPage';
 import { costInsightsApiRef, CostInsightsClient } from './api';
 
 export const rootRouteRef = createRouteRef({
   path: '/cost-insights',
   title: 'Cost Insights',
-});
-
-export const projectGrowthAlertRef = createRouteRef({
-  path: '/cost-insights/investigating-growth',
-  title: 'Investigating Growth',
-});
-
-export const unlabeledDataflowAlertRef = createRouteRef({
-  path: '/cost-insights/labeling-jobs',
-  title: 'Labeling Dataflow Jobs',
 });
 
 export const plugin = createPlugin({
@@ -49,14 +36,14 @@ export const plugin = createPlugin({
       api: costInsightsApiRef,
       deps: {
         googleAuthApi: googleAuthApiRef,
+        configApi: configApiRef,
       },
-      factory: ({ googleAuthApi }) => new CostInsightsClient(googleAuthApi),
+      factory: ({ googleAuthApi, configApi }) =>
+        new CostInsightsClient(googleAuthApi, configApi),
     }),
   ],
   register({ router, featureFlags }) {
     router.addRoute(rootRouteRef, CostInsightsPage);
-    router.addRoute(projectGrowthAlertRef, ProjectGrowthInstructionsPage);
-    router.addRoute(unlabeledDataflowAlertRef, LabelDataflowInstructionsPage);
     featureFlags.register('cost-insights-currencies');
   },
 });

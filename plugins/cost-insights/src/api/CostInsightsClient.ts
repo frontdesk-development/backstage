@@ -32,7 +32,7 @@ import {
   PageFilters,
   AllResultsComponents,
 } from '../types';
-import { OAuthApi, DiscoveryApi } from '@backstage/core';
+import { OAuthApi, ConfigApi } from '@backstage/core';
 import regression, { DataPoint } from 'regression';
 import moize from 'moize';
 import _ from 'lodash';
@@ -72,8 +72,8 @@ export class CostInsightsClient implements CostInsightsApi {
   bigQuery: BigQueryClass;
   memoizedProjects: any;
 
-  constructor(private readonly googleAuthApi: OAuthApi) {
-    this.bigQuery = new BigQueryClass();
+  constructor(private readonly googleAuthApi: OAuthApi, configApi: ConfigApi) {
+    this.bigQuery = new BigQueryClass(configApi);
     this.memoizedProjects = moize(
       async (token: string) => await this.getProjects(token),
       { maxAge: MAX_AGE, updateExpire: true },
