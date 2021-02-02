@@ -74,13 +74,13 @@ export class BigQueryClass {
       client_x509_cert_url: gcpConfig.clientX509CertUrl.trim(),
     };
 
-    const projectId = gcpConfig.projectId;
+    const projectId = gcpConfig.projectId.trim();
     const login = {
       projectId,
       credentials,
     };
     this.client = new BigQuery(login);
-    this.billingTable = gcpConfig.billingTable;
+    this.billingTable = gcpConfig.billingTable.trim();
   }
 
   public parseIntervals(
