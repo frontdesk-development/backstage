@@ -62,16 +62,16 @@ export class BigQueryClass {
 
     const gcpConfig: GcpConfig = (await response.json()) as GcpConfig;
     const credentials = {
-      type: gcpConfig.type,
-      project_id: gcpConfig.projectId,
-      private_key_id: gcpConfig.privateKeyId,
-      private_key: gcpConfig.privateKey,
-      client_email: gcpConfig.clientEmail,
-      client_id: gcpConfig.clientId,
+      type: gcpConfig.type.trim(),
+      project_id: gcpConfig.projectId.trim(),
+      private_key_id: gcpConfig.privateKeyId.trim(),
+      private_key: gcpConfig.privateKey.trim(),
+      client_email: gcpConfig.clientEmail.trim(),
+      client_id: gcpConfig.clientId.trim(),
       auth_uri: 'https://accounts.google.com/o/oauth2/auth',
       token_uri: 'https://oauth2.googleapis.com/token',
       auth_provider_x509_cert_url: 'https://www.googleapis.com/oauth2/v1/certs',
-      client_x509_cert_url: gcpConfig.clientX509CertUrl,
+      client_x509_cert_url: gcpConfig.clientX509CertUrl.trim(),
     };
 
     const projectId = gcpConfig.projectId;
