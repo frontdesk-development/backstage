@@ -223,7 +223,6 @@ export const MockCostInsightsApiProvider = ({
     getUserGroups: jest.fn(),
     getPillarLabels: jest.fn(),
     getTierLabels: jest.fn(),
-    setConfig: jest.fn(),
     getDomainLabels: jest.fn(),
     getProductLabels: jest.fn(),
     getTeamLabels: jest.fn(),
