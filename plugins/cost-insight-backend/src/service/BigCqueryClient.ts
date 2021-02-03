@@ -28,6 +28,7 @@ export class BigQueryClass {
   billingTable: string;
 
   constructor(gcpConfig: GcpConfig) {
+    console.log('GcpCOnfig: ', gcpConfig);
     this.billingTable = gcpConfig.billingTable;
     const projectId = gcpConfig.projectId;
     const keyFilename = gcpConfig.keyFilename;
@@ -158,6 +159,8 @@ export class BigQueryClass {
       DISTINCT(l.value) FROM \`${this.billingTable}\`, UNNEST(project.labels) as l
       WHERE (l.key="${label}" AND project.id = \"${projectName}\")`;
     }
+
+    console.log('Label Query:', query);
 
     return await this.memoizedLabelQuery(query);
   }
