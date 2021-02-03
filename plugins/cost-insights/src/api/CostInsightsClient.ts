@@ -17,7 +17,6 @@
 
 import dayjs from 'dayjs';
 import { CostInsightsApi, ProductInsightsOptions } from './CostInsightsApi';
-import { BigQueryClass } from './BigQueryClient';
 import {
   Alert,
   Cost,
@@ -31,6 +30,7 @@ import {
   ChangeStatistic,
   PageFilters,
   AllResultsComponents,
+  Agregation,
 } from '../types';
 import { OAuthApi, ConfigApi } from '@backstage/core';
 import regression, { DataPoint } from 'regression';
@@ -69,19 +69,17 @@ export function changeOf(aggregation: DateAggregation[]): ChangeStatistic {
 }
 
 export class CostInsightsClient implements CostInsightsApi {
-  bigQuery: BigQueryClass;
   memoizedProjects: any;
+  backendUrl: string;
 
   constructor(private readonly googleAuthApi: OAuthApi, configApi: ConfigApi) {
-    this.bigQuery = new BigQueryClass(configApi);
+    const url = configApi.getString('backend.baseUrl');
+    this.backendUrl = `${url}/api/cost-insights-backend`;
+
     this.memoizedProjects = moize(
       async (token: string) => await this.getProjects(token),
       { maxAge: MAX_AGE, updateExpire: true },
     );
-  }
-
-  setConfig() {
-    this.bigQuery.setConfig();
   }
 
   private request(_: any, res: any): Promise<any> {
@@ -170,41 +168,83 @@ export class CostInsightsClient implements CostInsightsApi {
     return projectArray;
   }
 
-  async getTierLabels(projectId: string): Promise<Project[]> {
-    const labels = await this.bigQuery.getLabels('trv-tier', projectId);
+  async getLabel(label: string, projectId?: string): Promise<Project[]> {
+    const response = await fetch(`${this.backendUrl}/labels`, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      method: 'POST',
+      body: JSON.stringify({
+        label: label,
+        projectName: projectId,
+      }),
+    }).catch(e => {
+      throw new Error(`Failed to generate entity definitions, ${e.message}`);
+    });
+    if (!response.ok) {
+      throw new Error(
+        `Failed to generate entity definitions. Received http response ${response.status}: ${response.statusText}`,
+      );
+    }
+
+    const labels = (await response.json()) as Project[];
     return labels;
+  }
+
+  async getTierLabels(projectId: string): Promise<Project[]> {
+    return this.getLabel('trv-tier', projectId);
   }
 
   async getPillarLabels(projectId: string): Promise<Project[]> {
-    const labels = await this.bigQuery.getLabels('trv-pillar', projectId);
-    return labels;
+    return this.getLabel('trv-pillar', projectId);
   }
 
   async getDomainLabels(projectId: string): Promise<Project[]> {
-    const labels = await this.bigQuery.getLabels('trv-domain', projectId);
-    return labels;
+    return this.getLabel('trv-domain', projectId);
   }
 
   async getProductLabels(projectId: string): Promise<Project[]> {
-    const labels = await this.bigQuery.getLabels('trv-product', projectId);
-    return labels;
+    return this.getLabel('trv-product', projectId);
   }
 
   async getTeamLabels(projectId: string): Promise<Project[]> {
-    const labels = await this.bigQuery.getLabels('trv-team', projectId);
-    return labels;
+    return this.getLabel('trv-team', projectId);
   }
 
+  async queryBigQuery(
+    intervals: string,
+    projectName: string | undefined,
+    whereStatement: string | undefined,
+  ): Promise<Agregation[]> {
+    const response = await fetch(`${this.backendUrl}/queryBigQuery`, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      method: 'POST',
+      body: JSON.stringify({
+        intervals: intervals,
+        projectName: projectName,
+        whereStatement: whereStatement,
+      }),
+    }).catch(e => {
+      throw new Error(`Failed to generate entity definitions, ${e.message}`);
+    });
+    if (!response.ok) {
+      throw new Error(
+        `Failed to generate entity definitions. Received http response ${response.status}: ${response.statusText}`,
+      );
+    }
+
+    const aggregation = (await response.json()) as Agregation[];
+    return aggregation;
+  }
   async getGroupDailyCost(
     pageFilters: PageFilters,
     intervals: string,
   ): Promise<Cost> {
     const whereStatement = this.getSqlWhereStatement(pageFilters);
 
-    const aggregation: {
-      amount: number;
-      date: string;
-    }[] = await this.bigQuery.queryBigQuery(
+    const aggregation: Agregation[] = await this.queryBigQuery(
       intervals,
       undefined,
       whereStatement,
@@ -243,19 +283,87 @@ export class CostInsightsClient implements CostInsightsApi {
     return arr;
   };
 
+  parseIntervals(intervals: string): { startDate: string; endDate: string } {
+    const splitInterval = intervals.split('/');
+
+    const endDate = splitInterval[2];
+    const endDateSplit = endDate.split('-');
+    let newYear = +endDateSplit[0];
+
+    let month = +endDateSplit[1];
+    const day = +endDateSplit[2];
+    if (splitInterval[0] === 'R2') {
+      if (splitInterval[1] === 'P90D') {
+        month = month - 6;
+        if (month < 0) {
+          month = 12 + month;
+          newYear = newYear - 1;
+        }
+      }
+      if (splitInterval[1] === 'P30D') {
+        month = month - 2;
+        if (month < 0) {
+          month = 12 + month;
+          newYear = newYear - 1;
+        }
+      }
+    }
+
+    let startDate = '';
+    if (month < 10) {
+      startDate = `${newYear}-0${month}-${day}`;
+    } else {
+      startDate = `${newYear}-${month}-${day}`;
+    }
+
+    return { startDate, endDate };
+  }
+
+  async getComponent(
+    intervals: string,
+    projectName: string | undefined,
+    whereStatement: string | undefined,
+  ): Promise<{ amount: number; date: string; description: string }[]> {
+    const response = await fetch(`${this.backendUrl}/getComponent`, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      method: 'POST',
+      body: JSON.stringify({
+        intervals: intervals,
+        projectName: projectName,
+        whereStatement: whereStatement,
+      }),
+    }).catch(e => {
+      throw new Error(`Failed to generate entity definitions, ${e.message}`);
+    });
+    if (!response.ok) {
+      throw new Error(
+        `Failed to generate entity definitions. Received http response ${response.status}: ${response.statusText}`,
+      );
+    }
+
+    const groupedCosts = (await response.json()) as {
+      amount: number;
+      date: string;
+      description: string;
+    }[];
+    return groupedCosts;
+  }
+
   async getData(
     intervals: string,
     projectName?: string,
     whereClouse?: string,
   ): Promise<AllResultsComponents[]> {
-    const { endDate, startDate } = this.bigQuery.parseIntervals(intervals);
+    const { endDate, startDate } = this.parseIntervals(intervals);
 
     const arr = this.getEmptyAmountArray(
       new Date(startDate),
       new Date(endDate),
     );
 
-    const groupedCosts = await this.bigQuery.getComponent(
+    const groupedCosts = await this.getComponent(
       intervals,
       projectName,
       whereClouse,
@@ -297,11 +405,7 @@ export class CostInsightsClient implements CostInsightsApi {
       const aggregation: {
         amount: number;
         date: string;
-      }[] = await this.bigQuery.queryBigQuery(
-        intervals,
-        project,
-        whereStatement,
-      );
+      }[] = await this.queryBigQuery(intervals, project, whereStatement);
 
       const projectDailyCost: Cost = await this.request(
         { project, intervals },

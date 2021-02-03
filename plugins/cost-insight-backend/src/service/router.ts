@@ -19,22 +19,13 @@ import Router from 'express-promise-router';
 import { Logger } from 'winston';
 import { Config } from '@backstage/config';
 import { loadBackendConfig } from '@backstage/backend-common';
+import { BigQueryClass } from './BigCqueryClient';
+import { GcpConfig } from '../types';
 
 export interface RouterOptions {
   logger: Logger;
   config: Config;
 }
-
-export type GcpConfig = {
-  type: string;
-  projectId: string;
-  privateKeyId: string;
-  privateKey: string;
-  clientEmail: string;
-  clientId: string;
-  clientX509CertUrl: string;
-  billingTable: string;
-};
 
 export const makeRouter = (
   logger: Logger,
@@ -43,14 +34,54 @@ export const makeRouter = (
 ): express.Router => {
   router.use(express.json());
 
-  logger.info('Inside cost-insight-backend router...');
+  const BigQueryClient = new BigQueryClass(gcpConfig);
 
-  router.get('/config', async (_, res) => {
+  router.post('/labels', async (req, res) => {
+    const label = req.body.label;
+    const projectName = req.body.projectName;
     try {
-      const response: GcpConfig = gcpConfig;
-      res.send(response);
+      const response = await BigQueryClient.getLabels(label, projectName);
+      res.status(200).send(response);
     } catch (e) {
-      logger.error(`action=retrieveBigQueryConfig, error=${e}`);
+      logger.error(`action=getLabels for label="${label}", error=${e}`);
+      res.status(500).send({ error: e.message });
+    }
+  });
+
+  router.post('/queryBigQuery', async (req, res) => {
+    const intervals = req.body.intervals;
+    const projectName = req.body.projectName;
+    const whereStatement = req.body.whereStatement;
+    try {
+      const response = await BigQueryClient.queryBigQuery(
+        intervals,
+        projectName,
+        whereStatement,
+      );
+      res.status(200).send(response);
+    } catch (e) {
+      logger.error(
+        `action=queryBigQuery for intervals="${intervals}", error=${e}`,
+      );
+      res.status(500).send({ error: e.message });
+    }
+  });
+
+  router.post('/getComponent', async (req, res) => {
+    const intervals = req.body.intervals;
+    const projectName = req.body.projectName;
+    const whereStatement = req.body.whereStatement;
+    try {
+      const response = await BigQueryClient.getComponent(
+        intervals,
+        projectName,
+        whereStatement,
+      );
+      res.status(200).send(response);
+    } catch (e) {
+      logger.error(
+        `action=getComponent for intervals="${intervals}", error=${e}`,
+      );
       res.status(500).send({ error: e.message });
     }
   });
@@ -70,14 +101,9 @@ export async function createRouter(
 
   const costConfig = config.getConfig('costInsights.gcpConfig');
   const gcpConfig = {
-    type: costConfig.getString('type'),
     projectId: costConfig.getString('projectId'),
-    privateKeyId: costConfig.getString('privateKeyId'),
-    privateKey: costConfig.getString('privateKey'),
-    clientEmail: costConfig.getString('clientEmail'),
-    clientId: costConfig.getString('clientId'),
-    clientX509CertUrl: costConfig.getString('clientX509CertUrl'),
     billingTable: costConfig.getString('billingTable'),
+    keyFilename: costConfig.getString('keyFilename'),
   };
 
   return makeRouter(logger, router, gcpConfig);

@@ -184,18 +184,8 @@ costInsights:
       icon: compute
   metrics:
   gcpConfig:
-    type: service_account
     projectId: 'trv-shared-admin'
-    privateKeyId:
-      $env: COST_PRIVATE_KEY_ID 
-    privateKey:
-      $env: COST_PRIVATE_KEY 
-    clientEmail:
-      $env: COST_CLIENT_EMAIL 
-    clientId:
-      $env: COST_CLIENT_ID 
-    clientX509CertUrl:
-      $env: COST_CLIENT_X509 
+    keyFilename: '/etc/trv-shared-admin'
     billingTable:
       $env: BILLING_TABLE
 

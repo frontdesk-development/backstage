@@ -14,26 +14,6 @@
  * limitations under the License.
  */
 
-export * from './Alert';
-export * from './ChangeStatistic';
-export * from './ChartData';
-export * from './Cost';
-export * from './DateAggregation';
-export * from './Duration';
-export * from './Currency';
-export * from './Entity';
-export * from './Icon';
-export * from './Filters';
-export * from './Group';
-export * from './Loading';
-export * from './Maybe';
-export * from './MetricData';
-export * from './Metric';
-export * from './Product';
-export * from './Project';
 export * from './Label';
-export * from './Theme';
-export * from './Trendline';
 export * from './GcpConfig';
-export * from './AllResultsComponents';
 export * from './Agregation';

@@ -14,5 +14,6 @@
  * limitations under the License.
  */
 
-export * from './CostInsightsApi';
-export * from './CostInsightsClient';
+export interface Label {
+  id: string;
+}

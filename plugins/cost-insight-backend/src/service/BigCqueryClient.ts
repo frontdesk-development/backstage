@@ -17,8 +17,8 @@
 
 import moize from 'moize';
 import { BigQuery } from '@google-cloud/bigquery';
-import { GcpConfig, Label } from '../types';
-import { ConfigApi } from '@backstage/core';
+import { GcpConfig } from '../types';
+import { Label } from '../types/Label';
 
 const MAX_AGE = 1000 * 60 * 60 * 24; // 24 hours
 export class BigQueryClass {
@@ -26,24 +26,18 @@ export class BigQueryClass {
   memoizedQuery: any;
   memoizedLabelQuery: any;
   billingTable: string;
-  memoizeGetConfig: any;
-  gcpConfig: GcpConfig;
-  private readonly configApi: ConfigApi;
 
-  constructor(configApi: ConfigApi) {
-    this.configApi = configApi;
-    this.gcpConfig = {
-      billingTable: '',
-      clientEmail: '',
-      clientId: '',
-      clientX509CertUrl: '',
-      privateKey: '',
-      privateKeyId: '',
-      projectId: '',
-      type: '',
+  constructor(gcpConfig: GcpConfig) {
+    this.billingTable = gcpConfig.billingTable;
+    const projectId = gcpConfig.projectId;
+    const keyFilename = gcpConfig.keyFilename;
+
+    const connectOptions = {
+      keyFilename: keyFilename,
+      projectId: projectId,
     };
-    this.client = new BigQuery();
-    this.billingTable = '';
+
+    this.client = new BigQuery(connectOptions);
 
     this.memoizedQuery = moize(
       async (query: string) => await this.runQuery(query),
@@ -53,34 +47,6 @@ export class BigQueryClass {
       async (query: string) => await this.runLabelQuery(query),
       { maxAge: MAX_AGE, updateExpire: true },
     );
-  }
-
-  async setConfig() {
-    const url = this.configApi.getString('backend.baseUrl');
-    const completeUrl = `${url}/api/cost-insights-backend/config`;
-    const response = await fetch(completeUrl);
-
-    const gcpConfig: GcpConfig = (await response.json()) as GcpConfig;
-    const credentials = {
-      type: gcpConfig.type.trim(),
-      project_id: gcpConfig.projectId.trim(),
-      private_key_id: gcpConfig.privateKeyId.trim(),
-      private_key: gcpConfig.privateKey.trim(),
-      client_email: gcpConfig.clientEmail.trim(),
-      client_id: gcpConfig.clientId.trim(),
-      auth_uri: 'https://accounts.google.com/o/oauth2/auth',
-      token_uri: 'https://oauth2.googleapis.com/token',
-      auth_provider_x509_cert_url: 'https://www.googleapis.com/oauth2/v1/certs',
-      client_x509_cert_url: gcpConfig.clientX509CertUrl.trim(),
-    };
-
-    const projectId = gcpConfig.projectId.trim();
-    const login = {
-      projectId,
-      credentials,
-    };
-    this.client = new BigQuery(login);
-    this.billingTable = gcpConfig.billingTable.trim();
   }
 
   public parseIntervals(
@@ -183,9 +149,9 @@ export class BigQueryClass {
     return this.memoizedQuery(query);
   }
 
-  async getLabels(label: string, projectName?: string) {
+  async getLabels(label: string, projectName?: string): Promise<Label[]> {
     let query = `SELECT 
-      DISTINCT(l.value) FROM \`${this.billingTable}\`, UNNEST(project.labels) as l
+      DISTINCT(l.value) FROM \`${this.billingTable}\`, UNNEST(project.labels) as l 
       WHERE (l.key="${label}")`;
     if (projectName) {
       query = `SELECT 

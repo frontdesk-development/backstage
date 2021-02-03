@@ -53,37 +53,12 @@ interface Config {
       /**
        * @visibility frontend
        */
-      type?: string;
+      keyFilename?: string;
 
       /**
        * @visibility frontend
        */
       projectId?: string;
-
-      /**
-       * @visibility frontend
-       */
-      privateKeyId?: string;
-
-      /**
-       * @visibility frontend
-       */
-      privateKey?: string;
-
-      /**
-       * @visibility frontend
-       */
-      clientEmail?: string;
-
-      /**
-       * @visibility frontend
-       */
-      clientId?: string;
-
-      /**
-       * @visibility frontend
-       */
-      clientX509CertUrl?: string;
 
       /**
        * @visibility frontend
