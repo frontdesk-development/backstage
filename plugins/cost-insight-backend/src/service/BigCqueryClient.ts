@@ -159,8 +159,6 @@ export class BigQueryClass {
       WHERE (l.key="${label}" AND project.id = \"${projectName}\")`;
     }
 
-    console.log('Label Query:', query);
-
     return await this.memoizedLabelQuery(query);
   }
 
