@@ -28,10 +28,9 @@ export class BigQueryClass {
   billingTable: string;
 
   constructor(gcpConfig: GcpConfig) {
-    console.log('GcpCOnfig: ', gcpConfig);
-    this.billingTable = gcpConfig.billingTable;
-    const projectId = gcpConfig.projectId;
-    const keyFilename = gcpConfig.keyFilename;
+    this.billingTable = gcpConfig.billingTable.trim();
+    const projectId = gcpConfig.projectId.trim();
+    const keyFilename = gcpConfig.keyFilename.trim();
 
     const connectOptions = {
       keyFilename: keyFilename,
@@ -39,8 +38,6 @@ export class BigQueryClass {
     };
 
     this.client = new BigQuery(connectOptions);
-
-    console.log('This.client: ', this.client);
 
     this.memoizedQuery = moize(
       async (query: string) => await this.runQuery(query),
