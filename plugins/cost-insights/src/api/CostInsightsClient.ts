@@ -151,6 +151,8 @@ export class CostInsightsClient implements CostInsightsApi {
       );
     }
 
+    console.log(response);
+
     return response.json();
   }
 
