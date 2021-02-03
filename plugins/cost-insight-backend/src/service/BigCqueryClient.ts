@@ -70,7 +70,7 @@ export class BigQueryClass {
       }
       if (splitInterval[1] === 'P30D') {
         month = month - 2;
-        if (month < 0) {
+        if (month <= 0) {
           month = 12 + month;
           newYear = newYear - 1;
         }
@@ -78,11 +78,17 @@ export class BigQueryClass {
     }
 
     let startDate = '';
+    let startDay = `${day}`;
+    let startMonth = `${month}`;
+
     if (month < 10) {
-      startDate = `${newYear}-0${month}-${day}`;
-    } else {
-      startDate = `${newYear}-${month}-${day}`;
+      startMonth = `0${month}`;
     }
+    if (day < 10) {
+      startDay = `0${day}`;
+    }
+
+    startDate = `${newYear}-${startMonth}-${startDay}`;
 
     return { startDate, endDate };
   }
@@ -92,7 +98,9 @@ export class BigQueryClass {
     projectName?: string,
     whereClouse?: string,
   ): Promise<{ amount: number; date: string }[]> {
+    console.log(intervals);
     const { endDate, startDate } = this.parseIntervals(intervals);
+    console.log('endDate: ', endDate, ' StartDate: ', startDate);
 
     if (projectName) {
       if (whereClouse) {

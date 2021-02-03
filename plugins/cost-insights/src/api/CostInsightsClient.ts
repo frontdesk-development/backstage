@@ -310,11 +310,17 @@ export class CostInsightsClient implements CostInsightsApi {
     }
 
     let startDate = '';
+    let startDay = `${day}`;
+    let startMonth = `${month}`;
+
     if (month < 10) {
-      startDate = `${newYear}-0${month}-${day}`;
-    } else {
-      startDate = `${newYear}-${month}-${day}`;
+      startMonth = `0${month}`;
     }
+    if (day < 10) {
+      startDay = `0${day}`;
+    }
+
+    startDate = `${newYear}-${startMonth}-${startDay}`;
 
     return { startDate, endDate };
   }

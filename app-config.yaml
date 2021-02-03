@@ -325,7 +325,7 @@ costInsights:
       icon: compute
   metrics:
   gcpConfig:
-    projectId: 'trv-shared-admin'
+    projectId: 'trv-shared-billing'
     keyFilename: '/etc/trv-shared-admin'
     billingTable:
       $env: BILLING_TABLE
