@@ -40,6 +40,8 @@ export class BigQueryClass {
 
     this.client = new BigQuery(connectOptions);
 
+    console.log('This.client: ', this.client);
+
     this.memoizedQuery = moize(
       async (query: string) => await this.runQuery(query),
       { maxAge: MAX_AGE, updateExpire: true },
