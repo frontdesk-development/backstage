@@ -183,6 +183,6 @@ costInsights:
   metrics:
   gcpConfig:
     projectId: 'trv-shared-admin'
-    keyFilename: '/etc/trv-shared-admin'
+    keyFilename: '/etc/trv-shared-admin/trv-shared-admin'
     billingTable:
       $env: BILLING_TABLE
