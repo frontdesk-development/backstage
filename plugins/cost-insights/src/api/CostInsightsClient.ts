@@ -269,7 +269,7 @@ export class CostInsightsClient implements CostInsightsApi {
     return groupDailyCost;
   }
 
-  getEmptyAmountArray = function (start: Date, end: Date) {
+  getEmptyAmountComponentArray = function (start: Date, end: Date) {
     let arr = [];
     let dt: Date;
     for (arr = [], dt = start; dt <= end; dt.setDate(dt.getDate() + 1)) {
@@ -277,6 +277,20 @@ export class CostInsightsClient implements CostInsightsApi {
         date: dt.toISOString().slice(0, 10),
         amount: 0,
         description: '',
+      };
+      arr.push(item);
+    }
+    return arr;
+  };
+
+  getEmptyAmountAllArray = function (start: Date, end: Date) {
+    let arr = [];
+    let dt: Date;
+    for (arr = [], dt = start; dt <= end; dt.setDate(dt.getDate() + 1)) {
+      const item = {
+        date: dt.toISOString().slice(0, 10),
+        amount: 0,
+        description: 'empty',
       };
       arr.push(item);
     }
@@ -295,14 +309,14 @@ export class CostInsightsClient implements CostInsightsApi {
     if (splitInterval[0] === 'R2') {
       if (splitInterval[1] === 'P90D') {
         month = month - 6;
-        if (month < 0) {
+        if (month <= 0) {
           month = 12 + month;
           newYear = newYear - 1;
         }
       }
       if (splitInterval[1] === 'P30D') {
         month = month - 2;
-        if (month < 0) {
+        if (month <= 0) {
           month = 12 + month;
           newYear = newYear - 1;
         }
@@ -330,6 +344,13 @@ export class CostInsightsClient implements CostInsightsApi {
     projectName: string | undefined,
     whereStatement: string | undefined,
   ): Promise<{ amount: number; date: string; description: string }[]> {
+    const { endDate, startDate } = this.parseIntervals(intervals);
+
+    const arr = this.getEmptyAmountAllArray(
+      new Date(startDate),
+      new Date(endDate),
+    );
+
     const response = await fetch(`${this.backendUrl}/getComponent`, {
       headers: {
         'Content-Type': 'application/json',
@@ -354,17 +375,20 @@ export class CostInsightsClient implements CostInsightsApi {
       date: string;
       description: string;
     }[];
+
+    groupedCosts.push(...arr);
+
     return groupedCosts;
   }
 
-  async getData(
+  async getGroupedProducts(
     intervals: string,
     projectName?: string,
     whereClouse?: string,
   ): Promise<AllResultsComponents[]> {
     const { endDate, startDate } = this.parseIntervals(intervals);
 
-    const arr = this.getEmptyAmountArray(
+    const arr = this.getEmptyAmountComponentArray(
       new Date(startDate),
       new Date(endDate),
     );
@@ -375,9 +399,9 @@ export class CostInsightsClient implements CostInsightsApi {
       whereClouse,
     );
 
-    const allResults = new Array<AllResultsComponents>();
+    const allGroupedProducts = new Array<AllResultsComponents>();
 
-    allResults.push({ id: 'empty', aggregation: arr });
+    allGroupedProducts.push({ id: 'empty', aggregation: arr });
 
     const groupByDescription = _.groupBy(groupedCosts, 'description');
 
@@ -387,18 +411,12 @@ export class CostInsightsClient implements CostInsightsApi {
           id: description,
           aggregation: groupByDescription[description],
         };
-        allResults.push(item);
+        allGroupedProducts.push(item);
       }
     }
 
-    return allResults;
+    return allGroupedProducts;
   }
-
-  getGroupedProducts = async (
-    intervals: string,
-    projectName?: string,
-    whereClouse?: string,
-  ) => await this.getData(intervals, projectName, whereClouse);
 
   async getProjectDailyCost(
     pageFilters: PageFilters,

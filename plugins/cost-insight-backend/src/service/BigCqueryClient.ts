@@ -63,7 +63,7 @@ export class BigQueryClass {
     if (splitInterval[0] === 'R2') {
       if (splitInterval[1] === 'P90D') {
         month = month - 6;
-        if (month < 0) {
+        if (month <= 0) {
           month = 12 + month;
           newYear = newYear - 1;
         }
@@ -98,9 +98,7 @@ export class BigQueryClass {
     projectName?: string,
     whereClouse?: string,
   ): Promise<{ amount: number; date: string }[]> {
-    console.log(intervals);
     const { endDate, startDate } = this.parseIntervals(intervals);
-    console.log('endDate: ', endDate, ' StartDate: ', startDate);
 
     if (projectName) {
       if (whereClouse) {
