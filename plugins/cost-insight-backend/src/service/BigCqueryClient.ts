@@ -126,12 +126,12 @@ export class BigQueryClass {
     whereClouse?: string,
   ): Promise<{ amount: number; date: string }[]> {
     const query = `SELECT
-    CONCAT(EXTRACT(DATE FROM usage_start_time AT TIME ZONE "UTC"),'') as date
-      ,SUM(cost) as amount
+      day as date
+      ,SUM(total) as amount
       FROM \`${this.billingTable}\`
-      WHERE usage_start_time > TIMESTAMP(DATE "${startDate}") 
-        AND project.id = \"${projectName}\" 
-        AND usage_start_time < TIMESTAMP(DATE "${endDate}") 
+      WHERE TIMESTAMP(day) > TIMESTAMP(DATE "${startDate}") 
+        AND TIMESTAMP(day) < TIMESTAMP(DATE "${endDate}")
+        AND project_name = \"${projectName}\"  
         ${whereClouse}
       GROUP BY date`;
 
@@ -144,11 +144,11 @@ export class BigQueryClass {
     whereClouse?: string,
   ): Promise<{ amount: number; date: string }[]> {
     const query = `SELECT
-    CONCAT(EXTRACT(DATE FROM usage_start_time AT TIME ZONE "UTC"),'') as date
-      ,SUM(cost) as amount
+      day as date
+      ,SUM(total) as amount
       FROM \`${this.billingTable}\` 
-      WHERE usage_start_time > TIMESTAMP(DATE "${startDate}") 
-        AND usage_start_time < TIMESTAMP(DATE "${endDate}")
+      WHERE TIMESTAMP(day) > TIMESTAMP(DATE "${startDate}") 
+        AND TIMESTAMP(day) < TIMESTAMP(DATE "${endDate}")
         ${whereClouse}
       GROUP BY date`;
 
@@ -157,12 +157,11 @@ export class BigQueryClass {
 
   async getLabels(label: string, projectName?: string): Promise<Label[]> {
     let query = `SELECT 
-      DISTINCT(l.value) FROM \`${this.billingTable}\`, UNNEST(project.labels) as l 
-      WHERE (l.key="${label}")`;
+      DISTINCT(${label}) as value FROM \`${this.billingTable}\` where ${label} IS NOT null`;
     if (projectName) {
       query = `SELECT 
-      DISTINCT(l.value) FROM \`${this.billingTable}\`, UNNEST(project.labels) as l
-      WHERE (l.key="${label}" AND project.id = \"${projectName}\")`;
+      DISTINCT(${label}) as value FROM \`${this.billingTable}\`
+      WHERE (project_name = \"${projectName}\" AND ${label} IS NOT null)`;
     }
 
     return await this.memoizedLabelQuery(query);
@@ -176,28 +175,28 @@ export class BigQueryClass {
     const { endDate, startDate } = this.parseIntervals(intervals);
 
     let query = `SELECT
-      CONCAT(EXTRACT(DATE FROM usage_start_time AT TIME ZONE "UTC"),'') as date
-      ,SUM(cost) as amount
-      ,service.description
+      day as date
+      ,SUM(total) as amount
+      ,description
       FROM \`${this.billingTable}\` 
-      WHERE usage_start_time > TIMESTAMP(DATE "${startDate}") 
-        AND usage_start_time < TIMESTAMP(DATE "${endDate}")
+      WHERE TIMESTAMP(day) > TIMESTAMP(DATE "${startDate}") 
+        AND TIMESTAMP(day) < TIMESTAMP(DATE "${endDate}")
         ${whereClouse}
-      GROUP BY service.description, date
-      ORDER BY service.description, date`;
+      GROUP BY description, date
+      ORDER BY description, date`;
 
     if (projectName) {
       query = `SELECT
-        CONCAT(EXTRACT(DATE FROM usage_start_time AT TIME ZONE "UTC"),'') as date
-        ,SUM(cost) as amount
-        ,service.description
+        day as date
+        ,SUM(total) as amount
+        ,description
         FROM \`${this.billingTable}\` 
-        WHERE usage_start_time > TIMESTAMP(DATE "${startDate}") 
-          AND usage_start_time < TIMESTAMP(DATE "${endDate}")
-          AND project.id = \"${projectName}\" 
+        WHERE TIMESTAMP(day) > TIMESTAMP(DATE "${startDate}") 
+          AND TIMESTAMP(day) < TIMESTAMP(DATE "${endDate}")
+          AND project_name = \"${projectName}\" 
           ${whereClouse}
-        GROUP BY service.description, date
-        ORDER BY service.description, date`;
+        GROUP BY description, date
+        ORDER BY description, date`;
     }
 
     return await this.memoizedQuery(query);

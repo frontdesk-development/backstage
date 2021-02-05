@@ -98,35 +98,35 @@ export class CostInsightsClient implements CostInsightsApi {
       if (whereClouse.length === 1) {
         whereClouse = 'AND ';
       }
-      whereClouse = `${whereClouse}(SELECT value FROM UNNEST(project.labels) WHERE key = \"trv-pillar\")=\"${pageFilters.pillarLabel}\"`;
+      whereClouse = `${whereClouse}trv_pillar=\"${pageFilters.pillarLabel}\"`;
     }
 
     if (pageFilters.productLabel) {
       if (whereClouse.length > 0) {
         whereClouse = `${whereClouse}AND `;
       }
-      whereClouse = `${whereClouse}(SELECT value FROM UNNEST(project.labels) WHERE key = \"trv-product\")=\"${pageFilters.productLabel}\"`;
+      whereClouse = `${whereClouse}trv_product=\"${pageFilters.productLabel}\"`;
     }
 
     if (pageFilters.domainLabel) {
       if (whereClouse.length > 0) {
         whereClouse = `${whereClouse}AND `;
       }
-      whereClouse = `${whereClouse}(SELECT value FROM UNNEST(project.labels) WHERE key = \"trv-domain\")=\"${pageFilters.domainLabel}\"`;
+      whereClouse = `${whereClouse}trv_domain=\"${pageFilters.domainLabel}\"`;
     }
 
     if (pageFilters.teamLabel) {
       if (whereClouse.length > 0) {
         whereClouse = `${whereClouse}AND `;
       }
-      whereClouse = `${whereClouse}(SELECT value FROM UNNEST(project.labels) WHERE key = \"trv-team\")=\"${pageFilters.teamLabel}\"`;
+      whereClouse = `${whereClouse}trv_team=\"${pageFilters.teamLabel}\"`;
     }
 
     if (pageFilters.tierLabel) {
       if (whereClouse.length > 0) {
         whereClouse = `${whereClouse}AND `;
       }
-      whereClouse = `${whereClouse}(SELECT value FROM UNNEST(project.labels) WHERE key = \"trv-tier\")=\"${pageFilters.tierLabel}\"`;
+      whereClouse = `${whereClouse}trv_tier=\"${pageFilters.tierLabel}\"`;
     }
     return whereClouse;
   }
@@ -192,23 +192,23 @@ export class CostInsightsClient implements CostInsightsApi {
   }
 
   async getTierLabels(projectId: string): Promise<Project[]> {
-    return this.getLabel('trv-tier', projectId);
+    return this.getLabel('trv_tier', projectId);
   }
 
   async getPillarLabels(projectId: string): Promise<Project[]> {
-    return this.getLabel('trv-pillar', projectId);
+    return this.getLabel('trv_pillar', projectId);
   }
 
   async getDomainLabels(projectId: string): Promise<Project[]> {
-    return this.getLabel('trv-domain', projectId);
+    return this.getLabel('trv_domain', projectId);
   }
 
   async getProductLabels(projectId: string): Promise<Project[]> {
-    return this.getLabel('trv-product', projectId);
+    return this.getLabel('trv_product', projectId);
   }
 
   async getTeamLabels(projectId: string): Promise<Project[]> {
-    return this.getLabel('trv-team', projectId);
+    return this.getLabel('trv_team', projectId);
   }
 
   async queryBigQuery(
