@@ -43,7 +43,16 @@ const BASE_URL =
 const MAX_AGE = 1000 * 60 * 10; // 10 min
 
 export function trendlineOf(aggregation: DateAggregation[]): Trendline {
-  const data: ReadonlyArray<DataPoint> = aggregation.map(a => [
+  if (aggregation.length === 0) {
+    return {
+      slope: 0,
+      intercept: 0,
+    };
+  }
+  const sortedAggregation = aggregation.sort((a, b) =>
+    a.date > b.date ? 1 : -1,
+  );
+  const data: ReadonlyArray<DataPoint> = sortedAggregation.map(a => [
     Date.parse(a.date) / 1000,
     a.amount,
   ]);
@@ -55,13 +64,22 @@ export function trendlineOf(aggregation: DateAggregation[]): Trendline {
 }
 
 export function changeOf(aggregation: DateAggregation[]): ChangeStatistic {
-  const half = Math.ceil(aggregation.length / 2);
-  const before = aggregation
-    .slice(0, half)
-    .reduce((sum, a) => sum + a.amount, 0);
-  const after = aggregation
-    .slice(half, aggregation.length)
-    .reduce((sum, a) => sum + a.amount, 0);
+  if (aggregation.length === 0) {
+    return {
+      ratio: 0,
+      amount: 0,
+    };
+  }
+  const sortedAggregation = aggregation.sort((a, b) =>
+    a.date > b.date ? 1 : -1,
+  );
+  // const half = Math.ceil(aggregation.length / 2);
+  const before = sortedAggregation[0].amount ?? 0;
+  // .slice(0, 1)
+  // .reduce((sum, a) => sum + a.amount, 0);
+  const after = sortedAggregation[aggregation.length - 1].amount ?? 0;
+  // .slice(aggregation.length, aggregation.length)
+  // .reduce((sum, a) => sum + a.amount, 0);
   return {
     ratio: (after - before) / before,
     amount: after - before,
