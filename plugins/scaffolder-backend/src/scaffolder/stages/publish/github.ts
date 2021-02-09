@@ -15,40 +15,64 @@
  */
 
 import { PublisherBase, PublisherOptions, PublisherResult } from './types';
-import { Octokit } from '@octokit/rest';
 import { initRepoAndPush } from './helpers';
-import { JsonValue } from '@backstage/config';
-import { RequiredTemplateValues } from '../templater';
 import fs from 'fs-extra';
+import { GitHubIntegrationConfig } from '@backstage/integration';
+import parseGitUrl from 'git-url-parse';
+import { Octokit } from '@octokit/rest';
+import path from 'path';
 
 export type RepoVisibilityOptions = 'private' | 'internal' | 'public';
 
-interface GithubPublisherParams {
-  client: Octokit;
-  token: string;
-  repoVisibility: RepoVisibilityOptions;
-}
-
 export class GithubPublisher implements PublisherBase {
-  private client: Octokit;
-  private repoVisibility: RepoVisibilityOptions;
+  static async fromConfig(
+    config: GitHubIntegrationConfig,
+    { repoVisibility }: { repoVisibility: RepoVisibilityOptions },
+  ) {
+    if (!config.token) {
+      return undefined;
+    }
 
-  constructor({ client, repoVisibility = 'internal' }: GithubPublisherParams) {
-    this.client = client;
-    this.repoVisibility = repoVisibility;
+    const githubClient = new Octokit({
+      auth: config.token,
+      baseUrl: config.apiBaseUrl,
+    });
+
+    return new GithubPublisher({
+      token: config.token,
+      client: githubClient,
+      repoVisibility,
+    });
   }
+
+  constructor(
+    private readonly config: {
+      token: string;
+      client: Octokit;
+      repoVisibility: RepoVisibilityOptions;
+    },
+  ) {}
 
   async publish({
     values,
-    directory,
+    workspacePath,
     logger,
     token,
-    github,
   }: PublisherOptions): Promise<PublisherResult> {
-    const remoteUrl = await this.createRemote(values, token, github);
+    const { owner, name } = parseGitUrl(values.storePath);
+
+    const description = values.description as string;
+    const access = values.access as string;
+    const remoteUrl = await this.createRemote({
+      description,
+      access,
+      name,
+      owner,
+      token,
+    });
 
     await initRepoAndPush({
-      dir: directory,
+      dir: path.join(workspacePath, 'result'),
       remoteUrl,
       auth: {
         username: token,
@@ -71,14 +95,16 @@ export class GithubPublisher implements PublisherBase {
         'Gitops empty readme file to avoid having a bare repo.',
       );
 
-      const manifestValues = values;
-      manifestValues.storePath = `${values.storePath}-gitops`;
+      const description = values.description as string;
+      const nameGitops = `${name}-gitops`;
 
-      const remoteUrlManifest = await this.createRemote(
-        manifestValues,
+      const remoteUrlManifest = await this.createRemote({
+        description,
+        access,
+        name: nameGitops,
+        owner,
         token,
-        github,
-      );
+      });
       await initRepoAndPush({
         dir: tempDir,
         remoteUrl: remoteUrlManifest,
@@ -93,35 +119,38 @@ export class GithubPublisher implements PublisherBase {
     return { remoteUrl, catalogInfoUrl };
   }
 
-  private async createRemote(
-    values: RequiredTemplateValues & Record<string, JsonValue>,
-    token: string,
-    github?: string[],
-  ) {
+  private async createRemote(opts: {
+    access: string;
+    name: string;
+    owner: string;
+    description: string;
+    token: string;
+  }) {
+    const { access, description, owner, name, token } = opts;
+
     const githubClientPublish = new Octokit({ auth: token });
-    const [owner, name] = values.storePath.split('/');
-    const description = values.description as string;
+
     const user = await githubClientPublish.users.getByUsername({
       username: owner,
     });
+
     const repoCreationPromise =
       user.data.type === 'Organization'
-        ? githubClientPublish.repos.createInOrg({
-            // this.client.repos.createInOrg({
+        ? this.config.client.repos.createInOrg({
             name,
             org: owner,
-            headers: {
-              Accept: `application/vnd.github.nebula-preview+json`,
-              authorization: `token ${token}`,
-            },
-            visibility: this.repoVisibility,
-            description: description,
+            private: this.config.repoVisibility !== 'public',
+            visibility: this.config.repoVisibility,
+            description,
           })
-        : this.client.repos.createForAuthenticatedUser({ name });
+        : this.config.client.repos.createForAuthenticatedUser({
+            name,
+            private: this.config.repoVisibility === 'private',
+            description,
+          });
 
     const { data } = await repoCreationPromise;
 
-    const access = values.access as string;
     if (access?.startsWith(`${owner}/`)) {
       const [, team] = access.split('/');
       await githubClientPublish.teams.addOrUpdateRepoPermissionsInOrg({
@@ -143,11 +172,11 @@ export class GithubPublisher implements PublisherBase {
 
     let topics = ['frontdesk'];
 
-    if (github) {
-      topics = [...topics, ...github];
-    }
+    
+    topics = [...topics];
+    
 
-    if (values?.storePath.endsWith('-gitops')) {
+    if (name.endsWith('-gitops')) {
       topics = [...topics, 'gitops'];
     }
 

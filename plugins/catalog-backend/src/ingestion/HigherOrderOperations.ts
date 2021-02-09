@@ -132,7 +132,7 @@ export class HigherOrderOperations implements HigherOrderOperation {
         `Locations Refresh: Refreshing location ${location.type}:${location.target}`,
       );
       try {
-        await this.refreshSingleLocation(location);
+        await this.refreshSingleLocation(location, logger);
         await this.locationsCatalog.logUpdateSuccess(location.id, undefined);
       } catch (e) {
         logger.warn(
@@ -177,9 +177,13 @@ export class HigherOrderOperations implements HigherOrderOperation {
   }
 
   // Performs a full refresh of a single location
-  private async refreshSingleLocation(location: Location) {
+  private async refreshSingleLocation(
+    location: Location,
+    optionalLogger?: Logger,
+  ) {
     let startTimestamp = process.hrtime();
     const token = await this.getToken();
+    const logger = optionalLogger || this.logger;
 
     const readerOutput = await this.locationReader.read(
       {
@@ -191,12 +195,12 @@ export class HigherOrderOperations implements HigherOrderOperation {
     );
 
     for (const item of readerOutput.errors) {
-      this.logger.warn(
+      logger.warn(
         `Failed item in location ${item.location.type}:${item.location.target}, ${item.error.stack}`,
       );
     }
 
-    this.logger.info(
+    logger.info(
       `Read ${readerOutput.entities.length} entities from location ${
         location.type
       }:${location.target} in ${durationText(startTimestamp)}`,
@@ -220,14 +224,14 @@ export class HigherOrderOperations implements HigherOrderOperation {
       throw e;
     }
 
-    this.logger.info(`Posting update success markers`);
+    logger.debug(`Posting update success markers`);
 
     await this.locationsCatalog.logUpdateSuccess(
       location.id,
       readerOutput.entities.map(e => e.entity.metadata.name),
     );
 
-    this.logger.info(
+    logger.info(
       `Wrote ${readerOutput.entities.length} entities from location ${
         location.type
       }:${location.target} in ${durationText(startTimestamp)}`,

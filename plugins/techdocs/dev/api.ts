@@ -13,29 +13,43 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { DiscoveryApi } from '@backstage/core';
+import { Config } from '@backstage/config';
 import { EntityName } from '@backstage/catalog-model';
 import { OAuthApi } from '@backstage/core';
 import { TechDocsStorage } from '../src/api';
 
 export class TechDocsDevStorageApi implements TechDocsStorage {
-  public apiOrigin: string;
-  private readonly githubAuthApi: OAuthApi;
+  public configApi: Config;
+  public discoveryApi: DiscoveryApi;
+  public readonly githubAuthApi: OAuthApi;
 
   constructor({
-    apiOrigin,
+    configApi,
+    discoveryApi,
     githubAuthApi,
   }: {
-    apiOrigin: string;
+    configApi: Config;
+    discoveryApi: DiscoveryApi;
     githubAuthApi: OAuthApi;
   }) {
-    this.apiOrigin = apiOrigin;
+    this.configApi = configApi;
+    this.discoveryApi = discoveryApi;
     this.githubAuthApi = githubAuthApi;
+  }
+
+  async getApiOrigin() {
+    return (
+      this.configApi.getOptionalString('techdocs.requestUrl') ??
+      (await this.discoveryApi.getBaseUrl('techdocs'))
+    );
   }
 
   async getEntityDocs(entityId: EntityName, path: string) {
     const { name } = entityId;
 
-    const url = `${this.apiOrigin}/${name}/${path}`;
+    const apiOrigin = await this.getApiOrigin();
+    const url = `${apiOrigin}/${name}/${path}`;
 
     const request = await fetch(
       `${url.endsWith('/') ? url : `${url}/`}index.html`,
@@ -53,9 +67,14 @@ export class TechDocsDevStorageApi implements TechDocsStorage {
     return request.text();
   }
 
-  getBaseUrl(oldBaseUrl: string, entityId: EntityName, path: string): string {
+  async getBaseUrl(
+    oldBaseUrl: string,
+    entityId: EntityName,
+    path: string,
+  ): Promise<string> {
     const { name } = entityId;
-    return new URL(oldBaseUrl, `${this.apiOrigin}/${name}/${path}`).toString();
+    const apiOrigin = await this.getApiOrigin();
+    return new URL(oldBaseUrl, `${apiOrigin}/${name}/${path}`).toString();
   }
 
   async getToken(): Promise<string> {
