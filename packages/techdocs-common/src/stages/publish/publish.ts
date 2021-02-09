@@ -20,6 +20,8 @@ import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { PublisherType, PublisherBase } from './types';
 import { LocalPublish } from './local';
 import { GoogleGCSPublish } from './googleStorage';
+import { AwsS3Publish } from './awsS3';
+import { AzureBlobStoragePublish } from './azureBlobStorage';
 
 type factoryOptions = {
   logger: Logger;
@@ -42,7 +44,15 @@ export class Publisher {
     switch (publisherType) {
       case 'googleGcs':
         logger.info('Creating Google Storage Bucket publisher for TechDocs');
-        return GoogleGCSPublish.fromConfig(config, logger);
+        return await GoogleGCSPublish.fromConfig(config, logger);
+      case 'awsS3':
+        logger.info('Creating AWS S3 Bucket publisher for TechDocs');
+        return AwsS3Publish.fromConfig(config, logger);
+      case 'azureBlobStorage':
+        logger.info(
+          'Creating Azure Blob Storage Container publisher for TechDocs',
+        );
+        return AzureBlobStoragePublish.fromConfig(config, logger);
       case 'local':
         logger.info('Creating Local publisher for TechDocs');
         return new LocalPublish(config, logger, discovery);

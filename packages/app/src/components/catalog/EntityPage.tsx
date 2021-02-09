@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import {
   ApiEntity,
   Entity,
@@ -27,11 +28,8 @@ import {
   ProvidedApisCard,
   ProvidingComponentsCard,
 } from '@backstage/plugin-api-docs';
-import {
-  AboutCard,
-  EntityPageLayout,
-  useEntity,
-} from '@backstage/plugin-catalog';
+import { AboutCard, EntityPageLayout } from '@backstage/plugin-catalog';
+import { useEntity } from '@backstage/plugin-catalog-react';
 import {
   isPluginApplicableToEntity as isCircleCIAvailable,
   Router as CircleCIRouter,
@@ -61,11 +59,12 @@ import {
   LastLighthouseAuditCard,
 } from '@backstage/plugin-lighthouse';
 import {
-  OwnershipCard,
-  MembersListCard,
   GroupProfileCard,
+  MembersListCard,
+  OwnershipCard,
   UserProfileCard,
 } from '@backstage/plugin-org';
+
 import { EmbeddedDocsRouter as DocsRouter } from '@backstage/plugin-techdocs';
 import { Button, Grid } from '@material-ui/core';
 import {
@@ -84,11 +83,6 @@ import {
   PullRequestsStatsCard,
   Router as PullRequestsRouter,
 } from '@roadiehq/backstage-plugin-github-pull-requests';
-import {
-  isPluginApplicableToEntity as isTravisCIAvailable,
-  RecentTravisCIBuildsWidget,
-  Router as TravisCIRouter,
-} from '@roadiehq/backstage-plugin-travis-ci';
 import {
   JiraCard,
   isPluginApplicableToEntity as isJiraAvailable,
@@ -117,8 +111,6 @@ export const CICDSwitcher = ({ entity }: { entity: Entity }) => {
       return <GitHubActionsRouter entity={entity} />;
     case isCloudbuildAvailable(entity):
       return <CloudbuildRouter entity={entity} />;
-    case isTravisCIAvailable(entity):
-      return <TravisCIRouter entity={entity} />;
     default:
       return (
         <EmptyState
@@ -150,9 +142,6 @@ const RecentCICDRunsSwitcher = ({ entity }: { entity: Entity }) => {
         <RecentWorkflowRunsCard entity={entity} limit={4} variant="gridItem" />
       );
       break;
-    case isTravisCIAvailable(entity):
-      content = <RecentTravisCIBuildsWidget entity={entity} />;
-      break;
     default:
       content = null;
   }
@@ -165,6 +154,7 @@ const RecentCICDRunsSwitcher = ({ entity }: { entity: Entity }) => {
     </Grid>
   );
 };
+
 
 const ComponentOverviewContent = ({ entity }: { entity: Entity }) => (
   <Grid container spacing={3} alignItems="stretch">

@@ -27,19 +27,20 @@ import {
   catalogApiRef,
   entityRoute,
   entityRouteParams,
-} from '@backstage/plugin-catalog';
+} from '@backstage/plugin-catalog-react';
 import { LinearProgress } from '@material-ui/core';
 import { IChangeEvent } from '@rjsf/core';
-import React, { useState, useCallback } from 'react';
+import parseGitUrl from 'git-url-parse';
+import React, { useCallback, useState } from 'react';
 import { generatePath, Navigate } from 'react-router';
 import { useParams } from 'react-router-dom';
 import { useAsync } from 'react-use';
 import { scaffolderApiRef } from '../../api';
 import { rootRoute } from '../../routes';
+import { useJobPolling } from '../hooks/useJobPolling';
 import { JobStatusModal } from '../JobStatusModal';
 import { MultistepJsonForm } from '../MultistepJsonForm';
 import { githubAuthApiRef } from '@backstage/core-api';
-import { useJobPolling } from '../hooks/useJobPolling';
 
 const useTemplate = (
   templateName: string,
@@ -64,10 +65,10 @@ const OWNER_REPO_SCHEMA = {
       description: 'Who is going to own this component',
     },
     storePath: {
-      format: 'GitHub user or org / Repo name',
       type: 'string' as const,
       title: 'Store path',
-      description: 'GitHub store path in org/repo format',
+      description:
+        'A full URL to the repository that should be created. e.g https://github.com/backstage/new-repo',
     },
     access: {
       type: 'string' as const,
@@ -76,11 +77,6 @@ const OWNER_REPO_SCHEMA = {
     },
   },
 };
-
-const REPO_FORMAT = {
-  'GitHub user or org / Repo name': /[^\/]*\/[^\/]*/,
-};
-
 export const TemplatePage = () => {
   const errorApi = useApi(errorApiRef);
   const catalogApi = useApi(catalogApiRef);
@@ -97,19 +93,11 @@ export const TemplatePage = () => {
   );
 
   const [jobId, setJobId] = useState<string | null>(null);
-  // const handleClose = () => setJobId(null);
   const githubAuthApi = useApi(githubAuthApiRef);
   const tokenPromise = githubAuthApi.getAccessToken();
 
-  // const handleCreate = async () => {
-  //   const token = await tokenPromise;
-  //   try {
-  //     const job = await scaffolderApi.scaffold(templateName, formState, token);
-  //     setJobId(job);
-  //   } catch (e) {
-  //     errorApi.post(e);
-  const job = useJobPolling(jobId, async job => {
-    if (!job.metadata.catalogInfoUrl) {
+  const job = useJobPolling(jobId, async jobItem => {
+    if (!jobItem.metadata.catalogInfoUrl) {
       errorApi.post(
         new Error(`No catalogInfoUrl returned from the scaffolder`),
       );
@@ -120,8 +108,8 @@ export const TemplatePage = () => {
       const {
         entities: [createdEntity],
       } = await catalogApi.addLocation({
-        target: job.metadata.catalogInfoUrl,
-        token: job.metadata.token,
+        target: jobItem.metadata.catalogInfoUrl,
+        token: jobItem.metadata.token,
       });
 
       const resolvedPath = generatePath(
@@ -146,12 +134,8 @@ export const TemplatePage = () => {
   const handleCreate = async () => {
     const token = await tokenPromise;
     try {
-      const jobId = await scaffolderApi.scaffold(
-        templateName,
-        formState,
-        token,
-      );
-      setJobId(jobId);
+      const id = await scaffolderApi.scaffold(templateName, formState, token);
+      setJobId(id);
       setModalOpen(true);
     } catch (e) {
       errorApi.post(e);
@@ -206,7 +190,34 @@ export const TemplatePage = () => {
                 {
                   label: 'Choose owner and repo',
                   schema: OWNER_REPO_SCHEMA,
-                  customFormats: REPO_FORMAT,
+                  validate: (formData, errors) => {
+                    const { storePath } = formData;
+                    try {
+                      const parsedUrl = parseGitUrl(storePath);
+
+                      if (
+                        !parsedUrl.resource ||
+                        !parsedUrl.owner ||
+                        !parsedUrl.name
+                      ) {
+                        if (parsedUrl.resource === 'dev.azure.com') {
+                          errors.storePath.addError(
+                            "The store path should be formatted like https://dev.azure.com/{org}/{project}/_git/{repo} for Azure URL's",
+                          );
+                        } else {
+                          errors.storePath.addError(
+                            'The store path should be a complete Git URL to the new repository location. For example: https://github.com/{owner}/{repo}',
+                          );
+                        }
+                      }
+                    } catch (ex) {
+                      errors.storePath.addError(
+                        `Failed validation of the store pathn with message ${ex.message}`,
+                      );
+                    }
+
+                    return errors;
+                  },
                 },
               ]}
             />

@@ -6,6 +6,7 @@
 
 *                                           @backstage/maintainers
 /docs/features/techdocs                     @backstage/techdocs-core
+/docs/features/search                       @backstage/techdocs-core
 /plugins/cost-insights                      @backstage/silver-lining
 /plugins/cloudbuild                         @trivago/ebarrios
 /plugins/gcp-projects                       @trivago/ebarrios
@@ -16,3 +17,4 @@
 /plugins/techdocs-backend                   @backstage/techdocs-core
 /packages/techdocs-common                   @backstage/techdocs-core
 /.changeset/cost-insights-*                 @backstage/silver-lining
+/.changeset/techdocs-*                      @backstage/techdocs-core

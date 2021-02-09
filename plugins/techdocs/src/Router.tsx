@@ -16,6 +16,7 @@
 
 import React from 'react';
 import { Entity } from '@backstage/catalog-model';
+import { useEntity } from '@backstage/plugin-catalog-react';
 import { Route, Routes } from 'react-router-dom';
 import { MissingAnnotationEmptyState, useApi } from '@backstage/core';
 import {
@@ -39,7 +40,14 @@ export const Router = () => {
   );
 };
 
-export const EmbeddedDocsRouter = ({ entity }: { entity: Entity }) => {
+type Props = {
+  /** @deprecated The entity is now grabbed from context instead */
+  entity?: Entity;
+};
+
+export const EmbeddedDocsRouter = (_props: Props) => {
+  const { entity } = useEntity();
+
   const projectId = entity.metadata.annotations?.[TECHDOCS_ANNOTATION];
   const githubAuthApi = useApi(githubAuthApiRef);
   const tokenPromise = githubAuthApi.getAccessToken();

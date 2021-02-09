@@ -165,12 +165,14 @@ export class GcpClient implements GcpApi {
     let subnetsSha: string = '';
     if (subnetsResponse) {
       if (subnetsResponse?.status === 200) {
-        const subnetsContent = Buffer.from(
-          subnetsResponse.data.content,
-          'base64',
-        ).toString();
+        // const subnetsContent = Buffer.from(
+        //   subnetsResponse.data.content,
+        //   'base64',
+        // ).toString();
+        const subnetsContent = '';
         subnetsTf = `${subnetsContent}\n\n${metadata.subnetsTf}`;
-        subnetsSha = subnetsResponse.data.sha;
+        // subnetsSha = subnetsResponse.sha;
+        subnetsSha = '';
       } else {
         subnetsTf = metadata.subnetsTf;
       }
@@ -212,12 +214,14 @@ export class GcpClient implements GcpApi {
       let groupsSha: string = '';
       if (groupsResponse) {
         if (groupsResponse?.status === 200) {
-          const groupsContent = Buffer.from(
-            groupsResponse.data.content,
-            'base64',
-          ).toString();
+          // const groupsContent = Buffer.from(
+          //   groupsResponse.data.content,
+          //   'base64',
+          // ).toString();
+          const groupsContent = '';
           groupsTf = `${groupsContent}\n\n${metadata.groupsTf}`;
-          groupsSha = groupsResponse.data.sha;
+          // groupsSha = groupsResponse.data.sha;
+          groupsSha = '';
         } else {
           groupsTf = metadata.groupsTf;
         }
@@ -259,12 +263,14 @@ export class GcpClient implements GcpApi {
     let projectSha: string = '';
     if (projectResponse) {
       if (projectResponse.status === 200) {
-        const projectContent = Buffer.from(
-          projectResponse.data.content,
-          'base64',
-        ).toString();
+        // const projectContent = Buffer.from(
+        //   projectResponse.data.content,
+        //   'base64',
+        // ).toString();
+        const projectContent = '';
         projectTf = `${projectContent}\n\n${metadata.projectTf}`;
-        projectSha = projectResponse.data.sha;
+        // projectSha = projectResponse.data.sha;
+        projectSha = '';
       } else {
         projectTf = metadata.projectTf;
       }

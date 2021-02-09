@@ -14,7 +14,7 @@
     ]
   },
   "dependencies": {
-    "@backstage/theme": "^0.2.0"
+    "@backstage/theme": "^0.2.3"
   },
   "devDependencies": {
     "@storybook/addon-actions": "^6.1.11",

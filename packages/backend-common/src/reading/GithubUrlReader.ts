@@ -15,14 +15,15 @@
  */
 
 import {
+  GithubCredentialsProvider,
   GitHubIntegrationConfig,
   readGitHubIntegrationConfigs,
-  getGitHubRequestOptions,
 } from '@backstage/integration';
+import { RestEndpointMethodTypes } from '@octokit/rest';
 import fetch from 'cross-fetch';
-import parseGitUri from 'git-url-parse';
+import parseGitUrl from 'git-url-parse';
 import { Readable } from 'stream';
-import { InputError, NotFoundError } from '../errors';
+import { NotFoundError, NotModifiedError } from '../errors';
 import { ReadTreeResponseFactory } from './tree';
 import {
   ReaderFactory,
@@ -89,7 +90,7 @@ export function getApiUrl(
   provider: GitHubIntegrationConfig,
 ): URL {
   try {
-    const { owner, name, ref, filepathtype, filepath } = parseGitUri(target);
+    const { owner, name, ref, filepathtype, filepath } = parseGitUrl(target);
 
     if (
       !owner ||
@@ -117,7 +118,7 @@ export function getRawUrl(
   provider: GitHubIntegrationConfig,
 ): URL {
   try {
-    const { owner, name, ref, filepathtype, filepath } = parseGitUri(target);
+    const { owner, name, ref, filepathtype, filepath } = parseGitUrl(target);
 
     if (
       !owner ||
@@ -147,7 +148,11 @@ export class GithubUrlReader implements UrlReader {
       config.getOptionalConfigArray('integrations.github') ?? [],
     );
     return configs.map(provider => {
-      const reader = new GithubUrlReader(provider, { treeResponseFactory });
+      const credentialsProvider = GithubCredentialsProvider.create(provider);
+      const reader = new GithubUrlReader(provider, {
+        treeResponseFactory,
+        credentialsProvider,
+      });
       const predicate = (url: URL) => url.host === provider.host;
       return { reader, predicate };
     });
@@ -155,7 +160,10 @@ export class GithubUrlReader implements UrlReader {
 
   constructor(
     private readonly config: GitHubIntegrationConfig,
-    private readonly deps: { treeResponseFactory: ReadTreeResponseFactory },
+    private readonly deps: {
+      treeResponseFactory: ReadTreeResponseFactory;
+      credentialsProvider: GithubCredentialsProvider;
+    },
   ) {
     if (!config.apiBaseUrl && !config.rawBaseUrl) {
       throw new Error(
@@ -195,44 +203,32 @@ export class GithubUrlReader implements UrlReader {
     url: string,
     options?: ReadTreeOptions,
   ): Promise<ReadTreeResponse> {
-    const {
-      name: repoName,
-      ref,
-      protocol,
-      resource,
-      full_name,
-      filepath,
-    } = parseGitUri(url);
+    const repoDetails = await this.getRepoDetails(url);
+    const commitSha = repoDetails.branch.commit.sha!;
 
-    if (!ref) {
-      // TODO(Rugvip): We should add support for defaulting to the default branch
-      throw new InputError(
-        'GitHub URL must contain branch to be able to fetch tree',
-      );
+    if (options?.etag && options.etag === commitSha) {
+      throw new NotModifiedError();
     }
 
-    // TODO(Rugvip): use API to fetch URL instead
-    const response = await fetch(
-      new URL(
-        `${protocol}://${resource}/${full_name}/archive/${ref}.tar.gz`,
-      ).toString(),
-      getGitHubRequestOptions(this.config),
+    const { headers } = await this.deps.credentialsProvider.getCredentials({
+      url,
+    });
+
+    // archive_url looks like "https://api.github.com/repos/owner/repo/{archive_format}{/ref}"
+    const archive = await this.fetchResponse(
+      repoDetails.repo.archive_url
+        .replace('{archive_format}', 'tarball')
+        .replace('{/ref}', `/${commitSha}`),
+      { headers },
     );
-    if (!response.ok) {
-      const message = `Failed to read tree from ${url}, ${response.status} ${response.statusText}`;
-      if (response.status === 404) {
-        throw new NotFoundError(message);
-      }
-      throw new Error(message);
-    }
 
-    const path = `${repoName}-${ref}/${filepath}`;
-
-    return this.deps.treeResponseFactory.fromTarArchive({
+    const { filepath } = parseGitUrl(url);
+    return await this.deps.treeResponseFactory.fromTarArchive({
       // TODO(Rugvip): Underlying implementation of fetch will be node-fetch, we probably want
       //               to stick to using that in exclusively backend code.
-      stream: (response.body as unknown) as Readable,
-      path,
+      stream: (archive.body as unknown) as Readable,
+      subpath: filepath,
+      etag: commitSha,
       filter: options?.filter,
     });
   }
@@ -240,5 +236,60 @@ export class GithubUrlReader implements UrlReader {
   toString() {
     const { host, token } = this.config;
     return `github{host=${host},authed=${Boolean(token)}}`;
+  }
+
+  private async getRepoDetails(
+    url: string,
+  ): Promise<{
+    repo: RestEndpointMethodTypes['repos']['get']['response']['data'];
+    branch: RestEndpointMethodTypes['repos']['getBranch']['response']['data'];
+  }> {
+    const parsed = parseGitUrl(url);
+    const { ref, full_name } = parsed;
+
+    // Caveat: The ref will totally be incorrect if the branch name includes a
+    // slash. Thus, some operations can not work on URLs containing branch
+    // names that have a slash in them.
+
+    const { headers } = await this.deps.credentialsProvider.getCredentials({
+      url,
+    });
+
+    const repo: RestEndpointMethodTypes['repos']['get']['response']['data'] = await this.fetchJson(
+      `${this.config.apiBaseUrl}/repos/${full_name}`,
+      { headers },
+    );
+
+    // branches_url looks like "https://api.github.com/repos/owner/repo/branches{/branch}"
+    const branch: RestEndpointMethodTypes['repos']['getBranch']['response']['data'] = await this.fetchJson(
+      repo.branches_url.replace('{/branch}', `/${ref || repo.default_branch}`),
+      { headers },
+    );
+
+    return { repo, branch };
+  }
+
+  private async fetchResponse(
+    url: string | URL,
+    init: RequestInit,
+  ): Promise<Response> {
+    const urlAsString = url.toString();
+
+    const response = await fetch(urlAsString, init);
+
+    if (!response.ok) {
+      const message = `Request failed for ${urlAsString}, ${response.status} ${response.statusText}`;
+      if (response.status === 404) {
+        throw new NotFoundError(message);
+      }
+      throw new Error(message);
+    }
+
+    return response;
+  }
+
+  private async fetchJson(url: string | URL, init: RequestInit): Promise<any> {
+    const response = await this.fetchResponse(url, init);
+    return await response.json();
   }
 }

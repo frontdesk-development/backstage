@@ -15,8 +15,7 @@
  */
 import type { Writable } from 'stream';
 import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
-import { JsonValue } from '@backstage/config';
-import { RequiredTemplateValues } from '../stages/templater';
+import { TemplaterValues } from '../stages/templater';
 import { Logger } from 'winston';
 
 // Context will be a mutable object which is passed between stages
@@ -24,10 +23,11 @@ import { Logger } from 'winston';
 // To maybe create sub steps or fail the entire thing, or skip stages down the line.
 export type StageContext<T = {}> = {
   token: string;
-  values: RequiredTemplateValues & Record<string, JsonValue>;
+  values: TemplaterValues;
   entity: TemplateEntityV1alpha1;
   logger: Logger;
   logStream: Writable;
+  workspacePath: string;
 } & T;
 
 export type ProcessorStatus = 'PENDING' | 'STARTED' | 'COMPLETED' | 'FAILED';
@@ -60,7 +60,7 @@ export type Processor = {
     stages,
   }: {
     entity: TemplateEntityV1alpha1;
-    values: RequiredTemplateValues & Record<string, JsonValue>;
+    values: TemplaterValues;
     stages: StageInput[];
   }): Job;
 

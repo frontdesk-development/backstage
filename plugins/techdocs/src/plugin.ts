@@ -35,6 +35,8 @@ import {
   createApiFactory,
   configApiRef,
   githubAuthApiRef,
+  discoveryApiRef,
+  createRoutableExtension,
 } from '@backstage/core';
 import {
   techdocsStorageApiRef,
@@ -58,26 +60,45 @@ export const rootCatalogDocsRouteRef = createRouteRef({
   title: 'Docs',
 });
 
-// TODO: Use discovery API for frontend to get URL for techdocs-backend instead of requestUrl
-export const plugin = createPlugin({
+export const techdocsPlugin = createPlugin({
   id: 'techdocs',
   apis: [
     createApiFactory({
       api: techdocsStorageApiRef,
-      deps: { configApi: configApiRef, githubAuthApi: githubAuthApiRef },
-      factory: ({ configApi, githubAuthApi }) =>
+      deps: { configApi: configApiRef, discoveryApi: discoveryApiRef, githubAuthApi: githubAuthApiRef },
+      factory: ({ configApi, discoveryApi, githubAuthApi }) =>
         new TechDocsStorageApi({
-          apiOrigin: configApi.getString('techdocs.requestUrl'),
+          configApi,
+          discoveryApi,
           githubAuthApi,
         }),
     }),
     createApiFactory({
       api: techdocsApiRef,
-      deps: { configApi: configApiRef },
-      factory: ({ configApi }) =>
+      deps: { configApi: configApiRef, discoveryApi: discoveryApiRef },
+      factory: ({ configApi, discoveryApi }) =>
         new TechDocsApi({
-          apiOrigin: configApi.getString('techdocs.requestUrl'),
+          configApi,
+          discoveryApi,
         }),
     }),
   ],
+  routes: {
+    root: rootRouteRef,
+    entityContent: rootCatalogDocsRouteRef,
+  },
 });
+
+export const TechdocsPage = techdocsPlugin.provide(
+  createRoutableExtension({
+    component: () => import('./Router').then(m => m.Router),
+    mountPoint: rootRouteRef,
+  }),
+);
+
+export const EntityTechdocsContent = techdocsPlugin.provide(
+  createRoutableExtension({
+    component: () => import('./Router').then(m => m.EmbeddedDocsRouter),
+    mountPoint: rootCatalogDocsRouteRef,
+  }),
+);
