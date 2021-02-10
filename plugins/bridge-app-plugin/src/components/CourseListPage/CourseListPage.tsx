@@ -90,7 +90,7 @@ const PageContents = ({ entity }: { entity?: Entity }) => {
         <TableBody>
           {value?.library_items.map((course: Course) => (
             <TableRow key={course.id}>
-              <TableCell align="left" width="100px">
+              <TableCell align="left">
                 <img
                   src={course.cover_slide_data.background_image_url ?? noImage}
                   width="100px"
@@ -99,7 +99,7 @@ const PageContents = ({ entity }: { entity?: Entity }) => {
                   style={{ borderRadius: '30%' }}
                 />
               </TableCell>
-              <TableCell align="left" width="250px">
+              <TableCell align="left">
                 <Typography>
                   <LongText
                     text={course.title ?? 'No title available'}
@@ -115,7 +115,7 @@ const PageContents = ({ entity }: { entity?: Entity }) => {
                   />
                 </Typography>
               </TableCell>
-              <TableCell align="right" width="200px">
+              <TableCell align="right">
                 <Button
                   variant="contained"
                   size="small"
