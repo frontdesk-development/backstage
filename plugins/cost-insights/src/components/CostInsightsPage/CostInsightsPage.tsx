@@ -15,12 +15,17 @@
  */
 
 import React, { useCallback, useEffect, useState } from 'react';
-import { Box, Container, Divider, Grid, Typography } from '@material-ui/core';
+import {
+  Box,
+  Container,
+  Divider,
+  Grid,
+  Typography,
+} from '@material-ui/core';
 import { Progress, useApi } from '@backstage/core';
 import { default as MaterialAlert } from '@material-ui/lab/Alert';
 import { costInsightsApiRef } from '../../api';
-import { AlertActionCardList } from '../AlertActionCardList';
-import { AlertInsights } from '../AlertInsights';
+// import { AlertInsights } from '../AlertInsights';
 import { CostInsightsLayout } from '../CostInsightsLayout';
 // import { CopyUrlToClipboard } from '../CopyUrlToClipboard';
 import { CurrencySelect } from '../CurrencySelect';
@@ -68,6 +73,7 @@ export const CostInsightsPage = () => {
   const groups = useGroups();
   // const [configLoaded, setConfigLoaded] = useState(false);
   const lastCompleteBillingDate = useLastCompleteBillingDate();
+  const [alerts, setAlerts] = useState<Alert[]>([]);
   const [currency, setCurrency] = useCurrency();
   const [projects, setProjects] = useState<Maybe<Project[]>>(null);
   const [tierLabel, setTierLabels] = useState<Maybe<Label[]>>(null);
@@ -78,10 +84,10 @@ export const CostInsightsPage = () => {
   // const [product, setProducts] = useState<Maybe<Product[]>>(null);
   const [dailyCost, setDailyCost] = useState<Maybe<Cost>>(null);
   const [metricData, setMetricData] = useState<Maybe<MetricData>>(null);
-  const [alerts, setAlerts] = useState<Maybe<Alert[]>>(null);
   const [error, setError] = useState<Maybe<Error>>(null);
 
   const { pageFilters, setPageFilters } = useFilters(p => p);
+
 
   const {
     loadingActions,
@@ -241,8 +247,8 @@ export const CostInsightsPage = () => {
       </CostInsightsLayout>
     );
   }
-  // These should be defined, alerts can be an empty array but that's truthy
-  if (!dailyCost || !alerts) {
+
+  if (!dailyCost) {
     return (
       <MaterialAlert severity="error">{`Error: Could not fetch cost insights data for team ${pageFilters.group}`}</MaterialAlert>
     );
@@ -387,7 +393,7 @@ export const CostInsightsPage = () => {
                   alerts={alerts.length}
                 />
               </Grid> */}
-              {!!alerts.length && (
+              {/* {!!alerts.length && (
                 <>
                   <Grid item xs>
                     <Box px={3} py={6}>
@@ -396,7 +402,7 @@ export const CostInsightsPage = () => {
                   </Grid>
                   <Divider />
                 </>
-              )}
+              )} */}
               <Grid item xs>
                 <CostOverviewBanner />
               </Grid>
@@ -413,11 +419,11 @@ export const CostInsightsPage = () => {
                 </Box>
               </Grid>
               <Grid item xs>
-                {!!alerts?.length && (
+                {/* {!!alerts?.length && (
                   <Box px={6} py={6} mx={-3} bgcolor="alertBackground">
                     <AlertInsights alerts={alerts} />
                   </Box>
-                )}
+                )} */}
               </Grid>
               {!alerts.length && <Divider />}
               <Grid item xs>

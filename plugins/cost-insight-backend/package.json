@@ -21,7 +21,7 @@
     "clean": "backstage-cli clean"
   },
   "dependencies": {
-    "@backstage/backend-common": "^0.5.2",
+    "@backstage/backend-common": "^0.4.1",
     "@backstage/catalog-model": "^0.7.1",
     "@backstage/config": "^0.1.2",
     "@google-cloud/bigquery": "^5.5.0",
