@@ -31,6 +31,7 @@ import {
   PageFilters,
   AllResultsComponents,
   Agregation,
+  AllResultsProjects,
 } from '../types';
 import { OAuthApi, ConfigApi } from '@backstage/core';
 import regression, { DataPoint } from 'regression';
@@ -276,11 +277,10 @@ export class CostInsightsClient implements CostInsightsApi {
         trendline: trendlineOf(aggregation),
         // Optional field on Cost which needs to be supplied in order to see
         // the product breakdown view in the top panel.
-        groupedCosts: await this.getGroupedProducts(
-          intervals,
-          undefined,
-          whereStatement,
-        ),
+        groupedCosts: {
+          product: await this.getGroupedProducts(intervals,undefined, whereStatement),
+          project: await this.getGroupedProjects(intervals, whereStatement),
+        },
       },
     );
 
@@ -295,6 +295,20 @@ export class CostInsightsClient implements CostInsightsApi {
         date: dt.toISOString().slice(0, 10),
         amount: 0,
         description: '',
+      };
+      arr.push(item);
+    }
+    return arr;
+  };
+
+  getEmptyAmountProjectArray = function (start: Date, end: Date) {
+    let arr = [];
+    let dt: Date;
+    for (arr = [], dt = start; dt <= end; dt.setDate(dt.getDate() + 1)) {
+      const item = {
+        date: dt.toISOString().slice(0, 10),
+        amount: 0,
+        projectName: '',
       };
       arr.push(item);
     }
@@ -357,6 +371,46 @@ export class CostInsightsClient implements CostInsightsApi {
     return { startDate, endDate };
   }
 
+  async getProjectsCosts(
+    intervals: string,
+    whereStatement: string | undefined,
+  ): Promise<{amount: number; date: string; projectName: string}[]> {
+    const { endDate, startDate } = this.parseIntervals(intervals);
+
+    const arr = this.getEmptyAmountProjectArray(
+      new Date(startDate),
+      new Date(endDate),
+    );
+
+    const response = await fetch(`${this.backendUrl}/getProjectsCosts`, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      method: 'POST',
+      body: JSON.stringify({
+        intervals: intervals,
+        whereStatement: whereStatement,
+      }),
+    }).catch(e => {
+      throw new Error(`Failed to generate entity definitions, ${e.message}`);
+    });
+    if (!response.ok) {
+      throw new Error(
+        `Failed to generate entity definitions. Received http response ${response.status}: ${response.statusText}`,
+      );
+    }
+
+    const groupedCosts = (await response.json()) as {
+      amount: number;
+      date: string;
+      projectName: string;
+    }[];
+
+    groupedCosts.push(...arr);
+
+    return groupedCosts;
+
+  };
   async getComponent(
     intervals: string,
     projectName: string | undefined,
@@ -398,6 +452,41 @@ export class CostInsightsClient implements CostInsightsApi {
 
     return groupedCosts;
   }
+
+  async getGroupedProjects(
+    intervals: string,
+    whereClouse?: string,
+  ): Promise<AllResultsProjects[]> {
+    const { endDate, startDate } = this.parseIntervals(intervals);
+
+    const arr = this.getEmptyAmountProjectArray(
+      new Date(startDate),
+      new Date(endDate),
+    );
+
+    const groupedCostsByProject = await this.getProjectsCosts(
+      intervals,
+      whereClouse,
+    );
+
+    const allGroupedProjects = new Array<AllResultsProjects>();
+
+    allGroupedProjects.push({ id: '', aggregation: arr });
+
+    const groupByProject = _.groupBy(groupedCostsByProject, 'projectName');
+
+    for (const projectName in groupByProject) {
+      if (groupByProject.hasOwnProperty(projectName)) {
+        const item: AllResultsProjects = {
+          id: projectName,
+          aggregation: groupByProject[projectName],
+        };
+        allGroupedProjects.push(item);
+      }
+    }
+
+    return allGroupedProjects;
+  };
 
   async getGroupedProducts(
     intervals: string,
@@ -458,11 +547,9 @@ export class CostInsightsClient implements CostInsightsApi {
           trendline: trendlineOf(aggregation),
           // Optional field on Cost which needs to be supplied in order to see
           // the product breakdown view in the top panel.
-          groupedCosts: await this.getGroupedProducts(
-            intervals,
-            project,
-            whereStatement,
-          ),
+          groupedCosts: {
+            product: await this.getGroupedProducts(intervals,undefined, whereStatement),
+          },
         },
       );
 

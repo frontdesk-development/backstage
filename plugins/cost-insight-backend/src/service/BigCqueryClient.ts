@@ -25,6 +25,7 @@ export class BigQueryClass {
   client: BigQuery;
   memoizedQuery: any;
   memoizedLabelQuery: any;
+  memoizedProjectsQuery: any;
   billingTable: string;
 
   constructor(gcpConfig: GcpConfig) {
@@ -41,6 +42,10 @@ export class BigQueryClass {
 
     this.memoizedQuery = moize(
       async (query: string) => await this.runQuery(query),
+      { maxAge: MAX_AGE, updateExpire: true },
+    );
+    this.memoizedProjectsQuery = moize(
+      async (query: string) => await this.runProjectsQuery(query),
       { maxAge: MAX_AGE, updateExpire: true },
     );
     this.memoizedLabelQuery = moize(
@@ -167,6 +172,25 @@ export class BigQueryClass {
     return await this.memoizedLabelQuery(query);
   }
 
+  public async getProjectsCost(
+    intervals: string,
+    whereClouse?: string,
+  ): Promise<{ amount: number; date: string; projectName: string }[]> {
+    const { endDate, startDate } = this.parseIntervals(intervals);
+
+    let query = `SELECT
+      day as date
+      ,SUM(total) as amount
+      ,project_name as projectName
+      FROM \`${this.billingTable}\` 
+      WHERE TIMESTAMP(day) > TIMESTAMP(DATE "${startDate}") 
+        AND TIMESTAMP(day) < TIMESTAMP(DATE "${endDate}")
+        ${whereClouse}
+      GROUP BY projectName, date
+      ORDER BY projectName, date`;
+
+      return await this.memoizedProjectsQuery(query);
+  };
   public async getComponent(
     intervals: string,
     projectName?: string,
@@ -202,6 +226,31 @@ export class BigQueryClass {
     return await this.memoizedQuery(query);
   }
 
+  public async runProjectsQuery(query: string): Promise<{amount: number; date: string; projectName: string }[]> {
+    const client = this.client;
+    const options = {
+      query: query,
+      // Location must match that of the dataset(s) referenced in the query.
+      location: 'EU',
+      useQueryCache: true,
+    };
+
+    const [job] = await client.createQueryJob(options);
+
+    const [rows] = await job.getQueryResults();
+
+    const aggregation: {
+      amount: number;
+      date: string;
+      projectName: string;
+    }[] = rows.map(entry => ({
+      date: entry.date,
+      amount: entry.amount,
+      projectName: entry.projectName,
+    }));
+
+    return aggregation;
+  };
   public async runQuery(
     query: string,
   ): Promise<{ amount: number; date: string; description: string }[]> {

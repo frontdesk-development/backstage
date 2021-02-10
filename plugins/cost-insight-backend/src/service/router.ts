@@ -86,6 +86,23 @@ export const makeRouter = (
     }
   });
 
+  router.post('/getProjectsCosts', async (req, res) => {
+    const intervals = req.body.intervals;
+    const whereStatement = req.body.whereStatement;
+    try {
+      const response = await BigQueryClient.getProjectsCost(
+        intervals,
+        whereStatement,
+      );
+      res.status(200).send(response);
+    } catch (e) {
+      logger.error(
+        `action=getProjectsCosts for intervals="${intervals}", error=${e}`,
+      );
+      res.status(500).send({ error: e.message });
+    }
+  });
+
   return router;
 };
 

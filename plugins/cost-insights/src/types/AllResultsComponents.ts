@@ -22,3 +22,12 @@ export type AllResultsComponents = {
     description: string;
   }[];
 };
+
+export type AllResultsProjects = {
+  id: string;
+  aggregation: {
+    amount: number;
+    date: string; // YYYY-MM-DD
+    projectName: string;
+  }[];
+};

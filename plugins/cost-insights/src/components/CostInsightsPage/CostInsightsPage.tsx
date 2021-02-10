@@ -28,7 +28,7 @@ import { costInsightsApiRef } from '../../api';
 // import { AlertInsights } from '../AlertInsights';
 import { CostInsightsLayout } from '../CostInsightsLayout';
 // import { CopyUrlToClipboard } from '../CopyUrlToClipboard';
-import { CurrencySelect } from '../CurrencySelect';
+// import { CurrencySelect } from '../CurrencySelect';
 // import { WhyCostsMatter } from '../WhyCostsMatter';
 import {
   // CostInsightsHeader,
@@ -41,7 +41,7 @@ import { ProductInsights } from '../ProductInsights';
 // import { CostInsightsSupportButton } from '../CostInsightsSupportButton';
 import {
   useConfig,
-  useCurrency,
+  // useCurrency,
   useFilters,
   useGroups,
   useLastCompleteBillingDate,
@@ -74,7 +74,7 @@ export const CostInsightsPage = () => {
   // const [configLoaded, setConfigLoaded] = useState(false);
   const lastCompleteBillingDate = useLastCompleteBillingDate();
   const [alerts, setAlerts] = useState<Alert[]>([]);
-  const [currency, setCurrency] = useCurrency();
+  // const [currency, setCurrency] = useCurrency();
   const [projects, setProjects] = useState<Maybe<Project[]>>(null);
   const [tierLabel, setTierLabels] = useState<Maybe<Label[]>>(null);
   const [pillarLabel, setPillarLabels] = useState<Maybe<Label[]>>(null);
@@ -300,13 +300,13 @@ export const CostInsightsPage = () => {
         </Typography>
       </Box>
       <Box display="flex">
-        <Box mr={1}>
+        {/* <Box mr={1}>
           <CurrencySelect
             currency={currency}
             currencies={config.currencies}
             onSelect={setCurrency}
           />
-        </Box>
+        </Box> */}
         <ProjectSelect
           project={pageFilters.project}
           projects={projects || []}
