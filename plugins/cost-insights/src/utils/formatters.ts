@@ -16,7 +16,7 @@
 
 import moment from 'moment';
 import pluralize from 'pluralize';
-import { Duration } from '../types';
+import { Duration, DEFAULT_DATE_FORMAT } from '../types';
 import { inclusiveEndDateOf, inclusiveStartDateOf } from '../utils/duration';
 
 export type Period = {
@@ -92,8 +92,11 @@ export function formatPercent(n: number): string {
 }
 
 export function formatLastTwoLookaheadQuarters(inclusiveEndDate: string) {
+  const exclusiveEndDate = moment(inclusiveEndDate)
+    .add(1, 'day')
+    .format(DEFAULT_DATE_FORMAT);
   const start = moment(
-    inclusiveStartDateOf(Duration.P3M, inclusiveEndDate),
+    inclusiveStartDateOf(Duration.P3M, exclusiveEndDate),
   ).format('[Q]Q YYYY');
   const end = moment(inclusiveEndDateOf(Duration.P3M, inclusiveEndDate)).format(
     '[Q]Q YYYY',

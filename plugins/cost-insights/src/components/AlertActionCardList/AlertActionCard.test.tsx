@@ -16,9 +16,9 @@
 
 import React from 'react';
 import { renderInTestApp } from '@backstage/test-utils';
-import { ActionItemCard } from './ActionItemCard';
+import { AlertActionCard } from './AlertActionCard';
 import { MockScrollProvider } from '../../utils/tests';
-import { ProjectGrowthAlert } from '../../alerts';
+import { ProjectGrowthAlert } from '../../utils/alerts';
 import { ProjectGrowthData } from '../../types';
 
 const data: ProjectGrowthData = {
@@ -31,11 +31,11 @@ const data: ProjectGrowthData = {
 };
 const alert = new ProjectGrowthAlert(data);
 
-describe('<ActionItemCard/>', () => {
+describe('<AlertActionCard/>', () => {
   it('Renders an alert', async () => {
     const rendered = await renderInTestApp(
       <MockScrollProvider>
-        <ActionItemCard alert={alert} avatar={<div>1</div>} />
+        <AlertActionCard alert={alert} number={1} />,
       </MockScrollProvider>,
     );
 

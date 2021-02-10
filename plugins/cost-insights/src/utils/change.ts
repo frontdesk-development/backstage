@@ -22,13 +22,14 @@ import {
   GrowthType,
   MetricData,
   Duration,
+  DEFAULT_DATE_FORMAT,
   DateAggregation,
 } from '../types';
 import dayjs, { OpUnitType } from 'dayjs';
-import durationPlugin from 'dayjs/plugin/duration';
+import duration from 'dayjs/plugin/duration';
 import { inclusiveStartDateOf } from './duration';
 
-dayjs.extend(durationPlugin);
+dayjs.extend(duration);
 
 // Used for displaying status colors
 export function growthOf(ratio: number, amount?: number) {
@@ -72,7 +73,10 @@ export function getPreviousPeriodTotalCost(
   inclusiveEndDate: string,
 ): number {
   const dayjsDuration = dayjs.duration(duration);
-  const startDate = inclusiveStartDateOf(duration, inclusiveEndDate);
+  const startDate = inclusiveStartDateOf(
+    duration,
+    dayjs(inclusiveEndDate).add(1, 'day').format(DEFAULT_DATE_FORMAT),
+  );
   // dayjs doesn't allow adding an ISO 8601 period to dates.
   const [amount, type]: [number, OpUnitType] = dayjsDuration.days()
     ? [dayjsDuration.days(), 'day']

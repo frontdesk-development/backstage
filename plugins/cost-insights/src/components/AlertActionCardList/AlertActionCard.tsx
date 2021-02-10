@@ -14,34 +14,32 @@
  * limitations under the License.
  */
 import React from 'react';
-import { Box, Button } from '@material-ui/core';
-import { AlertInsightsSectionHeader } from './AlertInsightsSectionHeader';
+import { Avatar, Card, CardHeader } from '@material-ui/core';
+import { useScroll } from '../../hooks';
 import { Alert } from '../../types';
+import {
+  useAlertActionCardHeader as useHeaderStyles,
+  useAlertActionCardStyles as useStyles,
+} from '../../utils/styles';
 
-type AlertInsightsSectionProps = {
+type AlertActionCardProps = {
   alert: Alert;
   number: number;
 };
 
-export const AlertInsightsSection = ({
-  alert,
-  number,
-}: AlertInsightsSectionProps) => {
+export const AlertActionCard = ({ alert, number }: AlertActionCardProps) => {
+  const { scrollIntoView } = useScroll(`alert-${number}`);
+  const headerClasses = useHeaderStyles();
+  const classes = useStyles();
+
   return (
-    <Box display="flex" flexDirection="column">
-      <AlertInsightsSectionHeader
+    <Card className={classes.card} raised={false} onClick={scrollIntoView}>
+      <CardHeader
+        classes={headerClasses}
+        avatar={<Avatar className={classes.avatar}>{number}</Avatar>}
         title={alert.title}
-        subtitle={alert.subtitle}
-        number={number}
+        subheader={alert.subtitle}
       />
-      {alert.url && (
-        <Box textAlign="left" mt={0} mb={4}>
-          <Button variant="contained" color="primary" href={alert.url}>
-            {alert.buttonText || 'View Instructions'}
-          </Button>
-        </Box>
-      )}
-      {alert.element}
-    </Box>
+    </Card>
   );
 };

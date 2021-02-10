@@ -15,46 +15,34 @@
  */
 
 import React from 'react';
-import { Avatar, Box, Button, Grid, Typography } from '@material-ui/core';
+import { Avatar, Box, Grid, Typography } from '@material-ui/core';
 import { useAlertInsightsSectionStyles as useStyles } from '../../utils/styles';
-import { ScrollAnchor } from '../../utils/scroll';
-import { Alert } from '../../types';
+import { useScroll } from '../../hooks';
 
 type AlertInsightsSectionHeaderProps = {
-  alert: Alert;
   number: number;
+  title: string;
+  subtitle: string;
 };
 
 export const AlertInsightsSectionHeader = ({
-  alert,
   number,
+  title,
+  subtitle,
 }: AlertInsightsSectionHeaderProps) => {
+  const { ScrollAnchor } = useScroll(`alert-${number}`);
   const classes = useStyles();
-
-  const isViewInstructionsButtonDisplayed = !!alert.url;
-
   return (
     <Box position="relative" mb={3} textAlign="left">
-      <ScrollAnchor id={`alert-${number}`} />
-      <Grid container spacing={2} justify="space-between" alignItems="center">
+      <ScrollAnchor top={-20} behavior="smooth" />
+      <Grid container spacing={2}>
         <Grid item>
-          <Box display="flex" alignItems="center">
-            <Box mr={2}>
-              <Avatar className={classes.button}>{number}</Avatar>
-            </Box>
-            <Box>
-              <Typography variant="h5">{alert.title}</Typography>
-              <Typography gutterBottom>{alert.subtitle}</Typography>
-            </Box>
-          </Box>
+          <Avatar className={classes.button}>{number}</Avatar>
         </Grid>
-        {isViewInstructionsButtonDisplayed && (
-          <Grid item>
-            <Button variant="text" color="primary" href={alert.url}>
-              {alert.buttonText || 'View Instructions'}
-            </Button>
-          </Grid>
-        )}
+        <Grid item>
+          <Typography variant="h5">{title}</Typography>
+          <Typography gutterBottom>{subtitle}</Typography>
+        </Grid>
       </Grid>
     </Box>
   );

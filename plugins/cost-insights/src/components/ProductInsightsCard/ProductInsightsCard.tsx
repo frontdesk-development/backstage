@@ -34,9 +34,9 @@ import {
   MapLoadingToProps,
   useLastCompleteBillingDate,
   useLoading,
+  useScroll,
 } from '../../hooks';
 import { findAnyKey } from '../../utils/assert';
-import { ScrollAnchor } from '../../utils/scroll';
 
 type LoadingProps = (isLoading: boolean) => void;
 
@@ -60,6 +60,7 @@ export const ProductInsightsCard = ({
 }: PropsWithChildren<ProductInsightsCardProps>) => {
   const classes = useStyles();
   const mountedRef = useRef(false);
+  const { ScrollAnchor } = useScroll(product.kind);
   const [error, setError] = useState<Maybe<Error>>(null);
   const dispatchLoading = useLoading(mapLoadingToProps);
   const lastCompleteBillingDate = useLastCompleteBillingDate();
@@ -95,10 +96,9 @@ export const ProductInsightsCard = ({
   const entityKey = findAnyKey(entity?.entities);
   const entities = entityKey ? entity!.entities[entityKey] : [];
 
-  const subheader =
-    entityKey && entities.length
-      ? `${pluralize(entityKey, entities.length, true)}, sorted by cost`
-      : null;
+  const subheader = entityKey
+    ? `${pluralize(entityKey, entities.length, true)}, sorted by cost`
+    : null;
   const headerProps = {
     classes: classes,
     action: <PeriodSelect duration={duration} onSelect={setDuration} />,
@@ -107,7 +107,7 @@ export const ProductInsightsCard = ({
   if (error || !entity) {
     return (
       <InfoCard title={product.name} headerProps={headerProps}>
-        <ScrollAnchor id={product.kind} />
+        <ScrollAnchor behavior="smooth" top={-12} />
         <Alert severity="error">
           {error
             ? error.message
@@ -123,7 +123,7 @@ export const ProductInsightsCard = ({
       subheader={subheader}
       headerProps={headerProps}
     >
-      <ScrollAnchor id={product.kind} />
+      <ScrollAnchor behavior="smooth" top={-12} />
       {entities.length ? (
         <ProductInsightsChart
           entity={entity}
@@ -132,7 +132,7 @@ export const ProductInsightsCard = ({
         />
       ) : (
         <Typography>
-          There are no {product.name} costs within this time frame for your
+          There are no {product.name} costs within this timeframe for your
           team's projects.
         </Typography>
       )}

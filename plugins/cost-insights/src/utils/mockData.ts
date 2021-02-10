@@ -36,7 +36,7 @@ import {
   getDefaultState as getDefaultLoadingState,
 } from '../utils/loading';
 import { findAlways } from '../utils/assert';
-import { inclusiveEndDateOf, inclusiveStartDateOf } from './duration';
+import { inclusiveStartDateOf } from './duration';
 
 type mockAlertRenderer<T> = (alert: T) => T;
 type mockEntityRenderer<T> = (entity: T) => T;
@@ -210,17 +210,17 @@ export const MockCostInsightsConfig: Partial<Config> = {
 //   };
 // }
 
-// TODO: ESTEBAN improve the function on the cost-insight-backend
 // export function changeOf(aggregation: DateAggregation[]): ChangeStatistic {
-//   const firstAmount = aggregation.length ? aggregation[0].amount : 0;
-//   const lastAmount = aggregation.length
-//     ? aggregation[aggregation.length - 1].amount
-//     : 0;
-//   const ratio =
-//     firstAmount !== 0 ? (lastAmount - firstAmount) / firstAmount : 0;
+//   const half = Math.ceil(aggregation.length / 2);
+//   const before = aggregation
+//     .slice(0, half)
+//     .reduce((sum, a) => sum + a.amount, 0);
+//   const after = aggregation
+//     .slice(half, aggregation.length)
+//     .reduce((sum, a) => sum + a.amount, 0);
 //   return {
-//     ratio: ratio,
-//     amount: lastAmount - firstAmount,
+//     ratio: (after - before) / before,
+//     amount: after - before,
 //   };
 // }
 
@@ -229,9 +229,8 @@ export function aggregationFor(
   baseline: number,
 ): DateAggregation[] {
   const { duration, endDate } = parseIntervals(intervals);
-  const inclusiveEndDate = inclusiveEndDateOf(duration, endDate);
   const days = dayjs(endDate).diff(
-    inclusiveStartDateOf(duration, inclusiveEndDate),
+    inclusiveStartDateOf(duration, endDate),
     'day',
   );
 
@@ -246,7 +245,7 @@ export function aggregationFor(
   return [...Array(days).keys()].reduce(
     (values: DateAggregation[], i: number): DateAggregation[] => {
       const last = values.length ? values[values.length - 1].amount : baseline;
-      const date = dayjs(inclusiveStartDateOf(duration, inclusiveEndDate))
+      const date = dayjs(inclusiveStartDateOf(duration, endDate))
         .add(i, 'day')
         .format(DEFAULT_DATE_FORMAT);
       const amount = Math.max(0, last + nextDelta());
@@ -531,7 +530,7 @@ export const SampleBigQueryInsights: Entity = {
   entities: {
     dataset: [
       {
-        id: 'dataset-a',
+        id: 'esteban',
         aggregation: [5_000, 10_000],
         change: {
           ratio: 1,
@@ -540,7 +539,7 @@ export const SampleBigQueryInsights: Entity = {
         entities: {},
       },
       {
-        id: 'dataset-b',
+        id: 'entity-b',
         aggregation: [5_000, 10_000],
         change: {
           ratio: 1,
@@ -549,7 +548,7 @@ export const SampleBigQueryInsights: Entity = {
         entities: {},
       },
       {
-        id: 'dataset-c',
+        id: 'entity-c',
         aggregation: [0, 10_000],
         change: {
           ratio: 10_000,
@@ -601,7 +600,7 @@ export const SampleCloudDataflowInsights: Entity = {
         },
       },
       {
-        id: 'pipeline-a',
+        id: 'entity-a',
         aggregation: [60_000, 70_000],
         change: {
           ratio: 0.16666666666666666,
@@ -640,7 +639,7 @@ export const SampleCloudDataflowInsights: Entity = {
         },
       },
       {
-        id: 'pipeline-b',
+        id: 'entity-b',
         aggregation: [12_000, 8_000],
         change: {
           ratio: -0.33333,
@@ -670,7 +669,7 @@ export const SampleCloudDataflowInsights: Entity = {
         },
       },
       {
-        id: 'pipeline-c',
+        id: 'entity-c',
         aggregation: [0, 10_000],
         change: {
           ratio: 10_000,
@@ -692,7 +691,7 @@ export const SampleCloudStorageInsights: Entity = {
   entities: {
     bucket: [
       {
-        id: 'bucket-a',
+        id: 'entity-a',
         aggregation: [15_000, 20_000],
         change: {
           ratio: 0.333,
@@ -731,7 +730,7 @@ export const SampleCloudStorageInsights: Entity = {
         },
       },
       {
-        id: 'bucket-b',
+        id: 'entity-b',
         aggregation: [30_000, 25_000],
         change: {
           ratio: -0.16666,
@@ -770,7 +769,7 @@ export const SampleCloudStorageInsights: Entity = {
         },
       },
       {
-        id: 'bucket-c',
+        id: 'entity-c',
         aggregation: [0, 0],
         change: {
           ratio: 0,
@@ -792,7 +791,7 @@ export const SampleComputeEngineInsights: Entity = {
   entities: {
     service: [
       {
-        id: 'service-a',
+        id: 'entity-a',
         aggregation: [20_000, 10_000],
         change: {
           ratio: -0.5,
@@ -851,7 +850,7 @@ export const SampleComputeEngineInsights: Entity = {
         },
       },
       {
-        id: 'service-b',
+        id: 'entity-b',
         aggregation: [10_000, 20_000],
         change: {
           ratio: 1,
@@ -910,7 +909,7 @@ export const SampleComputeEngineInsights: Entity = {
         },
       },
       {
-        id: 'service-c',
+        id: 'entity-c',
         aggregation: [0, 10_000],
         change: {
           ratio: 10_000,
@@ -932,7 +931,7 @@ export const SampleEventsInsights: Entity = {
   entities: {
     event: [
       {
-        id: 'event-a',
+        id: 'entity-a',
         aggregation: [15_000, 7_000],
         change: {
           ratio: -0.53333333333,
@@ -971,7 +970,7 @@ export const SampleEventsInsights: Entity = {
         },
       },
       {
-        id: 'event-b',
+        id: 'entity-b',
         aggregation: [5_000, 3_000],
         change: {
           ratio: -0.4,
@@ -1064,20 +1063,5 @@ export const getGroupedProducts = (intervals: string) => [
   {
     id: 'Cloud Bigtable',
     aggregation: aggregationFor(intervals, 250),
-  },
-];
-
-export const getGroupedProjects = (intervals: string) => [
-  {
-    id: 'project-a',
-    aggregation: aggregationFor(intervals, 1_700),
-  },
-  {
-    id: 'project-b',
-    aggregation: aggregationFor(intervals, 350),
-  },
-  {
-    id: 'project-c',
-    aggregation: aggregationFor(intervals, 1_300),
   },
 ];

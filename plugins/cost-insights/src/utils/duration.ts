@@ -24,21 +24,22 @@ export const DEFAULT_DURATION = Duration.P30D;
  * Derive the start date of a given period, assuming two repeating intervals.
  *
  * @param duration see comment on Duration enum
- * @param inclusiveEndDate from CostInsightsApi.getLastCompleteBillingDate
+ * @param exclusiveEndDate from CostInsightsApi.getLastCompleteBillingDate + 1 day
  */
 export function inclusiveStartDateOf(
   duration: Duration,
-  inclusiveEndDate: string,
+  exclusiveEndDate: string,
 ): string {
   switch (duration) {
-    case Duration.P7D:
     case Duration.P30D:
     case Duration.P90D:
-      return moment(inclusiveEndDate)
+      return moment(exclusiveEndDate)
+        .utc()
         .subtract(moment.duration(duration).add(moment.duration(duration)))
         .format(DEFAULT_DATE_FORMAT);
     case Duration.P3M:
-      return moment(inclusiveEndDate)
+      return moment(exclusiveEndDate)
+        .utc()
         .startOf('quarter')
         .subtract(moment.duration(duration).add(moment.duration(duration)))
         .format(DEFAULT_DATE_FORMAT);
@@ -52,12 +53,15 @@ export function exclusiveEndDateOf(
   inclusiveEndDate: string,
 ): string {
   switch (duration) {
-    case Duration.P7D:
     case Duration.P30D:
     case Duration.P90D:
-      return moment(inclusiveEndDate).add(1, 'day').format(DEFAULT_DATE_FORMAT);
+      return moment(inclusiveEndDate)
+        .utc()
+        .add(1, 'day')
+        .format(DEFAULT_DATE_FORMAT);
     case Duration.P3M:
       return moment(quarterEndDate(inclusiveEndDate))
+        .utc()
         .add(1, 'day')
         .format(DEFAULT_DATE_FORMAT);
     default:
@@ -70,24 +74,18 @@ export function inclusiveEndDateOf(
   inclusiveEndDate: string,
 ): string {
   return moment(exclusiveEndDateOf(duration, inclusiveEndDate))
+    .utc()
     .subtract(1, 'day')
     .format(DEFAULT_DATE_FORMAT);
 }
 
 // https://en.wikipedia.org/wiki/ISO_8601#Repeating_intervals
-export function intervalsOf(
-  duration: Duration,
-  inclusiveEndDate: string,
-  repeating: number = 2,
-) {
-  return `R${repeating}/${duration}/${exclusiveEndDateOf(
-    duration,
-    inclusiveEndDate,
-  )}`;
+export function intervalsOf(duration: Duration, inclusiveEndDate: string) {
+  return `R2/${duration}/${exclusiveEndDateOf(duration, inclusiveEndDate)}`;
 }
 
 export function quarterEndDate(inclusiveEndDate: string): string {
-  const endDate = moment(inclusiveEndDate);
+  const endDate = moment(inclusiveEndDate).utc();
   const endOfQuarter = endDate.endOf('quarter').format(DEFAULT_DATE_FORMAT);
   if (endOfQuarter === inclusiveEndDate) {
     return endDate.format(DEFAULT_DATE_FORMAT);

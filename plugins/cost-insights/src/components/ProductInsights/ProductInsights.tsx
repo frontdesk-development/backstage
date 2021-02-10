@@ -84,7 +84,12 @@ export const ProductInsights = ({
   // );
 
   useEffect(() => {
-    async function getAllProductInsights() {
+    async function getAllProductInsights(
+      group: string,
+      project: Maybe<string>,
+      products: Product[],
+      lastCompleteBillingDate: string,
+    ) {
       try {
         dispatchLoadingProducts(true);
         const responses = await Promise.allSettled(
@@ -98,10 +103,10 @@ export const ProductInsights = ({
           ),
         ).then(settledResponseOf);
 
-        const updatedInitialStates = initialStatesOf(products, responses).sort(
+        const initialStates = initialStatesOf(products, responses).sort(
           totalAggregationSort,
         );
-        setStates(updatedInitialStates);
+        setStates(initialStates);
       } catch (e) {
         setError(e);
       } finally {
@@ -109,7 +114,7 @@ export const ProductInsights = ({
       }
     }
 
-    getAllProductInsights();
+    getAllProductInsights(group, project, products, lastCompleteBillingDate);
   }, [
     client,
     group,
@@ -122,8 +127,8 @@ export const ProductInsights = ({
   useEffect(
     function handleOnLoaded() {
       if (onceRef.current) {
-        const initialProducts = initialStates.map(state => state.product);
-        onLoaded(initialProducts);
+        const products = initialStates.map(state => state.product);
+        onLoaded(products);
       } else {
         onceRef.current = true;
       }
