@@ -65,27 +65,40 @@ export function trendlineOf(aggregation: DateAggregation[]): Trendline {
 }
 
 export function changeOf(aggregation: DateAggregation[]): ChangeStatistic {
-  if (aggregation.length === 0) {
-    return {
-      ratio: 0,
-      amount: 0,
-    };
-  }
-  const sortedAggregation = aggregation.sort((a, b) =>
-    a.date > b.date ? 1 : -1,
-  );
-  // const half = Math.ceil(aggregation.length / 2);
-  const before = sortedAggregation[0].amount ?? 0;
-  // .slice(0, 1)
-  // .reduce((sum, a) => sum + a.amount, 0);
-  const after = sortedAggregation[aggregation.length - 1].amount ?? 0;
-  // .slice(aggregation.length, aggregation.length)
-  // .reduce((sum, a) => sum + a.amount, 0);
+  const firstAmount = aggregation.length ? aggregation[0].amount : 0;
+  const lastAmount = aggregation.length
+    ? aggregation[aggregation.length - 1].amount
+    : 0;
+  const ratio =
+    firstAmount !== 0 ? (lastAmount - firstAmount) / firstAmount : 0;
   return {
-    ratio: (after - before) / before,
-    amount: after - before,
+    ratio: ratio,
+    amount: lastAmount - firstAmount,
   };
 }
+
+// export function changeOf(aggregation: DateAggregation[]): ChangeStatistic {
+//   if (aggregation.length === 0) {
+//     return {
+//       ratio: 0,
+//       amount: 0,
+//     };
+//   }
+//   const sortedAggregation = aggregation.sort((a, b) =>
+//     a.date > b.date ? 1 : -1,
+//   );
+//   // const half = Math.ceil(aggregation.length / 2);
+//   const before = sortedAggregation[0].amount ?? 0;
+//   // .slice(0, 1)
+//   // .reduce((sum, a) => sum + a.amount, 0);
+//   const after = sortedAggregation[aggregation.length - 1].amount ?? 0;
+//   // .slice(aggregation.length, aggregation.length)
+//   // .reduce((sum, a) => sum + a.amount, 0);
+//   return {
+//     ratio: (after - before) / before,
+//     amount: after - before,
+//   };
+// }
 
 export class CostInsightsClient implements CostInsightsApi {
   memoizedProjects: any;
@@ -99,10 +112,6 @@ export class CostInsightsClient implements CostInsightsApi {
       async (token: string) => await this.getProjects(token),
       { maxAge: MAX_AGE, updateExpire: true },
     );
-  }
-
-  private request(_: any, res: any): Promise<any> {
-    return new Promise(resolve => setTimeout(resolve, 0, res));
   }
 
   getLastCompleteBillingDate(): Promise<string> {
@@ -150,8 +159,8 @@ export class CostInsightsClient implements CostInsightsApi {
     return whereClouse;
   }
 
-  async getUserGroups(userId: string): Promise<Group[]> {
-    const groups: Group[] = await this.request({ userId }, [{ id: 'trivago' }]);
+  async getUserGroups(_userId: string): Promise<Group[]> {
+    const groups: Group[] = [{ id: 'trivago' }];
 
     return groups;
   }
@@ -269,20 +278,22 @@ export class CostInsightsClient implements CostInsightsApi {
       whereStatement,
     );
 
-    const groupDailyCost: Cost = await this.request(
-      { group: 'trivago', intervals },
-      {
-        aggregation: aggregation,
-        change: changeOf(aggregation),
-        trendline: trendlineOf(aggregation),
-        // Optional field on Cost which needs to be supplied in order to see
-        // the product breakdown view in the top panel.
-        groupedCosts: {
-          product: await this.getGroupedProducts(intervals,undefined, whereStatement),
-          project: await this.getGroupedProjects(intervals, whereStatement),
-        },
+    const groupDailyCost: Cost = {
+      id: 'trivago',
+      aggregation: aggregation,
+      change: changeOf(aggregation),
+      trendline: trendlineOf(aggregation),
+      // Optional field on Cost which needs to be supplied in order to see
+      // the product breakdown view in the top panel.
+      groupedCosts: {
+        product: await this.getGroupedProducts(
+          intervals,
+          undefined,
+          whereStatement,
+        ),
+        project: await this.getGroupedProjects(intervals, whereStatement),
       },
-    );
+    };
 
     return groupDailyCost;
   }
@@ -329,15 +340,18 @@ export class CostInsightsClient implements CostInsightsApi {
     return arr;
   };
 
-  parseIntervals(intervals: string): { startDate: string; endDate: string } {
+  public parseIntervals(
+    intervals: string,
+  ): { startDate: string; endDate: string } {
     const splitInterval = intervals.split('/');
 
-    const endDate = splitInterval[2];
+    let endDate = splitInterval[2];
     const endDateSplit = endDate.split('-');
+
     let newYear = +endDateSplit[0];
 
     let month = +endDateSplit[1];
-    const day = +endDateSplit[2];
+    let day = +endDateSplit[2];
     if (splitInterval[0] === 'R2') {
       if (splitInterval[1] === 'P90D') {
         month = month - 6;
@@ -362,10 +376,12 @@ export class CostInsightsClient implements CostInsightsApi {
     if (month < 10) {
       startMonth = `0${month}`;
     }
+    day = day - 1;
     if (day < 10) {
       startDay = `0${day}`;
     }
 
+    endDate = `${endDateSplit[0]}-${endDateSplit[1]}-${day}`;
     startDate = `${newYear}-${startMonth}-${startDay}`;
 
     return { startDate, endDate };
@@ -374,7 +390,7 @@ export class CostInsightsClient implements CostInsightsApi {
   async getProjectsCosts(
     intervals: string,
     whereStatement: string | undefined,
-  ): Promise<{amount: number; date: string; projectName: string}[]> {
+  ): Promise<{ amount: number; date: string; projectName: string }[]> {
     const { endDate, startDate } = this.parseIntervals(intervals);
 
     const arr = this.getEmptyAmountProjectArray(
@@ -408,9 +424,14 @@ export class CostInsightsClient implements CostInsightsApi {
 
     groupedCosts.push(...arr);
 
-    return groupedCosts;
+    groupedCosts.forEach(function (costs) {
+      if (costs.projectName === null) {
+        costs.projectName = 'base-costs';
+      }
+    });
 
-  };
+    return groupedCosts;
+  }
   async getComponent(
     intervals: string,
     projectName: string | undefined,
@@ -486,7 +507,7 @@ export class CostInsightsClient implements CostInsightsApi {
     }
 
     return allGroupedProjects;
-  };
+  }
 
   async getGroupedProducts(
     intervals: string,
@@ -538,20 +559,21 @@ export class CostInsightsClient implements CostInsightsApi {
         date: string;
       }[] = await this.queryBigQuery(intervals, project, whereStatement);
 
-      const projectDailyCost: Cost = await this.request(
-        { project, intervals },
-        {
-          id: project,
-          aggregation: aggregation,
-          change: changeOf(aggregation),
-          trendline: trendlineOf(aggregation),
-          // Optional field on Cost which needs to be supplied in order to see
-          // the product breakdown view in the top panel.
-          groupedCosts: {
-            product: await this.getGroupedProducts(intervals,undefined, whereStatement),
-          },
+      const projectDailyCost: Cost = {
+        id: project,
+        aggregation: aggregation,
+        change: changeOf(aggregation),
+        trendline: trendlineOf(aggregation),
+        // Optional field on Cost which needs to be supplied in order to see
+        // the product breakdown view in the top panel.
+        groupedCosts: {
+          product: await this.getGroupedProducts(
+            intervals,
+            undefined,
+            whereStatement,
+          ),
         },
-      );
+      };
 
       return projectDailyCost;
     }
@@ -571,40 +593,24 @@ export class CostInsightsClient implements CostInsightsApi {
     intervals: string,
   ): Promise<MetricData> {
     const aggregation: { amount: number; date: string }[] = [];
-    const cost: MetricData = await this.request(
-      { metric, intervals },
-      {
-        format: 'number',
-        aggregation: aggregation,
-        change: changeOf(aggregation),
-        trendline: trendlineOf(aggregation),
-      },
-    );
+    const cost: MetricData = {
+      id: `${metric}-${intervals}`,
+      format: 'number',
+      aggregation: aggregation,
+      change: changeOf(aggregation),
+    };
 
     return cost;
   }
 
-  async getProductInsights(options2: ProductInsightsOptions): Promise<Entity> {
-    const productInsights: Entity = await this.request(
-      options2,
-      this.entityOf(options2.product),
-    );
-
-    return productInsights;
+  async getProductInsights(_options2: ProductInsightsOptions): Promise<Entity> {
+    return this.SampleComputeEngineInsights;
   }
 
   entityOf(product: string): Entity {
     switch (product) {
       case 'computeEngine':
         return this.SampleComputeEngineInsights;
-      // case 'cloudDataflow':
-      //   return SampleCloudDataflowInsights;
-      // case 'cloudStorage':
-      //   return SampleCloudStorageInsights;
-      // case 'bigQuery':
-      //   return SampleBigQueryInsights;
-      // case 'events':
-      //   return SampleEventsInsights;
       default:
         throw new Error(
           `Cannot get insights for ${product}. Make sure product matches product property in app-info.yaml`,
@@ -752,7 +758,7 @@ export class CostInsightsClient implements CostInsightsApi {
     },
   };
 
-  async getAlerts(group: string): Promise<Alert[]> {
+  async getAlerts(_group: string): Promise<Alert[]> {
     // const projectGrowthData: ProjectGrowthData = {
     //   project: 'example-project',
     //   periodStart: '2020-Q2',
@@ -788,10 +794,10 @@ export class CostInsightsClient implements CostInsightsApi {
     //   ],
     // };
 
-    const alerts: Alert[] = await this.request({ group }, [
+    const alerts: Alert[] = [
       // new ProjectGrowthAlert(projectGrowthData),
       // new UnlabeledDataflowAlert(unlabeledDataflowData),
-    ]);
+    ];
 
     return alerts;
   }

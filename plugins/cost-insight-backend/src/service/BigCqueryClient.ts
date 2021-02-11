@@ -59,12 +59,13 @@ export class BigQueryClass {
   ): { startDate: string; endDate: string } {
     const splitInterval = intervals.split('/');
 
-    const endDate = splitInterval[2];
+    let endDate = splitInterval[2];
     const endDateSplit = endDate.split('-');
+
     let newYear = +endDateSplit[0];
 
     let month = +endDateSplit[1];
-    const day = +endDateSplit[2];
+    let day = +endDateSplit[2];
     if (splitInterval[0] === 'R2') {
       if (splitInterval[1] === 'P90D') {
         month = month - 6;
@@ -89,10 +90,12 @@ export class BigQueryClass {
     if (month < 10) {
       startMonth = `0${month}`;
     }
+    day = day - 1;
     if (day < 10) {
       startDay = `0${day}`;
     }
 
+    endDate = `${endDateSplit[0]}-${endDateSplit[1]}-${day}`;
     startDate = `${newYear}-${startMonth}-${startDay}`;
 
     return { startDate, endDate };
@@ -178,7 +181,7 @@ export class BigQueryClass {
   ): Promise<{ amount: number; date: string; projectName: string }[]> {
     const { endDate, startDate } = this.parseIntervals(intervals);
 
-    let query = `SELECT
+    const query = `SELECT
       day as date
       ,SUM(total) as amount
       ,project_name as projectName
@@ -189,8 +192,8 @@ export class BigQueryClass {
       GROUP BY projectName, date
       ORDER BY projectName, date`;
 
-      return await this.memoizedProjectsQuery(query);
-  };
+    return await this.memoizedProjectsQuery(query);
+  }
   public async getComponent(
     intervals: string,
     projectName?: string,
@@ -226,7 +229,9 @@ export class BigQueryClass {
     return await this.memoizedQuery(query);
   }
 
-  public async runProjectsQuery(query: string): Promise<{amount: number; date: string; projectName: string }[]> {
+  public async runProjectsQuery(
+    query: string,
+  ): Promise<{ amount: number; date: string; projectName: string }[]> {
     const client = this.client;
     const options = {
       query: query,
@@ -250,7 +255,7 @@ export class BigQueryClass {
     }));
 
     return aggregation;
-  };
+  }
   public async runQuery(
     query: string,
   ): Promise<{ amount: number; date: string; description: string }[]> {
