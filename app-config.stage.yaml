@@ -121,7 +121,16 @@ auth:
 
 catalog:
   rules:
-    - allow: [Component, API, Group, User, Template, Location]
+    - allow:
+        - Component
+        - API
+        - Resource
+        - Group
+        - User
+        - Template
+        - System
+        - Domain
+        - Location
   locations:
     # Backstage Example Templates
     - type: url
@@ -142,8 +151,8 @@ catalog:
 integrations:
   github:
     - host: github.com
-      token:
-        $env: GITHUB_TOKEN
+      apps:
+        - $include: '/etc/trv-shared-admin/frontdesk-stage.yaml'
   githubOrg:
     - host: https://github.com
       token:
@@ -199,3 +208,6 @@ homepage:
       timezone: 'Europe/Stockholm'
     - label: TYO
       timezone: 'Asia/Tokyo'
+
+pagerduty:
+  eventsBaseUrl: 'https://events.pagerduty.com/v2'
