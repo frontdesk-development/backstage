@@ -123,8 +123,8 @@ export const Project: FC<{}> = () => {
     metadata.subnetsTf = subnetsTfRenderPlayground(metadata);
   }
 
-  const info = (metadata: Metadata) => {
-    const partialMetadata: Partial<Metadata> = {};
+  const info = (partialMetadata: Partial<Metadata>) => {
+    // const partialMetadata: Partial<Metadata> = {};
     partialMetadata.userEmail = metadata.userEmail;
     partialMetadata.pillar = metadata.pillar;
     partialMetadata.teamName = metadata.teamName;
@@ -208,10 +208,10 @@ export const Project: FC<{}> = () => {
     },
   ];
 
-  const onSubmit = async (metadata: Metadata) => {
+  const onSubmit = async (submitMetadata: Metadata) => {
     try {
       setModalOpen(true);
-      setPrLink(await api.createPr(metadata));
+      setPrLink(await api.createPr(submitMetadata));
     } catch (e) {
       errorApi.post(e);
     }
@@ -403,7 +403,7 @@ export const Project: FC<{}> = () => {
 
 const labels = (
   <>
-    <HeaderLabel label="Owner" value="Spotify" />
+    <HeaderLabel label="Owner" value="trivago" />
     <HeaderLabel label="Lifecycle" value="Production" />
   </>
 );

@@ -60,7 +60,7 @@ export const GraphiQLPage = () => {
   return (
     <Page themeId="tool">
       <Header title="GraphiQL">
-        <HeaderLabel label="Owner" value="Spotify" />
+        <HeaderLabel label="Owner" value="trivago" />
         <HeaderLabel label="Lifecycle" value="Alpha" />
       </Header>
       {content}

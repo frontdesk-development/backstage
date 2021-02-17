@@ -97,7 +97,7 @@ const AuditList = () => {
         title="Lighthouse"
         subtitle="Website audits powered by Lighthouse"
       >
-        <HeaderLabel label="Owner" value="Spotify" />
+        <HeaderLabel label="Owner" value="trivago" />
         <HeaderLabel label="Lifecycle" value="Alpha" />
       </Header>
       <Content>

@@ -55,7 +55,7 @@ const LongText = ({ text, max }: { text: string; max: number }) => {
 
 const labels = (
   <>
-    <HeaderLabel label="Owner" value="Spotify" />
+    <HeaderLabel label="Owner" value="trivago" />
     <HeaderLabel label="Lifecycle" value="Production" />
   </>
 );
