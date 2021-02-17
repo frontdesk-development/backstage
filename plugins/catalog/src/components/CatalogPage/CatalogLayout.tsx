@@ -40,7 +40,7 @@ const CatalogLayout = ({ children }: Props) => {
       <Header
         title={`${greeting.greeting}, ${profile.displayName || userId}!`}
         subtitle={`${orgName || 'Backstage'} Service Catalog`}
-        tooltip={greeting.language}
+        // tooltip={greeting.language}
         pageTitleOverride="Home"
       >
         <HomepageTimer />

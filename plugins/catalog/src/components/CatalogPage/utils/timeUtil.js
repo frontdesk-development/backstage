@@ -38,7 +38,8 @@ export function getTimeBasedGreeting() {
     return goodEvening;
   };
   const greetings = timeOfDay(currentHour);
-  const greetingsKey = random(Object.keys(greetings));
+  // const greetingsKey = random(Object.keys(greetings));
+  const greetingsKey = 'English';
   return {
     language: greetingsKey,
     greeting: greetings[greetingsKey],
