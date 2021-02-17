@@ -49,7 +49,6 @@ describe('GitHubPreparer', () => {
         'https://github.com/benjdlambert/backstage-graphql-template/blob/master/templates/graphql-starter/template',
       logger,
       workspacePath,
-      token: '',
     });
 
     expect(mockGitClient.clone).toHaveBeenCalledWith({
@@ -70,7 +69,6 @@ describe('GitHubPreparer', () => {
         'https://github.com/benjdlambert/backstage-graphql-template/blob/master',
       logger,
       workspacePath,
-      token: '',
     });
 
     expect(mockGitClient.clone).toHaveBeenCalledWith({
@@ -88,13 +86,12 @@ describe('GitHubPreparer', () => {
         'https://github.com/benjdlambert/backstage-graphql-template/blob/master',
       logger,
       workspacePath,
-      token: '',
     });
 
     expect(Git.fromAuth).toHaveBeenCalledWith({
       logger,
-      username: 'fake-token',
-      password: 'x-oauth-basic',
+      username: 'x-access-token',
+      password: 'fake-token',
     });
   });
 });

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import React from 'react';
-import { MenuItem, Select, FormControl, InputLabel } from '@material-ui/core';
+import { MenuItem, Select } from '@material-ui/core';
 import { Maybe, Project } from '../../types';
 import { useSelectStyles as useStyles } from '../../utils/styles';
 
@@ -49,28 +49,24 @@ export const ProjectSelect = ({
   };
 
   return (
-    <FormControl variant="outlined">
-      <InputLabel shrink>Project Name:</InputLabel>
-      <Select
-        className={classes.select}
-        variant="outlined"
-        labelWidth={100}
-        value={project || 'all'}
-        renderValue={renderValue}
-        onChange={handleOnChange}
-        data-testid="project-filter-select"
-      >
-        {[{ id: 'all' }, ...projectOptions].map(proj => (
-          <MenuItem
-            className={`${classes.menuItem} compact`}
-            key={proj.id}
-            value={proj.id}
-            data-testid={`option-${proj.id}`}
-          >
-            {proj.id === 'all' ? 'All Projects' : proj.id}
-          </MenuItem>
-        ))}
-      </Select>
-    </FormControl>
+    <Select
+      className={classes.select}
+      variant="outlined"
+      value={project || 'all'}
+      renderValue={renderValue}
+      onChange={handleOnChange}
+      data-testid="project-filter-select"
+    >
+      {[{ id: 'all' }, ...projectOptions].map(proj => (
+        <MenuItem
+          className={`${classes.menuItem} compact`}
+          key={proj.id}
+          value={proj.id}
+          data-testid={`option-${proj.id}`}
+        >
+          {proj.id === 'all' ? 'All Projects' : proj.id}
+        </MenuItem>
+      ))}
+    </Select>
   );
 };

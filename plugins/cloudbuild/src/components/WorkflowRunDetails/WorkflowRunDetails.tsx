@@ -97,19 +97,19 @@ export const WorkflowRunDetails = ({ entity }: { entity: Entity }) => {
               <TableCell>
                 <Typography noWrap>Branch</Typography>
               </TableCell>
-              <TableCell>{details.value?.substitutions?.BRANCH_NAME || ''}</TableCell>
+              <TableCell>{details.value?.substitutions.BRANCH_NAME}</TableCell>
             </TableRow>
             <TableRow>
               <TableCell>
                 <Typography noWrap>Message</Typography>
               </TableCell>
-              <TableCell>{details.value?.substitutions?.REPO_NAME || ''}</TableCell>
+              <TableCell>{details.value?.substitutions.REPO_NAME}</TableCell>
             </TableRow>
             <TableRow>
               <TableCell>
                 <Typography noWrap>Commit ID</Typography>
               </TableCell>
-              <TableCell>{details.value?.substitutions?.COMMIT_SHA || ''}</TableCell>
+              <TableCell>{details.value?.substitutions.COMMIT_SHA}</TableCell>
             </TableRow>
             <TableRow>
               <TableCell>

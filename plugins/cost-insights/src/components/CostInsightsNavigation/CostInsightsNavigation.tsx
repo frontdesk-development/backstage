@@ -14,24 +14,25 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useState } from 'react';
-import {
-  Collapse,
-  MenuList,
-  MenuItem,
-  ListItemIcon,
-  ListItemText,
-  Typography,
-  Badge,
-} from '@material-ui/core';
-import { useNavigationStyles as useStyles } from '../../utils/styles';
-import { useConfig, useScroll } from '../../hooks';
-import { findAlways } from '../../utils/assert';
-import {
-  DefaultNavigation,
-  NavigationItem,
-  getDefaultNavigationItems,
-} from '../../utils/navigation';
+import React from 'react';
+// import React, { useEffect, useState } from 'react';
+// import {
+//   Collapse,
+//   MenuList,
+//   MenuItem,
+//   ListItemIcon,
+//   ListItemText,
+//   Typography,
+//   Badge,
+// } from '@material-ui/core';
+// import { useNavigationStyles as useStyles } from '../../utils/styles';
+// import { useConfig, useScroll } from '../../hooks';
+// import { findAlways } from '../../utils/assert';
+// import {
+//   DefaultNavigation,
+//   NavigationItem,
+//   getDefaultNavigationItems,
+// } from '../../utils/navigation';
 import { Maybe, Product } from '../../types';
 
 type CostInsightsNavigationProps = {
@@ -39,51 +40,55 @@ type CostInsightsNavigationProps = {
   products: Maybe<Product[]>;
 };
 
-const NavigationMenuItem = ({ navigation, icon, title }: NavigationItem) => {
-  const classes = useStyles();
-  const [, setScroll] = useScroll();
-  return (
-    <MenuItem
-      button
-      data-testid={`menu-item-${navigation}`}
-      className={classes.menuItem}
-      onClick={() => setScroll(navigation)}
-    >
-      <ListItemIcon className={classes.listItemIcon}>{icon}</ListItemIcon>
-      <ListItemText
-        primary={<Typography className={classes.title}>{title}</Typography>}
-      />
-    </MenuItem>
-  );
-};
+// const NavigationMenuItem = ({ navigation, icon, title }: NavigationItem) => {
+//   const classes = useStyles();
+//   const [, setScroll] = useScroll();
+//   return (
+//     <MenuItem
+//       button
+//       data-testid={`menu-item-${navigation}`}
+//       className={classes.menuItem}
+//       onClick={() => setScroll(navigation)}
+//     >
+//       <ListItemIcon className={classes.listItemIcon}>{icon}</ListItemIcon>
+//       <ListItemText
+//         primary={<Typography className={classes.title}>{title}</Typography>}
+//       />
+//     </MenuItem>
+//   );
+// };
 
 export const CostInsightsNavigation = React.memo(
   ({ alerts, products }: CostInsightsNavigationProps) => {
-    const classes = useStyles();
-    const { icons } = useConfig();
-    const [isOpen, setOpen] = useState(false);
+    if (alerts === products?.length) {
+      return <></>;
+    }
+    // const classes = useStyles();
+    // const { icons } = useConfig();
+    // const [isOpen, setOpen] = useState(false);
 
-    const defaultNavigationItems = getDefaultNavigationItems(alerts);
-    const productNavigationItems: NavigationItem[] =
-      products?.map(product => ({
-        title: product.name,
-        navigation: product.kind,
-        icon: findAlways(icons, i => i.kind === product.kind).component,
-      })) ?? [];
+    // const defaultNavigationItems = getDefaultNavigationItems(alerts);
+    // const productNavigationItems: NavigationItem[] =
+    //   products?.map(product => ({
+    //     title: product.name,
+    //     navigation: product.kind,
+    //     icon: findAlways(icons, i => i.kind === product.kind).component,
+    //   })) ?? [];
 
-    useEffect(
-      function toggleProductMenuItems() {
-        if (products?.length) {
-          setOpen(true);
-        } else {
-          setOpen(false);
-        }
-      },
-      [products],
-    );
+    // useEffect(
+    //   function toggleProductMenuItems() {
+    //     if (products?.length) {
+    //       setOpen(true);
+    //     } else {
+    //       setOpen(false);
+    //     }
+    //   },
+    //   [products],
+    // );
 
     return (
-      <MenuList className={classes.menuList}>
+      <>
+        {/* <MenuList className={classes.menuList}>
         {defaultNavigationItems.map(item => (
           <NavigationMenuItem
             key={`navigation-menu-item-${item.navigation}`}
@@ -116,7 +121,8 @@ export const CostInsightsNavigation = React.memo(
             />
           ))}
         </Collapse>
-      </MenuList>
+      </MenuList> */}
+      </>
     );
   },
 );

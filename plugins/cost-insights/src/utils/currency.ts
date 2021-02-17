@@ -60,11 +60,4 @@ export const defaultCurrencies: Currency[] = [
     unit: 'ice cream pint',
     rate: 5.5,
   },
-  {
-    kind: CurrencyType.EURO,
-    label: 'Euro €',
-    unit: 'euro',
-    prefix: '€',
-    rate: 1,
-  },
 ];

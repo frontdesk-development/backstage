@@ -18,11 +18,12 @@ import { fireEvent } from '@testing-library/react';
 import { renderInTestApp } from '@backstage/test-utils';
 import { CostOverviewCard } from './CostOverviewCard';
 import { Cost } from '../../types';
-import { changeOf, trendlineOf } from '../../api/CostInsightsClient'
 import {
+  changeOf,
   getGroupedProducts,
   getGroupedProjects,
   MockAggregatedDailyCosts,
+  trendlineOf,
 } from '../../utils/mockData';
 import {
   MockBillingDateProvider,

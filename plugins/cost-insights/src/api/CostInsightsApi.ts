@@ -75,7 +75,7 @@ export type CostInsightsApi = {
    *
    * @param group The group id from getUserGroups or query parameters
    */
-  getGroupProjects(projectId?: string): Promise<Project[]>;
+  getGroupProjects(group: string): Promise<Project[]>;
 
   /**
    * Get a list of Tier labels that belong to this group.
@@ -101,8 +101,9 @@ export type CostInsightsApi = {
    * Get a list of Team labels that belong to this group.
    */
   getTeamLabels(group: Maybe<string>): Promise<Label[]>;
+
   /**
-   * Get daily cost aggregations for a given group and interval timeframe.
+   * Get daily cost aggregations for a given group and interval time frame.
    *
    * The return type includes an array of daily cost aggregations as well as statistics about the
    * change in cost over the intervals. Calculating these statistics requires us to bucket costs

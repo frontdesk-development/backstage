@@ -16,13 +16,8 @@
 export interface Config {
   costInsights?: {
     gcpConfig?: {
-      type: string;
       projectId: string;
-      privateKeyId: string;
-      privateKey: string;
-      clientEmail: string;
-      clientId: string;
-      clientX509CertUrl: string;
+      keyFilename: string;
       billingTable: string;
     };
   };

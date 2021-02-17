@@ -18,8 +18,6 @@ import { CloudbuildApi } from './CloudbuildApi';
 import {
   ActionsListWorkflowRunsForRepoResponseData,
   ActionsGetWorkflowResponseData,
-  BuildTriggerList,
-  BuildTrigger,
 } from '../api/types';
 import { OAuthApi } from '@backstage/core';
 
@@ -47,15 +45,13 @@ export class CloudbuildClient implements CloudbuildApi {
   }
   async listWorkflowRuns({
     projectId,
-    triggerName,
   }: {
     projectId: string;
-    triggerName?: string;
   }): Promise<ActionsListWorkflowRunsForRepoResponseData> {
-    const triggerIds = await fetch(
+    const workflowRuns = await fetch(
       `https://cloudbuild.googleapis.com/v1/projects/${encodeURIComponent(
         projectId,
-      )}/triggers`,
+      )}/builds`,
       {
         headers: new Headers({
           Accept: '*/*',
@@ -64,67 +60,7 @@ export class CloudbuildClient implements CloudbuildApi {
       },
     );
 
-    const triggers: BuildTriggerList = await triggerIds.json();
-
-    const mapsTrigger: Map<string, BuildTrigger> = new Map();
-
-    for (const trigger of triggers.triggers) {
-      mapsTrigger.set(trigger.id, trigger);
-    }
-
-    let triggerId: string = '';
-    if (triggerName) {
-      triggers.triggers.forEach(trigger => {
-        if (trigger.name === triggerName) {
-          triggerId = trigger.id;
-        }
-      });
-    }
-
-    let workflowRuns: Response;
-    if (triggerId !== '') {
-      workflowRuns = await fetch(
-        `https://cloudbuild.googleapis.com/v1/projects/${encodeURIComponent(
-          projectId,
-        )}/builds?filter=(trigger_id=\"${encodeURIComponent(triggerId)}\")`,
-        {
-          headers: new Headers({
-            Accept: '*/*',
-            Authorization: `Bearer ${await this.getToken()}`,
-          }),
-        },
-      );
-    } else {
-      workflowRuns = await fetch(
-        `https://cloudbuild.googleapis.com/v1/projects/${encodeURIComponent(
-          projectId,
-        )}/builds`,
-        {
-          headers: new Headers({
-            Accept: '*/*',
-            Authorization: `Bearer ${await this.getToken()}`,
-          }),
-        },
-      );
-    }
-
     const builds: ActionsListWorkflowRunsForRepoResponseData = await workflowRuns.json();
-
-    builds.builds.forEach(build => {
-      const triggerInfo = mapsTrigger.get(build.buildTriggerId) || {
-        id: '',
-        createTime: '',
-        description: '',
-        filename: '',
-        github: {
-          name: '-',
-          owner: '-',
-          pullRequest: { branch: '', commentControl: '' },
-        },
-        name: '-',
-      };
-      build.buildTriggerInfo = triggerInfo;
-    });
 
     return builds;
   }

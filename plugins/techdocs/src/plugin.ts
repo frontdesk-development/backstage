@@ -34,7 +34,6 @@ import {
   createRouteRef,
   createApiFactory,
   configApiRef,
-  githubAuthApiRef,
   discoveryApiRef,
   createRoutableExtension,
 } from '@backstage/core';
@@ -65,12 +64,11 @@ export const techdocsPlugin = createPlugin({
   apis: [
     createApiFactory({
       api: techdocsStorageApiRef,
-      deps: { configApi: configApiRef, discoveryApi: discoveryApiRef, githubAuthApi: githubAuthApiRef },
-      factory: ({ configApi, discoveryApi, githubAuthApi }) =>
+      deps: { configApi: configApiRef, discoveryApi: discoveryApiRef },
+      factory: ({ configApi, discoveryApi }) =>
         new TechDocsStorageApi({
           configApi,
           discoveryApi,
-          githubAuthApi,
         }),
     }),
     createApiFactory({

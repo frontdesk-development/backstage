@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-import path from 'path';
-import { Logger } from 'winston';
-import { PassThrough } from 'stream';
 import { Config } from '@backstage/config';
-
-import { GeneratorBase, GeneratorRunOptions } from './types';
+import path from 'path';
+import { PassThrough } from 'stream';
+import { Logger } from 'winston';
 import {
-  runDockerContainer,
-  runCommand,
+  addBuildTimestampMetadata,
   patchMkdocsYmlPreBuild,
+  runCommand,
+  runDockerContainer,
 } from './helpers';
+import { GeneratorBase, GeneratorRunOptions } from './types';
 
 type TechdocsGeneratorOptions = {
   // This option enables users to configure if they want to use TechDocs container
@@ -90,17 +90,6 @@ export class TechdocsGenerator implements GeneratorBase {
           this.logger.info(
             `Successfully generated docs from ${inputDir} into ${outputDir} using local mkdocs`,
           );
-          await runCommand({
-            command: 'rm',
-            args: ['-rf', `${outputDir}/backstage-repo`],
-            options: {
-              cwd: outputDir,
-            },
-            logStream,
-          });
-          this.logger.info(
-            `Removed ${outputDir}/backstage-repo from result folder`,
-          );
           break;
         case 'docker':
           await runDockerContainer({
@@ -124,10 +113,18 @@ export class TechdocsGenerator implements GeneratorBase {
       this.logger.debug(
         `Failed to generate docs from ${inputDir} into ${outputDir}`,
       );
-      this.logger.warn(`[TechDocs]: Build failed with error: ${log}`);
+      this.logger.debug(`Build failed with error: ${log}`);
       throw new Error(
         `Failed to generate docs from ${inputDir} into ${outputDir} with error ${error.message}`,
       );
     }
+
+    // Post Generate steps
+
+    // Add build timestamp to techdocs_metadata.json
+    addBuildTimestampMetadata(
+      path.join(outputDir, 'techdocs_metadata.json'),
+      this.logger,
+    );
   }
 }

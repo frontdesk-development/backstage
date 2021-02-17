@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import { UrlPatternDiscovery } from '../../DiscoveryApi';
-import MockOAuthApi from '../..//OAuthRequestApi/MockOAuthApi';
 import GithubAuth from './GithubAuth';
 
 describe('GithubAuth', () => {
@@ -23,10 +21,7 @@ describe('GithubAuth', () => {
     const getSession = jest
       .fn()
       .mockResolvedValue({ providerInfo: { accessToken: 'access-token' } });
-    const githubAuth = GithubAuth.create({
-      oauthRequestApi: new MockOAuthApi(),
-      discoveryApi: UrlPatternDiscovery.compile('http://example.com'),
-    });
+    const githubAuth = new GithubAuth({ getSession } as any);
 
     expect(await githubAuth.getAccessToken()).toBe('access-token');
     expect(getSession).toBeCalledTimes(1);

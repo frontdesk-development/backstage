@@ -13,23 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Logger } from 'winston';
-import Router from 'express-promise-router';
-import express from 'express';
-import Knex from 'knex';
-import fetch from 'cross-fetch';
-import { Config } from '@backstage/config';
-import Docker from 'dockerode';
-import {
-  GeneratorBuilder,
-  PreparerBuilder,
-  PublisherBase,
-  getLocationForEntity,
-} from '@backstage/techdocs-common';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { Entity } from '@backstage/catalog-model';
-import { getEntityNameFromUrlPath } from './helpers';
+import { Config } from '@backstage/config';
+import {
+  GeneratorBuilder,
+  getLocationForEntity,
+  PreparerBuilder,
+  PublisherBase,
+} from '@backstage/techdocs-common';
+import fetch from 'cross-fetch';
+import Docker from 'dockerode';
+import express from 'express';
+import Router from 'express-promise-router';
+import Knex from 'knex';
+import { Logger } from 'winston';
 import { DocsBuilder } from '../DocsBuilder';
+import { getEntityNameFromUrlPath } from './helpers';
 
 type RouterOptions = {
   preparers: PreparerBuilder;
@@ -106,12 +106,6 @@ export async function createRouter({
       config.getOptionalString('techdocs.storageUrl') ??
       `${await discovery.getBaseUrl('techdocs')}/static/docs`;
 
-    if (typeof req.headers.authorization === 'undefined') {
-      return res.redirect(`${storageUrl}${req.path.replace('/docs', '')}`);
-    }
-
-    const token = req.headers.authorization || '';
-
     const catalogUrl = await discovery.getBaseUrl('catalog');
     const triple = [kind, namespace, name].map(encodeURIComponent).join('/');
 
@@ -120,7 +114,7 @@ export async function createRouter({
       const catalogResText = await catalogRes.text();
       res.status(catalogRes.status);
       res.send(catalogResText);
-      return res.send(catalogResText);
+      return;
     }
 
     const entity: Entity = await catalogRes.json();
@@ -147,14 +141,10 @@ export async function createRouter({
         dockerClient,
         logger,
         entity,
-        config,
-        token,
       });
       switch (publisherType) {
         case 'local':
-          if (!(await docsBuilder.docsUpToDate(token))) {
-            await docsBuilder.build(token);
-          }
+          await docsBuilder.build();
           break;
         case 'awsS3':
         case 'azureBlobStorage':
@@ -165,7 +155,7 @@ export async function createRouter({
             logger.info(
               'No pre-generated documentation files found for the entity in the storage. Building docs...',
             );
-            await docsBuilder.build(token);
+            await docsBuilder.build();
             // With a maximum of ~5 seconds wait, check if the files got published and if docs will be fetched
             // on the user's page. If not, respond with a message asking them to check back later.
             // The delay here is to make sure GCS/AWS/etc. registers newly uploaded files which is usually <1 second
@@ -193,16 +183,18 @@ export async function createRouter({
               'Found pre-generated docs for this entity. Serving them.',
             );
             // TODO: re-trigger build for cache invalidation.
-            // Compare the date modified of the requested file on storage and compare it against
-            // the last modified or last commit timestamp in the repository.
+            // Add build info in techdocs_metadata.json and compare it against
+            // the etag/commit in the repository.
             // Without this, docs will not be re-built once they have been generated.
+            // Although it is unconventional that anyone will face this issue - because
+            // if you have an external storage, you should be using CI/CD to build and publish docs.
           }
           break;
         default:
       }
     }
 
-    return res.redirect(`${storageUrl}${req.path.replace('/docs', '')}`);
+    res.redirect(`${storageUrl}${req.path.replace('/docs', '')}`);
   });
 
   // Route middleware which serves files from the storage set in the publisher.

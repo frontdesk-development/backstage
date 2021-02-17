@@ -22,7 +22,6 @@ import { Logger } from 'winston';
 // To share data, but also thinking that we can pass in functions here too
 // To maybe create sub steps or fail the entire thing, or skip stages down the line.
 export type StageContext<T = {}> = {
-  token: string;
   values: TemplaterValues;
   entity: TemplateEntityV1alpha1;
   logger: Logger;
@@ -50,7 +49,6 @@ export type Job = {
   status: ProcessorStatus;
   stages: StageResult[];
   error?: Error;
-  token: string;
 };
 
 export type Processor = {

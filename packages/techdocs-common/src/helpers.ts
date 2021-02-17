@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-import os from 'os';
-import path from 'path';
-import parseGitUrl from 'git-url-parse';
-import fs from 'fs-extra';
-import { InputError, UrlReader, Git } from '@backstage/backend-common';
+import { Git, InputError, UrlReader } from '@backstage/backend-common';
 import { Entity } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
-import { getDefaultBranch } from './default-branch';
-import { getGitRepoType } from './git-auth';
-import { RemoteProtocol } from './stages/prepare/types';
+import fs from 'fs-extra';
+import parseGitUrl from 'git-url-parse';
+import os from 'os';
+import path from 'path';
 import { Logger } from 'winston';
+import { getDefaultBranch } from './default-branch';
+import { getGitRepoType, getTokenForGitRepo } from './git-auth';
+import { PreparerResponse, RemoteProtocol } from './stages/prepare/types';
 
 export type ParsedLocationAnnotation = {
   type: RemoteProtocol;
@@ -91,13 +91,8 @@ export const getLocationForEntity = (
 export const getGitRepositoryTempFolder = async (
   repositoryUrl: string,
   config: Config,
-  branch?: string,
-  privateToken?: string,
 ): Promise<string> => {
   const parsedGitLocation = parseGitUrl(repositoryUrl);
-  parsedGitLocation.token = privateToken || '';
-  parsedGitLocation.ref = branch || 'master';
-
   // removes .git from git location path
   parsedGitLocation.git_suffix = false;
 
@@ -123,23 +118,10 @@ export const checkoutGitRepository = async (
   repoUrl: string,
   config: Config,
   logger: Logger,
-  branch?: string,
-  privateToken?: string,
 ): Promise<string> => {
   const parsedGitLocation = parseGitUrl(repoUrl);
-
-  parsedGitLocation.token = privateToken || '';
-  const repositoryTmpPath = await getGitRepositoryTempFolder(
-    repoUrl,
-    config,
-    branch,
-    privateToken,
-  );
-
-  let token = process.env.GITHUB_TOKEN || '';
-  if (privateToken !== '') {
-    token = privateToken || '';
-  }
+  const repositoryTmpPath = await getGitRepositoryTempFolder(repoUrl, config);
+  const token = await getTokenForGitRepo(repoUrl, config);
 
   // Initialize a git client
   let git = Git.fromAuth({ logger });
@@ -151,11 +133,11 @@ export const checkoutGitRepository = async (
     switch (type) {
       case 'github':
         git = Git.fromAuth({
-          username: token,
-          password: 'x-oauth-basic',
+          username: 'x-access-token',
+          password: token,
           logger,
         });
-        parsedGitLocation.token = `${token}:x-oauth-basic`;
+        parsedGitLocation.token = `x-access-token:${token}`;
         break;
       case 'gitlab':
         git = Git.fromAuth({
@@ -214,25 +196,10 @@ export const checkoutGitRepository = async (
 };
 
 export const getLastCommitTimestamp = async (
-  repositoryUrl: string,
-  branch: string,
-  config: Config,
+  repositoryLocation: string,
   logger: Logger,
-  privateToken?: string,
 ): Promise<number> => {
-  const repositoryLocation = await checkoutGitRepository(
-    repositoryUrl,
-    config,
-    logger,
-    branch,
-    privateToken,
-  );
-
-  const git = Git.fromAuth({
-    username: privateToken,
-    password: 'x-oauth-basic',
-    logger,
-  });
+  const git = Git.fromAuth({ logger });
   const sha = await git.resolveRef({ dir: repositoryLocation, ref: 'HEAD' });
   const commit = await git.readCommit({ dir: repositoryLocation, sha });
 
@@ -242,13 +209,22 @@ export const getLastCommitTimestamp = async (
 export const getDocFilesFromRepository = async (
   reader: UrlReader,
   entity: Entity,
-): Promise<any> => {
+  opts?: { etag?: string; logger?: Logger },
+): Promise<PreparerResponse> => {
   const { target } = parseReferenceAnnotation(
     'backstage.io/techdocs-ref',
     entity,
   );
 
-  const response = await reader.readTree(target);
+  opts?.logger?.info(`Reading files from ${target}`);
+  // readTree will throw NotModifiedError if etag has not changed.
+  const readTreeResponse = await reader.readTree(target, { etag: opts?.etag });
+  const preparedDir = await readTreeResponse.dir();
 
-  return await response.dir();
+  opts?.logger?.info(`Tree downloaded and stored at ${preparedDir}`);
+
+  return {
+    preparedDir,
+    etag: readTreeResponse.etag,
+  };
 };

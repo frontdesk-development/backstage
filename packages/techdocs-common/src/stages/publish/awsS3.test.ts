@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import type { Entity, EntityName } from '@backstage/catalog-model';
+import { ConfigReader } from '@backstage/config';
 import mockFs from 'mock-fs';
 import path from 'path';
 import * as winston from 'winston';
-import { ConfigReader } from '@backstage/config';
 import { AwsS3Publish } from './awsS3';
 import { PublisherBase, TechDocsMetadata } from './types';
-import type { Entity, EntityName } from '@backstage/catalog-model';
 
 const createMockEntity = (annotations = {}): Entity => {
   return {
@@ -102,6 +102,12 @@ describe('AwsS3Publish', () => {
     });
 
     it('should fail to publish a directory', async () => {
+      const wrongPathToGeneratedDirectory = path.join(
+        'wrong',
+        'path',
+        'to',
+        'generatedDirectory',
+      );
       const entity = createMockEntity();
       const entityRootDir = getEntityRootDir(entity);
 
@@ -118,11 +124,13 @@ describe('AwsS3Publish', () => {
       await publisher
         .publish({
           entity,
-          directory: '/wrong/path/to/generatedDirectory',
+          directory: wrongPathToGeneratedDirectory,
         })
         .catch(error =>
-          expect(error.message).toContain(
-            'Unable to upload file(s) to AWS S3. Error Failed to read template directory',
+          expect(error.message).toEqual(
+            expect.stringContaining(
+              'Unable to upload file(s) to AWS S3. Error Failed to read template directory: ENOENT, no such file or directory',
+            ),
           ),
         );
       mockFs.restore();
@@ -197,19 +205,12 @@ describe('AwsS3Publish', () => {
 
     it('should return an error if the techdocs_metadata.json file is not present', async () => {
       const entityNameMock = createMockEntityName();
-      const entity = createMockEntity();
-      const {
-        metadata: { name, namespace },
-        kind,
-      } = entity;
 
       await publisher
         .fetchTechDocsMetadata(entityNameMock)
         .catch(error =>
-          expect(error).toEqual(
-            new Error(
-              `TechDocs metadata fetch failed, The file ${namespace}/${kind}/${name}/techdocs_metadata.json doest not exist.`,
-            ),
+          expect(error.message).toEqual(
+            expect.stringContaining('TechDocs metadata fetch'),
           ),
         );
     });

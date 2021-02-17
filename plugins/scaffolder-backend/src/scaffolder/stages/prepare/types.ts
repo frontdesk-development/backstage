@@ -25,8 +25,6 @@ export type PreparerOptions = {
    */
   workspacePath: string;
   logger: Logger;
-
-  token: string;
 };
 
 export interface PreparerBase {

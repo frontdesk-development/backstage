@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { configApiRef, discoveryApiRef, githubAuthApiRef } from '@backstage/core';
+import { configApiRef, discoveryApiRef } from '@backstage/core';
 import { createDevApp } from '@backstage/dev-utils';
 import { techdocsPlugin } from '../src/plugin';
 import { TechDocsDevStorageApi } from './api';
@@ -23,12 +23,11 @@ import { techdocsStorageApiRef } from '../src';
 createDevApp()
   .registerApi({
     api: techdocsStorageApiRef,
-    deps: { configApi: configApiRef, discoveryApi: discoveryApiRef, githubAuthApi: githubAuthApiRef },
-    factory: ({ configApi, discoveryApi, githubAuthApi }) =>
+    deps: { configApi: configApiRef, discoveryApi: discoveryApiRef },
+    factory: ({ configApi, discoveryApi }) =>
       new TechDocsDevStorageApi({
         configApi,
         discoveryApi,
-        githubAuthApi,
       }),
   })
   .registerPlugin(techdocsPlugin)

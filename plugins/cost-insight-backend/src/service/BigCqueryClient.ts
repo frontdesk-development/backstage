@@ -65,7 +65,7 @@ export class BigQueryClass {
     let newYear = +endDateSplit[0];
 
     let month = +endDateSplit[1];
-    let day = +endDateSplit[2];
+    const day = +endDateSplit[2];
     if (splitInterval[0] === 'R2') {
       if (splitInterval[1] === 'P90D') {
         month = month - 6;
@@ -90,7 +90,7 @@ export class BigQueryClass {
     if (month < 10) {
       startMonth = `0${month}`;
     }
-    day = day - 1;
+
     if (day < 10) {
       startDay = `0${day}`;
     }

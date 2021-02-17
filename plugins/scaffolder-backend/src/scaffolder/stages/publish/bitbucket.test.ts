@@ -79,7 +79,6 @@ describe('Bitbucket Publisher', () => {
         },
         workspacePath,
         logger: logger,
-        token: '',
       });
 
       expect(result).toEqual({
@@ -141,7 +140,6 @@ describe('Bitbucket Publisher', () => {
         },
         workspacePath,
         logger: logger,
-        token: '',
       });
 
       expect(result).toEqual({

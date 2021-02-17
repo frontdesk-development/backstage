@@ -50,7 +50,7 @@ const ClusterPage = () => {
 
   useEffect(() => {
     const fetchGithubUserInfo = async () => {
-      const accessToken = await githubAuth.getAccessToken();
+      const accessToken = await githubAuth.getAccessToken(['repo', 'user']);
       const userInfo = await api.fetchUserInfo({ accessToken });
       setGithubAccessToken(accessToken);
       setGithubUsername(userInfo.login);

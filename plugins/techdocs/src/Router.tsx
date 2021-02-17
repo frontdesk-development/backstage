@@ -18,7 +18,7 @@ import React from 'react';
 import { Entity } from '@backstage/catalog-model';
 import { useEntity } from '@backstage/plugin-catalog-react';
 import { Route, Routes } from 'react-router-dom';
-import { MissingAnnotationEmptyState, useApi } from '@backstage/core';
+import { MissingAnnotationEmptyState } from '@backstage/core';
 import {
   rootRouteRef,
   rootDocsRouteRef,
@@ -27,7 +27,6 @@ import {
 import { TechDocsHome } from './reader/components/TechDocsHome';
 import { TechDocsPage } from './reader/components/TechDocsPage';
 import { EntityPageDocs } from './EntityPageDocs';
-import { githubAuthApiRef } from '@backstage/core-api';
 
 const TECHDOCS_ANNOTATION = 'backstage.io/techdocs-ref';
 
@@ -49,8 +48,6 @@ export const EmbeddedDocsRouter = (_props: Props) => {
   const { entity } = useEntity();
 
   const projectId = entity.metadata.annotations?.[TECHDOCS_ANNOTATION];
-  const githubAuthApi = useApi(githubAuthApiRef);
-  const tokenPromise = githubAuthApi.getAccessToken();
 
   if (!projectId) {
     return <MissingAnnotationEmptyState annotation={TECHDOCS_ANNOTATION} />;
@@ -60,7 +57,7 @@ export const EmbeddedDocsRouter = (_props: Props) => {
     <Routes>
       <Route
         path={`/${rootCatalogDocsRouteRef.path}`}
-        element={<EntityPageDocs entity={entity} tokenPromise={tokenPromise} />}
+        element={<EntityPageDocs entity={entity} />}
       />
     </Routes>
   );

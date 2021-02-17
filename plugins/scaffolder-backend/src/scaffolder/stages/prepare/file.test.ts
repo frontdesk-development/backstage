@@ -28,29 +28,27 @@ describe('File preparer', () => {
     const preparer = new FilePreparer();
     const root = os.platform() === 'win32' ? 'C:\\' : '/';
     const workspacePath = path.join(root, 'tmp');
-    const checkoutPath = path.resolve(workspacePath, 'checkout');
+    const targetPath = path.resolve(workspacePath, 'template');
 
     await preparer.prepare({
       url: `file:///${root}path/to/template`,
       logger,
       workspacePath,
-      token: '',
     });
     expect(fs.copy).toHaveBeenCalledWith(
       path.join(root, 'path', 'to', 'template'),
-      checkoutPath,
+      targetPath,
       {
         recursive: true,
       },
     );
-    expect(fs.ensureDir).toHaveBeenCalledWith(checkoutPath);
+    expect(fs.ensureDir).toHaveBeenCalledWith(targetPath);
 
     await expect(
       preparer.prepare({
         url: 'file://not/full/path',
         logger,
         workspacePath,
-        token: '',
       }),
     ).rejects.toThrow(
       "Wrong location protocol, should be 'file', file://not/full/path",

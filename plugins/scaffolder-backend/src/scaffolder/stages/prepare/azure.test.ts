@@ -44,7 +44,6 @@ describe('AzurePreparer', () => {
       'https://dev.azure.com/backstage-org/backstage-project/_git/template-repo',
     workspacePath,
     logger,
-    token: '',
   };
 
   it('calls the clone command with token from integrations config', async () => {
@@ -74,7 +73,6 @@ describe('AzurePreparer', () => {
         'https://dev.azure.com/backstage-org/backstage-project/_git/template-repo?path=%2Ftemplate.yaml&version=GBmaster',
       logger,
       workspacePath,
-      token: '',
     });
 
     expect(mockGitClient.clone).toHaveBeenCalledWith({
@@ -91,7 +89,6 @@ describe('AzurePreparer', () => {
         'https://dev.azure.com/backstage-org/backstage-project/_git/template-repo',
       workspacePath,
       logger,
-      token: '',
     });
 
     expect(mockGitClient.clone).toHaveBeenCalledWith({
@@ -109,7 +106,6 @@ describe('AzurePreparer', () => {
       )}`,
       logger,
       workspacePath,
-      token: '',
     });
 
     expect(fs.move).toHaveBeenCalledWith(

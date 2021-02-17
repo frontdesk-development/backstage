@@ -34,7 +34,6 @@ export type PublisherOptions = {
   values: TemplaterValues;
   workspacePath: string;
   logger: Logger;
-  token: string;
 };
 
 export type PublisherResult = {

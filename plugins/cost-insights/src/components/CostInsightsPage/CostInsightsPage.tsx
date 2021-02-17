@@ -15,8 +15,10 @@
  */
 
 import React, { useCallback, useEffect, useState } from 'react';
+// import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   Box,
+  // Collapse,
   Container,
   Divider,
   Grid,
@@ -25,6 +27,7 @@ import {
 import { Progress, useApi } from '@backstage/core';
 import { default as MaterialAlert } from '@material-ui/lab/Alert';
 import { costInsightsApiRef } from '../../api';
+// import { ActionItems } from '../ActionItems';
 // import { AlertInsights } from '../AlertInsights';
 import { CostInsightsLayout } from '../CostInsightsLayout';
 // import { CopyUrlToClipboard } from '../CopyUrlToClipboard';
@@ -52,12 +55,12 @@ import {
   Cost,
   Maybe,
   MetricData,
-  // Product,
-  Project,
+  Product,
+  // Project,
   Label,
 } from '../../types';
 import { mapLoadingToProps } from './selector';
-import { ProjectSelect } from '../ProjectSelect';
+// import { ProjectSelect } from '../ProjectSelect';
 import { LabelTierSelect } from '../LabelTierSelect';
 import { LabelPillarSelect } from '../LabelPillarSelect';
 import { LabelDomainSelect } from '../LabelDomainSelect';
@@ -65,29 +68,42 @@ import { LabelProductSelect } from '../LabelProductSelect';
 import { LabelTeamSelect } from '../LabelTeamSelect';
 import { intervalsOf } from '../../utils/duration';
 import { useSubtleTypographyStyles } from '../../utils/styles';
+// import {
+//   isAlertActive,
+//   // isAlertAccepted,
+//   // isAlertDismissed,
+//   // isAlertSnoozed,
+// } from '../../utils/alerts';
+import { CostInsightsNavigation } from '../CostInsightsNavigation';
 
 export const CostInsightsPage = () => {
   const classes = useSubtleTypographyStyles();
   const client = useApi(costInsightsApiRef);
   const config = useConfig();
   const groups = useGroups();
-  // const [configLoaded, setConfigLoaded] = useState(false);
   const lastCompleteBillingDate = useLastCompleteBillingDate();
   const [alerts, setAlerts] = useState<Alert[]>([]);
   // const [currency, setCurrency] = useCurrency();
-  const [projects, setProjects] = useState<Maybe<Project[]>>(null);
+  // const [projects, setProjects] = useState<Maybe<Project[]>>(null);
   const [tierLabel, setTierLabels] = useState<Maybe<Label[]>>(null);
   const [pillarLabel, setPillarLabels] = useState<Maybe<Label[]>>(null);
   const [domainLabel, setDomainLabels] = useState<Maybe<Label[]>>(null);
   const [productLabel, setProductLabels] = useState<Maybe<Label[]>>(null);
   const [teamLabel, setTeamLabels] = useState<Maybe<Label[]>>(null);
-  // const [product, setProducts] = useState<Maybe<Product[]>>(null);
+  const [products, setProducts] = useState<Maybe<Product[]>>(null);
   const [dailyCost, setDailyCost] = useState<Maybe<Cost>>(null);
   const [metricData, setMetricData] = useState<Maybe<MetricData>>(null);
   const [error, setError] = useState<Maybe<Error>>(null);
 
   const { pageFilters, setPageFilters } = useFilters(p => p);
 
+  // const active = useMemo(() => alerts.filter(isAlertActive), [alerts]);
+  // const snoozed = useMemo(() => alerts.filter(isAlertSnoozed), [alerts]);
+  // const accepted = useMemo(() => alerts.filter(isAlertAccepted), [alerts]);
+  // const dismissed = useMemo(() => alerts.filter(isAlertDismissed), [alerts]);
+
+  // const isActionItemsDisplayed = !!active.length;
+  const isAlertInsightsDisplayed = !!alerts.length;
 
   const {
     loadingActions,
@@ -113,11 +129,11 @@ export const CostInsightsPage = () => {
   const dispatchLoadingReset = useCallback(dispatchReset, []);
   /* eslint-enable react-hooks/exhaustive-deps */
 
-  const setProject = (project: Maybe<string>) =>
-    setPageFilters({
-      ...pageFilters,
-      project: project === 'all' ? null : project,
-    });
+  // const setProject = (project: Maybe<string>) =>
+  //   setPageFilters({
+  //     ...pageFilters,
+  //     project: project === 'all' ? null : project,
+  //   });
 
   const setTier = (tier: Maybe<string>) =>
     setPageFilters({
@@ -160,7 +176,7 @@ export const CostInsightsPage = () => {
             lastCompleteBillingDate,
           );
           const [
-            fetchedProjects,
+            // fetchedProjects,
             fetchedTierLabels,
             fetchedPillarLabels,
             fetchedDomainLabels,
@@ -170,7 +186,7 @@ export const CostInsightsPage = () => {
             fetchedMetricData,
             fetchedDailyCost,
           ] = await Promise.all([
-            client.getGroupProjects(pageFilters.group),
+            // client.getGroupProjects(pageFilters.group),
             client.getTierLabels(pageFilters.project),
             client.getPillarLabels(pageFilters.project),
             client.getDomainLabels(pageFilters.project),
@@ -184,7 +200,7 @@ export const CostInsightsPage = () => {
               ? client.getProjectDailyCost(pageFilters, intervals)
               : client.getGroupDailyCost(pageFilters, intervals),
           ]);
-          setProjects(fetchedProjects);
+          // setProjects(fetchedProjects);
           setTierLabels(fetchedTierLabels);
           setPillarLabels(fetchedPillarLabels);
           setDomainLabels(fetchedDomainLabels);
@@ -241,9 +257,9 @@ export const CostInsightsPage = () => {
           <CostInsightsHeaderNoGroups />
         </Container>
         {/* <Divider /> */}
-        {/* <Container maxWidth="lg">
-          <WhyCostsMatter />
-        </Container> */}
+        {/* <Container maxWidth="lg"> */}
+        {/* <WhyCostsMatter /> */}
+        {/* </Container> */}
       </CostInsightsLayout>
     );
   }
@@ -254,33 +270,33 @@ export const CostInsightsPage = () => {
     );
   }
 
-  const onProjectSelect = (project: Maybe<string>) => {
-    setProject(project);
+  // const onProjectSelect = (project: Maybe<string>) => {
+  //   setProject(project);
+  //   dispatchLoadingReset(loadingActions);
+  // };
+
+  const onTierLabelSelect = (onTierLabel: Maybe<string>) => {
+    setTier(onTierLabel);
     dispatchLoadingReset(loadingActions);
   };
 
-  const onTierLabelSelect = (tierLabel: Maybe<string>) => {
-    setTier(tierLabel);
+  const onPillarLabelSelect = (onPillarLabel: Maybe<string>) => {
+    setPillar(onPillarLabel);
     dispatchLoadingReset(loadingActions);
   };
 
-  const onPillarLabelSelect = (pillarLabel: Maybe<string>) => {
-    setPillar(pillarLabel);
+  const onDomainLabelSelect = (onDomainLabel: Maybe<string>) => {
+    setDomain(onDomainLabel);
     dispatchLoadingReset(loadingActions);
   };
 
-  const onDomainLabelSelect = (domainLabel: Maybe<string>) => {
-    setDomain(domainLabel);
+  const onProductLabelSelect = (onProductLabel: Maybe<string>) => {
+    setProduct(onProductLabel);
     dispatchLoadingReset(loadingActions);
   };
 
-  const onProductLabelSelect = (productLabel: Maybe<string>) => {
-    setProduct(productLabel);
-    dispatchLoadingReset(loadingActions);
-  };
-
-  const onTeamLabelSelect = (teamLabel: Maybe<string>) => {
-    setTeam(teamLabel);
+  const onTeamLabelSelect = (onTeamLabel: Maybe<string>) => {
+    setTeam(onTeamLabel);
     dispatchLoadingReset(loadingActions);
   };
 
@@ -300,18 +316,18 @@ export const CostInsightsPage = () => {
         </Typography>
       </Box>
       <Box display="flex">
-        {/* <Box mr={1}>
-          <CurrencySelect
-            currency={currency}
-            currencies={config.currencies}
-            onSelect={setCurrency}
-          />
-        </Box> */}
-        <ProjectSelect
+        {/* <Box mr={1}> */}
+        {/* <CurrencySelect */}
+        {/* currency={currency} */}
+        {/* currencies={config.currencies} */}
+        {/* onSelect={setCurrency} */}
+        {/* /> */}
+        {/* </Box> */}
+        {/* <ProjectSelect
           project={pageFilters.project}
           projects={projects || []}
           onSelect={onProjectSelect}
-        />
+        /> */}
       </Box>
     </Box>
   );
@@ -365,14 +381,11 @@ export const CostInsightsPage = () => {
   return (
     <CostInsightsLayout groups={groups}>
       <Grid container wrap="nowrap">
-        {/* <Grid item>
+        <Grid item>
           <Box position="sticky" top={20}>
-            <CostInsightsNavigation
-              products={products}
-              alerts={alerts.length}
-            />
+            <CostInsightsNavigation products={products} alerts={0} />
           </Box>
-        </Grid> */}
+        </Grid>
         <Grid item xs>
           <Box
             display="flex"
@@ -385,30 +398,33 @@ export const CostInsightsPage = () => {
           </Box>
           <Container maxWidth="lg" disableGutters>
             <Grid container direction="column">
-              {/* <Grid item xs>
-                <CostInsightsHeader
-                  owner={pageFilters.group}
-                  groups={groups}
-                  hasCostData={!!dailyCost.aggregation.length}
-                  alerts={alerts.length}
-                />
-              </Grid> */}
-              {/* {!!alerts.length && (
-                <>
-                  <Grid item xs>
-                    <Box px={3} py={6}>
-                      <AlertActionCardList alerts={alerts} />
-                    </Box>
-                  </Grid>
-                  <Divider />
-                </>
-              )} */}
+              {/* <Grid item xs> */}
+              {/* <CostInsightsHeader */}
+              {/* owner={pageFilters.group} */}
+              {/* groups={groups} */}
+              {/* hasCostData={!!dailyCost.aggregation.length} */}
+              {/* alerts={active.length} */}
+              {/* /> */}
+              {/* </Grid> */}
+              {/* <Collapse in={isActionItemsDisplayed} enter={false}> */}
+              {/* <Grid item xs> */}
+              {/* <Box px={3} py={6}> */}
+              {/* <ActionItems */}
+              {/* active={active} */}
+              {/* snoozed={snoozed} */}
+              {/* accepted={accepted} */}
+              {/* dismissed={dismissed} */}
+              {/* /> */}
+              {/* </Box> */}
+              {/* </Grid> */}
+              {/* <Divider /> */}
+              {/* </Collapse> */}
               <Grid item xs>
                 <CostOverviewBanner />
               </Grid>
               <Grid item xs>
                 <LabelsBanner />
-                <Box px={3} py={6} pt={2}>
+                <Box px={3} py={6}>
                   {!!dailyCost.aggregation.length && (
                     <CostOverviewCard
                       dailyCostData={dailyCost}
@@ -418,22 +434,28 @@ export const CostInsightsPage = () => {
                   {/* <WhyCostsMatter /> */}
                 </Box>
               </Grid>
-              <Grid item xs>
-                {/* {!!alerts?.length && (
-                  <Box px={6} py={6} mx={-3} bgcolor="alertBackground">
-                    <AlertInsights alerts={alerts} />
-                  </Box>
-                )} */}
-              </Grid>
-              {!alerts.length && <Divider />}
+              {/* <Collapse in={isAlertInsightsDisplayed} enter={false}> */}
+              {/* <Grid item xs> */}
+              {/* <Box px={6} py={6} mx={-3} bgcolor="alertBackground"> */}
+              {/* <AlertInsights */}
+              {/* group={pageFilters.group} */}
+              {/* active={active} */}
+              {/* snoozed={snoozed} */}
+              {/* accepted={accepted} */}
+              {/* dismissed={dismissed} */}
+              {/* onChange={setAlerts} */}
+              {/* /> */}
+              {/* </Box> */}
+              {/* </Grid> */}
+              {/* </Collapse> */}
+              {!isAlertInsightsDisplayed && <Divider />}
               <Grid item xs>
                 <Box px={3} py={6}>
                   <ProductInsights
                     group={pageFilters.group}
                     project={pageFilters.project}
                     products={config.products}
-                    onLoaded={() => undefined}
-                    // onLoaded={setProducts}
+                    onLoaded={setProducts}
                   />
                 </Box>
               </Grid>

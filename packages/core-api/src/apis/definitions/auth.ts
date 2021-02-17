@@ -230,11 +230,7 @@ export const googleAuthApiRef: ApiRef<
  * for a full list of supported scopes.
  */
 export const githubAuthApiRef: ApiRef<
-  OAuthApi &
-    OpenIdConnectApi &
-    ProfileInfoApi &
-    BackstageIdentityApi &
-    SessionApi
+  OAuthApi & ProfileInfoApi & BackstageIdentityApi & SessionApi
 > = createApiRef({
   id: 'core.auth.github',
   description: 'Provides authentication towards GitHub APIs',

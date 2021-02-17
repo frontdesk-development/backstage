@@ -116,9 +116,9 @@ describe('<ProductInsightsCard/>', () => {
   });
 
   describe.each`
-    duration         | periodStartText     | periodEndText
-    ${Duration.P30D} | ${'First 30 Days'}  | ${'Last 30 Days'}
-    ${Duration.P90D} | ${'First 180 Days'} | ${'Last 180 Days'}
+    duration         | periodStartText    | periodEndText
+    ${Duration.P30D} | ${'First 30 Days'} | ${'Last 30 Days'}
+    ${Duration.P90D} | ${'First 90 Days'} | ${'Last 90 Days'}
   `(
     'Should display the correct relative time',
     ({ duration, periodStartText, periodEndText }) => {

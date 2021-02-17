@@ -80,12 +80,10 @@ export class JobProcessor implements Processor {
   }
 
   create({
-    token,
     entity,
     values,
     stages,
   }: {
-    token: string;
     entity: TemplateEntityV1alpha1;
     values: TemplaterValues;
     stages: StageInput[];
@@ -94,18 +92,12 @@ export class JobProcessor implements Processor {
     const { logger, stream } = makeLogStream({ id });
 
     const context: StageContext = {
-      token,
       entity,
       values,
       logger,
       logStream: stream,
       workspacePath: path.join(this.workingDirectory, id),
     };
-
-    let localToken: string = '';
-    if (token !== undefined) {
-      localToken = token;
-    }
 
     const job: Job = {
       id,
@@ -117,7 +109,6 @@ export class JobProcessor implements Processor {
         status: 'PENDING',
       })),
       status: 'PENDING',
-      token: localToken,
     };
 
     this.jobs.set(job.id, job);
@@ -146,7 +137,6 @@ export class JobProcessor implements Processor {
           id: job.id,
           stage: stage.name,
         });
-
         // Attach the logger to the stage, and setup some timestamps.
         stage.log = log;
         stage.startedAt = Date.now();

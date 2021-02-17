@@ -16,13 +16,12 @@
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 // import { Box, Typography } from '@material-ui/core';
-import { Box } from '@material-ui/core';
 import { default as Alert } from '@material-ui/lab/Alert';
 import { useApi } from '@backstage/core';
 import { costInsightsApiRef } from '../../api';
 // import { ProductInsightsCardList } from '../ProductInsightsCard/ProductInsightsCardList';
-// import { Duration, Entity, Maybe, Product } from '../../types';
 import { Maybe, Product } from '../../types';
+// import { Duration, Entity, Maybe, Product } from '../../types';
 import { intervalsOf, DEFAULT_DURATION } from '../../utils/duration';
 import {
   DefaultLoadingAction,
@@ -132,13 +131,24 @@ export const ProductInsights = ({
   );
 
   return (
-    <Box px={3} py={6}>
-      {/* <Box mt={0} mb={5} textAlign="center">
-        <Typography variant="h4" gutterBottom>
-          Your team's product usage
-        </Typography>
-      </Box> */}
-      {error && <Alert severity="error">{error.message}</Alert>}
-    </Box>
+    <>
+      {/* <Box px={3} py={6}> */}
+      {/* <Box mt={0} mb={5} textAlign="center"> */}
+      {/* <Typography variant="h4" gutterBottom> */}
+      {/* Your team's product usage */}
+      {/* </Typography> */}
+      {/* </Box> */}
+      {error ? (
+        <Alert severity="error">{error.message}</Alert>
+      ) : (
+        <>
+          {/* <ProductInsightsCardList */}
+          {/* initialStates={initialStates} */}
+          {/* onSelectAsync={onSelectAsyncMemo} */}
+          {/* /> */}
+        </>
+      )}
+      {/* </Box> */}
+    </>
   );
 };

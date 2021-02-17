@@ -18,12 +18,7 @@ import React from 'react';
 import { Entity } from '@backstage/catalog-model';
 import { Reader } from './reader';
 
-export const EntityPageDocs = ({
-  entity,
-}: {
-  entity: Entity;
-  tokenPromise: Promise<string>;
-}) => {
+export const EntityPageDocs = ({ entity }: { entity: Entity }) => {
   return (
     <Reader
       entityId={{

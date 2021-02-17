@@ -72,7 +72,6 @@ describe('GitHub Publisher', () => {
           },
           workspacePath,
           logger,
-          token: '',
         });
 
         expect(result).toEqual({
@@ -98,7 +97,7 @@ describe('GitHub Publisher', () => {
         expect(initRepoAndPush).toHaveBeenCalledWith({
           dir: resultPath,
           remoteUrl: 'https://github.com/backstage/backstage.git',
-          auth: { username: 'fake-token', password: 'x-oauth-basic' },
+          auth: { username: 'x-access-token', password: 'fake-token' },
           logger,
         });
       });
@@ -131,7 +130,6 @@ describe('GitHub Publisher', () => {
           },
           workspacePath,
           logger,
-          token: '',
         });
 
         expect(result).toEqual({
@@ -150,7 +148,7 @@ describe('GitHub Publisher', () => {
         expect(initRepoAndPush).toHaveBeenCalledWith({
           dir: resultPath,
           remoteUrl: 'https://github.com/backstage/backstage.git',
-          auth: { username: 'fake-token', password: 'x-oauth-basic' },
+          auth: { username: 'x-access-token', password: 'fake-token' },
           logger,
         });
       });
@@ -185,7 +183,6 @@ describe('GitHub Publisher', () => {
         },
         workspacePath,
         logger,
-        token: '',
       });
 
       expect(result).toEqual({
@@ -209,7 +206,7 @@ describe('GitHub Publisher', () => {
       expect(initRepoAndPush).toHaveBeenCalledWith({
         dir: resultPath,
         remoteUrl: 'https://github.com/backstage/backstage.git',
-        auth: { username: 'fake-token', password: 'x-oauth-basic' },
+        auth: { username: 'x-access-token', password: 'fake-token' },
         logger,
       });
     });
@@ -244,7 +241,6 @@ describe('GitHub Publisher', () => {
         },
         workspacePath,
         logger,
-        token: '',
       });
 
       expect(result).toEqual({
@@ -261,7 +257,7 @@ describe('GitHub Publisher', () => {
       expect(initRepoAndPush).toHaveBeenCalledWith({
         dir: resultPath,
         remoteUrl: 'https://github.com/backstage/backstage.git',
-        auth: { username: 'fake-token', password: 'x-oauth-basic' },
+        auth: { username: 'x-access-token', password: 'fake-token' },
         logger,
       });
     });
@@ -295,7 +291,6 @@ describe('GitHub Publisher', () => {
         },
         workspacePath,
         logger,
-        token: '',
       });
 
       expect(result).toEqual({
@@ -312,7 +307,7 @@ describe('GitHub Publisher', () => {
       expect(initRepoAndPush).toHaveBeenCalledWith({
         dir: resultPath,
         remoteUrl: 'https://github.com/backstage/backstage.git',
-        auth: { username: 'fake-token', password: 'x-oauth-basic' },
+        auth: { username: 'x-access-token', password: 'fake-token' },
         logger,
       });
     });

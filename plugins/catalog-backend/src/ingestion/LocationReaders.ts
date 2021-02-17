@@ -75,7 +75,7 @@ export class LocationReaders implements LocationReader {
 
       for (const item of items) {
         if (item.type === 'location') {
-          await this.handleLocation(item, emit, location.appToken);
+          await this.handleLocation(item, emit);
         } else if (item.type === 'entity') {
           if (rulesEnforcer.isAllowed(item.entity, item.location)) {
             const relations = Array<EntityRelationSpec>();
@@ -132,15 +132,22 @@ export class LocationReaders implements LocationReader {
   private async handleLocation(
     item: CatalogProcessorLocationResult,
     emit: CatalogProcessorEmit,
-    appToken?: string,
   ) {
     const { processors, logger } = this.options;
-
-    item.location.appToken = appToken;
 
     const validatedEmit: CatalogProcessorEmit = emitResult => {
       if (emitResult.type === 'relation') {
         throw new Error('readLocation may not emit entity relations');
+      }
+      if (
+        emitResult.type === 'location' &&
+        emitResult.location.type === item.location.type &&
+        emitResult.location.target === item.location.target
+      ) {
+        // Ignore self-referential locations silently (this can happen for
+        // example if you use a glob target like "**/*.yaml" in a Location
+        // entity)
+        return;
       }
       emit(emitResult);
     };

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { createApiRef, DiscoveryApi, OAuthApi } from '@backstage/core';
+import { createApiRef, DiscoveryApi } from '@backstage/core';
 import { Config } from '@backstage/config';
 import { EntityName } from '@backstage/catalog-model';
 import { TechDocsMetadata } from './types';
@@ -120,20 +120,16 @@ export class TechDocsApi implements TechDocs {
 export class TechDocsStorageApi implements TechDocsStorage {
   public configApi: Config;
   public discoveryApi: DiscoveryApi;
-  public readonly githubAuthApi: OAuthApi;
 
   constructor({
     configApi,
     discoveryApi,
-    githubAuthApi,
   }: {
     configApi: Config;
     discoveryApi: DiscoveryApi;
-    githubAuthApi: OAuthApi;
   }) {
     this.configApi = configApi;
     this.discoveryApi = discoveryApi;
-    this.githubAuthApi = githubAuthApi;
   }
 
   async getApiOrigin() {
@@ -159,11 +155,6 @@ export class TechDocsStorageApi implements TechDocsStorage {
 
     const request = await fetch(
       `${url.endsWith('/') ? url : `${url}/`}index.html`,
-      {
-        headers: new Headers({
-          Authorization: await this.getToken(),
-        }),
-      },
     );
 
     let errorMessage = '';
@@ -201,13 +192,5 @@ export class TechDocsStorageApi implements TechDocsStorage {
       oldBaseUrl,
       `${apiOrigin}/docs/${namespace}/${kind}/${name}/${path}`,
     ).toString();
-  }
-
-  async getToken(): Promise<string> {
-    // NOTE(freben): There's a .read-only variant of this scope that we could
-    // use for readonly operations, but that means we would ask the user for a
-    // second auth during creation and I decided to keep the wider scope for
-    // all ops for now
-    return this.githubAuthApi.getAccessToken();
   }
 }

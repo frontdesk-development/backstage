@@ -21,13 +21,11 @@ export type Job = {
     entity: any;
     values: any;
     remoteUrl?: string;
-    token?: string;
     catalogInfoUrl?: string;
   };
   status: JobStatus;
   stages: Stage[];
   error?: Error;
-  token: string;
 };
 
 export type Stage = {

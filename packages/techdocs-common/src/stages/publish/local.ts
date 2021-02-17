@@ -84,11 +84,11 @@ export class LocalPublish implements PublisherBase {
       fs.copy(directory, publishDir, err => {
         if (err) {
           this.logger.debug(
-            `Failed to move docs from ${directory} to ${publishDir}`,
+            `Failed to copy docs from ${directory} to ${publishDir}`,
           );
           reject(err);
         }
-
+        this.logger.info(`Published site stored at ${publishDir}`);
         this.discovery
           .getBaseUrl('techdocs')
           .then(techdocsApiUrl => {
@@ -99,7 +99,6 @@ export class LocalPublish implements PublisherBase {
           .catch(reason => {
             reject(reason);
           });
-        fs.remove(directory);
       });
     });
   }

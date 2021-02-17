@@ -20,13 +20,7 @@ import { cloudbuildApiRef } from '../api/CloudbuildApi';
 import { useApi, errorApiRef } from '@backstage/core';
 import { ActionsListWorkflowRunsForRepoResponseData } from '../api/types';
 
-export function useWorkflowRuns({
-  projectId,
-  triggerName,
-}: {
-  projectId: string;
-  triggerName: string;
-}) {
+export function useWorkflowRuns({ projectId }: { projectId: string }) {
   const api = useApi(cloudbuildApiRef);
   const errorApi = useApi(errorApiRef);
 
@@ -40,7 +34,6 @@ export function useWorkflowRuns({
     return api
       .listWorkflowRuns({
         projectId,
-        triggerName,
       })
       .then(
         (
@@ -49,7 +42,7 @@ export function useWorkflowRuns({
           setTotal(workflowRunsData.builds.length);
           // Transformation here
           return workflowRunsData.builds.map(run => ({
-            message: run.substitutions?.REPO_NAME || run.name,
+            message: run.substitutions.REPO_NAME,
             id: run.id,
             rerun: async () => {
               try {
@@ -63,18 +56,16 @@ export function useWorkflowRuns({
             },
             substitutions: run.substitutions,
             source: {
-              branchName:
-                run.substitutions?.REPO_NAME || run.buildTriggerInfo.name,
+              branchName: run.substitutions.REPO_NAME,
               commit: {
-                hash: run.substitutions?.COMMIT_SHA || run.statusDetail,
-                url: run.substitutions?.REPO_NAME || run.statusDetail,
+                hash: run.substitutions.COMMIT_SHA,
+                url: run.substitutions.REPO_NAME,
               },
             },
             status: run.status,
             url: run.logUrl,
             googleUrl: run.logUrl,
             createTime: run.createTime,
-            buildTriggerInfo: run.buildTriggerInfo,
           }));
         },
       );

@@ -40,7 +40,6 @@ import { rootRoute } from '../../routes';
 import { useJobPolling } from '../hooks/useJobPolling';
 import { JobStatusModal } from '../JobStatusModal';
 import { MultistepJsonForm } from '../MultistepJsonForm';
-import { githubAuthApiRef } from '@backstage/core-api';
 
 const useTemplate = (
   templateName: string,
@@ -93,9 +92,6 @@ export const TemplatePage = () => {
   );
 
   const [jobId, setJobId] = useState<string | null>(null);
-  const githubAuthApi = useApi(githubAuthApiRef);
-  const tokenPromise = githubAuthApi.getAccessToken();
-
   const job = useJobPolling(jobId, async jobItem => {
     if (!jobItem.metadata.catalogInfoUrl) {
       errorApi.post(
@@ -109,7 +105,6 @@ export const TemplatePage = () => {
         entities: [createdEntity],
       } = await catalogApi.addLocation({
         target: jobItem.metadata.catalogInfoUrl,
-        token: jobItem.metadata.token,
       });
 
       const resolvedPath = generatePath(
@@ -126,15 +121,10 @@ export const TemplatePage = () => {
       );
     }
   });
-  // const {
-  //   entities: [createdEntity],
-  // } = await catalogApi.addLocation({ target, token: job.metadata.token });
 
-  // setEntity((createdEntity as any) as TemplateEntityV1alpha1);
   const handleCreate = async () => {
-    const token = await tokenPromise;
     try {
-      const id = await scaffolderApi.scaffold(templateName, formState, token);
+      const id = await scaffolderApi.scaffold(templateName, formState);
       setJobId(id);
       setModalOpen(true);
     } catch (e) {
@@ -159,10 +149,10 @@ export const TemplatePage = () => {
   return (
     <Page themeId="home">
       <Header
-        pageTitleOverride="Create a new component"
+        pageTitleOverride="Create a New Component"
         title={
           <>
-            Create a new component <Lifecycle alpha shorthand />
+            Create a New Component <Lifecycle alpha shorthand />
           </>
         }
         subtitle="Create new software components using standard templates"

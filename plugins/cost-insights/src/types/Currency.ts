@@ -24,7 +24,6 @@ export interface Currency {
 
 export enum CurrencyType {
   USD = 'USD',
-  EURO = 'Euro',
   CarbonOffsetTons = 'CARBON_OFFSET_TONS',
   Beers = 'BEERS',
   IceCream = 'PINTS_OF_ICE_CREAM',

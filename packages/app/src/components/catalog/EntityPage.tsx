@@ -28,13 +28,16 @@ import {
   ProvidedApisCard,
   ProvidingComponentsCard,
 } from '@backstage/plugin-api-docs';
-import { AboutCard, EntityPageLayout } from '@backstage/plugin-catalog';
+import {
+  AboutCard,
+  EntityLinksCard,
+  EntityPageLayout,
+} from '@backstage/plugin-catalog';
 import { useEntity } from '@backstage/plugin-catalog-react';
 import {
   isPluginApplicableToEntity as isCircleCIAvailable,
   Router as CircleCIRouter,
 } from '@backstage/plugin-circleci';
-import { Router as BridgeRouter } from '@backstage/plugin-bridge-app-plugin';
 import {
   isPluginApplicableToEntity as isCloudbuildAvailable,
   Router as CloudbuildRouter,
@@ -49,10 +52,8 @@ import {
   LatestRunCard as JenkinsLatestRunCard,
   Router as JenkinsRouter,
 } from '@backstage/plugin-jenkins';
+import { Router as KafkaRouter } from '@backstage/plugin-kafka';
 import { Router as KubernetesRouter } from '@backstage/plugin-kubernetes';
-import { Router as ArgocdRequestRouter } from '@backstage/plugin-argocd';
-import { Router as GrafanaRouter } from '@backstage/plugin-grafana';
-
 import {
   EmbeddedRouter as LighthouseRouter,
   isPluginApplicableToEntity as isLighthouseAvailable,
@@ -64,7 +65,15 @@ import {
   OwnershipCard,
   UserProfileCard,
 } from '@backstage/plugin-org';
-
+import {
+  isPluginApplicableToEntity as isPagerDutyAvailable,
+  PagerDutyCard,
+} from '@backstage/plugin-pagerduty';
+import {
+  isRollbarAvailable,
+  Router as RollbarRouter,
+} from '@backstage/plugin-rollbar';
+import { Router as SentryRouter } from '@backstage/plugin-sentry';
 import { EmbeddedDocsRouter as DocsRouter } from '@backstage/plugin-techdocs';
 import { Button, Grid } from '@material-ui/core';
 import {
@@ -84,9 +93,17 @@ import {
   Router as PullRequestsRouter,
 } from '@roadiehq/backstage-plugin-github-pull-requests';
 import {
+  isPluginApplicableToEntity as isTravisCIAvailable,
+  RecentTravisCIBuildsWidget,
+  Router as TravisCIRouter,
+} from '@roadiehq/backstage-plugin-travis-ci';
+import {
   JiraCard,
   isPluginApplicableToEntity as isJiraAvailable,
 } from '@roadiehq/backstage-plugin-jira';
+import { Router as ArgocdRequestRouter } from '@backstage/plugin-argocd';
+import { Router as GrafanaRouter } from '@backstage/plugin-grafana';
+import { Router as BridgeRouter } from '@backstage/plugin-bridge-app-plugin';
 
 import React, { ReactNode } from 'react';
 
@@ -111,6 +128,8 @@ export const CICDSwitcher = ({ entity }: { entity: Entity }) => {
       return <GitHubActionsRouter entity={entity} />;
     case isCloudbuildAvailable(entity):
       return <CloudbuildRouter entity={entity} />;
+    case isTravisCIAvailable(entity):
+      return <TravisCIRouter entity={entity} />;
     default:
       return (
         <EmptyState
@@ -142,6 +161,9 @@ const RecentCICDRunsSwitcher = ({ entity }: { entity: Entity }) => {
         <RecentWorkflowRunsCard entity={entity} limit={4} variant="gridItem" />
       );
       break;
+    case isTravisCIAvailable(entity):
+      content = <RecentTravisCIBuildsWidget entity={entity} />;
+      break;
     default:
       content = null;
   }
@@ -155,11 +177,27 @@ const RecentCICDRunsSwitcher = ({ entity }: { entity: Entity }) => {
   );
 };
 
+export const ErrorsSwitcher = ({ entity }: { entity: Entity }) => {
+  switch (true) {
+    case isRollbarAvailable(entity):
+      return <RollbarRouter entity={entity} />;
+    default:
+      return <SentryRouter entity={entity} />;
+  }
+};
 
 const ComponentOverviewContent = ({ entity }: { entity: Entity }) => (
   <Grid container spacing={3} alignItems="stretch">
     <Grid item md={6}>
       <AboutCard entity={entity} variant="gridItem" />
+    </Grid>
+    {isPagerDutyAvailable(entity) && (
+      <Grid item md={6}>
+        <PagerDutyCard entity={entity} />
+      </Grid>
+    )}
+    <Grid item md={4} sm={6}>
+      <EntityLinksCard entity={entity} />
     </Grid>
     <RecentCICDRunsSwitcher entity={entity} />
     {isGitHubAvailable(entity) && (
@@ -262,6 +300,11 @@ const ServiceEntityPage = ({ entity }: { entity: Entity }) => (
       title="Code Insights"
       element={<GitHubInsightsRouter entity={entity} />}
     />
+    <EntityPageLayout.Content
+      path="/kafka/*"
+      title="Kafka"
+      element={<KafkaRouter entity={entity} />}
+    />
   </EntityPageLayout>
 );
 
@@ -281,6 +324,11 @@ const WebsiteEntityPage = ({ entity }: { entity: Entity }) => (
       path="/lighthouse/*"
       title="Lighthouse"
       element={<LighthouseRouter entity={entity} />}
+    />
+    <EntityPageLayout.Content
+      path="/errors/*"
+      title="Errors"
+      element={<ErrorsSwitcher entity={entity} />}
     />
     <EntityPageLayout.Content
       path="/docs/*"

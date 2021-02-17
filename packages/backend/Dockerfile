@@ -1,4 +1,4 @@
-FROM gcr.io/trv-io-frontdesk-stage/frontdesk-backend-base:v0.14 
+FROM node:14-buster
 
 WORKDIR /usr/src/app
 

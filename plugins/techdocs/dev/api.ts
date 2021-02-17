@@ -16,26 +16,21 @@
 import { DiscoveryApi } from '@backstage/core';
 import { Config } from '@backstage/config';
 import { EntityName } from '@backstage/catalog-model';
-import { OAuthApi } from '@backstage/core';
 import { TechDocsStorage } from '../src/api';
 
 export class TechDocsDevStorageApi implements TechDocsStorage {
   public configApi: Config;
   public discoveryApi: DiscoveryApi;
-  public readonly githubAuthApi: OAuthApi;
 
   constructor({
     configApi,
     discoveryApi,
-    githubAuthApi,
   }: {
     configApi: Config;
     discoveryApi: DiscoveryApi;
-    githubAuthApi: OAuthApi;
   }) {
     this.configApi = configApi;
     this.discoveryApi = discoveryApi;
-    this.githubAuthApi = githubAuthApi;
   }
 
   async getApiOrigin() {
@@ -53,11 +48,6 @@ export class TechDocsDevStorageApi implements TechDocsStorage {
 
     const request = await fetch(
       `${url.endsWith('/') ? url : `${url}/`}index.html`,
-      {
-        headers: new Headers({
-          Authorization: 'token',
-        }),
-      },
     );
 
     if (request.status === 404) {
@@ -75,9 +65,5 @@ export class TechDocsDevStorageApi implements TechDocsStorage {
     const { name } = entityId;
     const apiOrigin = await this.getApiOrigin();
     return new URL(oldBaseUrl, `${apiOrigin}/${name}/${path}`).toString();
-  }
-
-  async getToken(): Promise<string> {
-    return this.githubAuthApi.getAccessToken();
   }
 }

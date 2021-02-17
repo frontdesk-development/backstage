@@ -150,8 +150,8 @@ kafka:
 integrations:
   github:
     - host: github.com
-      token:
-        $env: GITHUB_TOKEN
+      apps:
+        - $include: /home/ebarrios/git/backstage/frontdesk-local.yaml
   githubOrg:
     - host: https://github.com
       token:
@@ -367,6 +367,7 @@ auth:
           $env: AUTH_ONELOGIN_CLIENT_SECRET
         issuer:
           $env: AUTH_ONELOGIN_ISSUER
+
 costInsights:
   engineerCost: 200000
   products:

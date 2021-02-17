@@ -48,22 +48,5 @@ interface Config {
         default?: boolean;
       };
     };
-
-    gcpConfig?: {
-      /**
-       * @visibility frontend
-       */
-      keyFilename?: string;
-
-      /**
-       * @visibility frontend
-       */
-      projectId?: string;
-
-      /**
-       * @visibility frontend
-       */
-      billingTable?: string;
-    };
   };
 }

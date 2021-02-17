@@ -58,7 +58,7 @@ export const CurrencySelect = ({
 
   return (
     <FormControl variant="outlined">
-      <InputLabel shrink>Project Name:</InputLabel>
+      <InputLabel shrink>Convert to:</InputLabel>
       <Select
         className={classes.select}
         variant="outlined"

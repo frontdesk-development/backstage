@@ -15,17 +15,17 @@
  */
 
 import dayjs from 'dayjs';
-// import regression, { DataPoint } from 'regression';
+import regression, { DataPoint } from 'regression';
 import { Config } from '@backstage/config';
 import { ConfigApi } from '@backstage/core';
 import {
-  // ChangeStatistic,
+  ChangeStatistic,
   Duration,
   Entity,
   Product,
   ProductFilters,
   ProjectGrowthData,
-  // Trendline,
+  Trendline,
   UnlabeledDataflowAlertProject,
   UnlabeledDataflowData,
   DateAggregation,
@@ -198,31 +198,30 @@ export const MockCostInsightsConfig: Partial<Config> = {
   getOptionalConfig: () => MockMetricsConfig as Config,
 };
 
-// export function trendlineOf(aggregation: DateAggregation[]): Trendline {
-//   const data: ReadonlyArray<DataPoint> = aggregation.map(a => [
-//     Date.parse(a.date) / 1000,
-//     a.amount,
-//   ]);
-//   const result = regression.linear(data, { precision: 5 });
-//   return {
-//     slope: result.equation[0],
-//     intercept: result.equation[1],
-//   };
-// }
+export function trendlineOf(aggregation: DateAggregation[]): Trendline {
+  const data: ReadonlyArray<DataPoint> = aggregation.map(a => [
+    Date.parse(a.date) / 1000,
+    a.amount,
+  ]);
+  const result = regression.linear(data, { precision: 5 });
+  return {
+    slope: result.equation[0],
+    intercept: result.equation[1],
+  };
+}
 
-// TODO: ESTEBAN improve the function on the cost-insight-backend
-// export function changeOf(aggregation: DateAggregation[]): ChangeStatistic {
-//   const firstAmount = aggregation.length ? aggregation[0].amount : 0;
-//   const lastAmount = aggregation.length
-//     ? aggregation[aggregation.length - 1].amount
-//     : 0;
-//   const ratio =
-//     firstAmount !== 0 ? (lastAmount - firstAmount) / firstAmount : 0;
-//   return {
-//     ratio: ratio,
-//     amount: lastAmount - firstAmount,
-//   };
-// }
+export function changeOf(aggregation: DateAggregation[]): ChangeStatistic {
+  const firstAmount = aggregation.length ? aggregation[0].amount : 0;
+  const lastAmount = aggregation.length
+    ? aggregation[aggregation.length - 1].amount
+    : 0;
+  const ratio =
+    firstAmount !== 0 ? (lastAmount - firstAmount) / firstAmount : 0;
+  return {
+    ratio: ratio,
+    amount: lastAmount - firstAmount,
+  };
+}
 
 export function aggregationFor(
   intervals: string,

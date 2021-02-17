@@ -17,8 +17,8 @@
 import {
   errorApiRef,
   githubAuthApiRef,
-  googleAuthApiRef,
   createApiFactory,
+  googleAuthApiRef,
   configApiRef,
 } from '@backstage/core';
 

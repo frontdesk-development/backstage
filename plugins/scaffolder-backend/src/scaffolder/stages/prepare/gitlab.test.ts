@@ -37,8 +37,10 @@ describe('GitLabPreparer', () => {
     jest.clearAllMocks();
   });
   const preparer = GitlabPreparer.fromConfig({
-    host: 'gitlab.com',
+    host: '<ignored>',
     token: 'fake-token',
+    apiBaseUrl: '<ignored>',
+    baseUrl: '<ignored>',
   });
 
   it(`calls the clone command with the correct arguments for a repository`, async () => {
@@ -47,7 +49,6 @@ describe('GitLabPreparer', () => {
         'https://gitlab.com/benjdlambert/backstage-graphql-template/-/blob/master',
       logger,
       workspacePath,
-      token: '',
     });
 
     expect(mockGitClient.clone).toHaveBeenCalledWith({
@@ -72,7 +73,6 @@ describe('GitLabPreparer', () => {
         'https://gitlab.com/benjdlambert/backstage-graphql-template/-/blob/master/1/2/3',
       logger,
       workspacePath,
-      token: '',
     });
     expect(fs.move).toHaveBeenCalledWith(
       path.resolve(checkoutPath, '1', '2', '3'),

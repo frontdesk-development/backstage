@@ -16,7 +16,6 @@
 import { Config } from '@backstage/config';
 import { UrlPatternDiscovery } from '@backstage/core';
 import { TechDocsStorageApi } from './api';
-import { OAuthApi } from '@backstage/core';
 
 const mockEntity = {
   kind: 'Component',
@@ -30,11 +29,10 @@ describe('TechDocsStorageApi', () => {
     getOptionalString: () => 'http://backstage:9191/api/techdocs',
   } as Partial<Config>;
   const discoveryApi = UrlPatternDiscovery.compile(mockBaseUrl);
-  const githubApi =  <OAuthApi>{};
 
   it('should return correct base url based on defined storage', async () => {
     // @ts-ignore Partial<Config> not assignable to Config.
-    const storageApi = new TechDocsStorageApi({ configApi, discoveryApi, githubApi });
+    const storageApi = new TechDocsStorageApi({ configApi, discoveryApi });
 
     await expect(
       storageApi.getBaseUrl('test.js', mockEntity, ''),
@@ -45,7 +43,7 @@ describe('TechDocsStorageApi', () => {
 
   it('should return base url with correct entity structure', async () => {
     // @ts-ignore Partial<Config> not assignable to Config.
-    const storageApi = new TechDocsStorageApi({ configApi, discoveryApi, githubApi });
+    const storageApi = new TechDocsStorageApi({ configApi, discoveryApi });
 
     await expect(
       storageApi.getBaseUrl('test/', mockEntity, ''),

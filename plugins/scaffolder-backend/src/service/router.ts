@@ -17,7 +17,7 @@
 import { Config } from '@backstage/config';
 import Docker from 'dockerode';
 import express from 'express';
-import { resolve as resolvePath } from 'path';
+import { resolve as resolvePath, dirname } from 'path';
 import Router from 'express-promise-router';
 import { Logger } from 'winston';
 import {
@@ -133,9 +133,10 @@ export async function createRouter(
         },
       };
 
-      const token: string = req.body.token;
-
-      const template = await entityClient.findTemplate(templateName);
+      // Forward authorization from client
+      const template = await entityClient.findTemplate(templateName, {
+        token: getBearerToken(req.headers.authorization),
+      });
 
       const validationResult: ValidatorResult = validate(
         values,
@@ -148,7 +149,6 @@ export async function createRouter(
       }
 
       const job = jobProcessor.create({
-        token: token,
         entity: template,
         values,
         stages: [
@@ -164,7 +164,7 @@ export async function createRouter(
                 const preparer = new FilePreparer();
 
                 const path = resolvePath(
-                  templateEntityLocation,
+                  dirname(templateEntityLocation),
                   template.spec.path || '.',
                 );
 
@@ -172,7 +172,6 @@ export async function createRouter(
                   url: `file://${path}`,
                   logger: ctx.logger,
                   workspacePath: ctx.workspacePath,
-                  token: token,
                 });
                 return;
               }
@@ -188,7 +187,6 @@ export async function createRouter(
                 url,
                 logger: ctx.logger,
                 workspacePath: ctx.workspacePath,
-                token: token,
               });
             },
           },
@@ -213,7 +211,6 @@ export async function createRouter(
                 values: ctx.values,
                 workspacePath: ctx.workspacePath,
                 logger: ctx.logger,
-                token: token,
               });
               return result;
             },
@@ -300,4 +297,8 @@ export async function createRouter(
   app.use('/', router);
 
   return app;
+}
+
+function getBearerToken(header?: string): string | undefined {
+  return header?.match(/Bearer\s+(\S+)/i)?.[1];
 }

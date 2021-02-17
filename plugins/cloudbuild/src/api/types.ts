@@ -21,15 +21,14 @@ export interface ActionsListWorkflowRunsForRepoResponseData {
 export type ActionsGetWorkflowResponseData = {
   id: string;
   status: string;
-  statusDetail: string;
-  source?: Source;
+  source: Source;
   createTime: string;
   startTime: string;
-  steps?: Step[];
+  steps: Step[];
   timeout: string;
   projectId: string;
   logsBucket: string;
-  sourceProvenance?: SourceProvenance;
+  sourceProvenance: SourceProvenance;
   buildTriggerId: string;
   options: Options;
   logUrl: string;
@@ -38,29 +37,8 @@ export type ActionsGetWorkflowResponseData = {
   queueTtl: string;
   name: string;
   finishTime: any;
-  results?: Results;
-  timing?: Timing2;
-  buildTriggerInfo: BuildTrigger;
-};
-
-export type BuildTrigger = {
-  id: string;
-  createTime: string;
-  filename: string;
-  description: string;
-  github: {
-    pullRequest: {
-      branch: string;
-      commentControl: string;
-    };
-    owner: string;
-    name: string;
-  };
-  name: string;
-};
-
-export type BuildTriggerList = {
-  triggers: BuildTrigger[];
+  results: Results;
+  timing: Timing2;
 };
 
 export interface Step {

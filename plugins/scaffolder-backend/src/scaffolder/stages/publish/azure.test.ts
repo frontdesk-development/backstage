@@ -60,7 +60,6 @@ describe('Azure Publisher', () => {
         },
         workspacePath,
         logger,
-        token: '',
       });
 
       expect(WebApi).toHaveBeenCalledWith(

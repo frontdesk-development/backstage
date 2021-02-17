@@ -46,9 +46,7 @@ export async function initRepoAndPush({
   });
 
   for (const filepath of paths) {
-    if (!filepath.startsWith('.git/')) {
-      await git.add({ dir, filepath });
-    }
+    await git.add({ dir, filepath });
   }
 
   await git.commit({

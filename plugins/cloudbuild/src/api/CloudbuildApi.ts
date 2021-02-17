@@ -28,7 +28,6 @@ export const cloudbuildApiRef = createApiRef<CloudbuildApi>({
 export type CloudbuildApi = {
   listWorkflowRuns: (request: {
     projectId: string;
-    triggerName?: string;
   }) => Promise<ActionsListWorkflowRunsForRepoResponseData>;
   getWorkflow: ({
     projectId,

@@ -48,7 +48,6 @@ describe('BitbucketPreparer', () => {
     url: 'https://bitbucket.org/backstage-project/backstage-repo',
     logger,
     workspacePath,
-    token: '',
   };
 
   it('calls the clone command with the correct arguments for a repository', async () => {
@@ -91,7 +90,6 @@ describe('BitbucketPreparer', () => {
       url: 'https://bitbucket.org/foo/bar/src/master/1/2/3',
       logger,
       workspacePath,
-      token: '',
     });
     expect(fs.move).toHaveBeenCalledWith(
       path.resolve(checkoutPath, '1', '2', '3'),

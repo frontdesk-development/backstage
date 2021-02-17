@@ -51,11 +51,7 @@ export type LocationReader = {
    * @throws An error if the location was handled by this reader, but could not
    *         be read
    */
-  read(
-    location: LocationSpec,
-    token?: string,
-    apptoken?: string,
-  ): Promise<ReadLocationResult>;
+  read(location: LocationSpec): Promise<ReadLocationResult>;
 };
 
 export type ReadLocationResult = {

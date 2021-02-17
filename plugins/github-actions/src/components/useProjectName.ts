@@ -17,7 +17,7 @@
 import { useAsync } from 'react-use';
 import { Entity } from '@backstage/catalog-model';
 
-export const GITHUB_ACTIONS_ANNOTATION = 'backstage.io/github-actions-id';
+export const GITHUB_ACTIONS_ANNOTATION = 'github.com/project-slug';
 
 export const useProjectName = (entity: Entity) => {
   const { value, loading, error } = useAsync(async () => {

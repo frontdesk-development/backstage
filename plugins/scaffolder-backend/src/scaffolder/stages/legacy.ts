@@ -45,7 +45,6 @@ export function registerLegacyActions(
         url: url as string,
         logger: ctx.logger,
         workspacePath: ctx.workspacePath,
-        token: '',
       });
     },
   });
@@ -101,7 +100,6 @@ export function registerLegacyActions(
         },
         workspacePath: ctx.workspacePath,
         logger: ctx.logger,
-        token: '',
       });
       ctx.output('remoteUrl', remoteUrl);
       if (catalogInfoUrl) {

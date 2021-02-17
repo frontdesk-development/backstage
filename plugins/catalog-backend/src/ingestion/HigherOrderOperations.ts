@@ -24,7 +24,6 @@ import {
   HigherOrderOperation,
   LocationReader,
 } from './types';
-import { createAppAuth } from '@octokit/auth-app';
 
 /**
  * Placeholder for operations that span several catalogs and/or stretches out
@@ -73,8 +72,7 @@ export class HigherOrderOperations implements HigherOrderOperation {
         };
 
     // Read the location fully, bailing on any errors
-    const readerOutput = await this.locationReader.read(spec, spec.token);
-
+    const readerOutput = await this.locationReader.read(spec);
     if (!(spec.presence === 'optional') && readerOutput.errors.length) {
       const item = readerOutput.errors[0];
       throw item.error;
@@ -149,50 +147,18 @@ export class HigherOrderOperations implements HigherOrderOperation {
     );
   }
 
-  private async getToken(): Promise<string> {
-    const appId = process.env.GITHUB_APP_ID ?? '';
-    const privateKey = process.env.GITHUB_PRIVATE_KEY ?? '';
-    const installationId = process.env.GITHUB_INSTALLATION_ID ?? '';
-    const clientId = process.env.AUTH_GITHUB_CLIENT_ID;
-    const clientSecret = process.env.AUTH_GITHUB_CLIENT_SECRET;
-
-    // console.log("### Env variables: ");
-    // console.log("### appId:          ",appId);
-    // console.log("### privateKey:     ",privateKey);
-    // console.log("### installationID: ",installationId);
-    // console.log("### clientId:       ",clientId);
-    // console.log("### clientSecret:   ",clientSecret);
-
-    const auth = createAppAuth({
-      appId: appId,
-      privateKey: privateKey,
-      installationId: installationId,
-      clientId: clientId,
-      clientSecret: clientSecret,
-    });
-
-    const appAuthentication = await auth({ type: 'installation' });
-
-    return appAuthentication.token;
-  }
-
   // Performs a full refresh of a single location
   private async refreshSingleLocation(
     location: Location,
     optionalLogger?: Logger,
   ) {
     let startTimestamp = process.hrtime();
-    const token = await this.getToken();
     const logger = optionalLogger || this.logger;
 
-    const readerOutput = await this.locationReader.read(
-      {
-        type: location.type,
-        target: location.target,
-        appToken: token,
-      },
-      token,
-    );
+    const readerOutput = await this.locationReader.read({
+      type: location.type,
+      target: location.target,
+    });
 
     for (const item of readerOutput.errors) {
       logger.warn(

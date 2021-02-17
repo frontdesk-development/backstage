@@ -17,8 +17,6 @@
 export type LocationSpec = {
   type: string;
   target: string;
-  token?: string;
-  appToken?: string;
   // When using repo importer plugin, location is being created before the component yaml file is merged to the main branch.
   // This flag is then set to indicate that the file can be not present.
   // default value: 'required'.
