@@ -15,17 +15,13 @@ backend:
     client: pg
     connection:
       database:
-        $secret:
-          env: PGDATABASE
+        $env: PGDATABASE
       user:
-        $secret:
-          env: PGUSER
+        $env: PGUSER
       password:
-        $secret:
-          env: PGPASSWORD
+        $env: PGPASSWORD
       host:
-        $secret:
-          env: PGHOST
+        $env: PGHOST
   csp:
     connect-src: ["'self'", 'http:', 'https:']
 
@@ -88,8 +84,7 @@ sentry:
 rollbar:
   organization: trivago
   accountToken:
-    $secret:
-      env: ROLLBAR_ACCOUNT_TOKEN
+    $env: ROLLBAR_ACCOUNT_TOKEN
 
 newrelic:
   api:
@@ -103,24 +98,19 @@ auth:
         appOrigin: http://frontdesk.trivago.cloud
         secure: false
         clientId:
-          $secret:
-            env: AUTH_GOOGLE_CLIENT_ID
+          $env: AUTH_GOOGLE_CLIENT_ID
         clientSecret:
-          $secret:
-            env: AUTH_GOOGLE_CLIENT_SECRET
+          $env: AUTH_GOOGLE_CLIENT_SECRET
     github:
       development:
         appOrigin: http://frontdesk.trivago.cloud
         secure: false
         clientId:
-          $secret:
-            env: AUTH_GITHUB_CLIENT_ID
+          $env: AUTH_GITHUB_CLIENT_ID
         clientSecret:
-          $secret:
-            env: AUTH_GITHUB_CLIENT_SECRET
+          $env: AUTH_GITHUB_CLIENT_SECRET
         enterpriseInstanceUrl:
-          $secret:
-            env: AUTH_GITHUB_ENTERPRISE_INSTANCE_URL
+          $env: AUTH_GITHUB_ENTERPRISE_INSTANCE_URL
 
 catalog:
   rules:
@@ -168,8 +158,7 @@ grafana:
 scaffolder:
   github:
     token:
-      $secret:
-        env: GITHUB_ACCESS_TOKEN
+      $env: GITHUB_ACCESS_TOKEN
     visibility: internal # or 'public' or 'private'
 
 kubernetes:
