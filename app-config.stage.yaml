@@ -154,7 +154,7 @@ integrations:
   github:
     - host: github.com
       apps:
-        - $include: '/etc/trv-shared-admin/key.json'
+        - $include: '/etc/github-admin/key.json'
   githubOrg:
     - host: https://github.com
       token:
@@ -196,7 +196,7 @@ costInsights:
   metrics:
   gcpConfig:
     projectId: 'trv-shared-billing'
-    keyFilename: '/etc/trv-shared-admin/trv-shared-admin'
+    keyFilename: '/etc/trv-shared-admin/key.json'
     billingTable:
       $env: BILLING_TABLE
 

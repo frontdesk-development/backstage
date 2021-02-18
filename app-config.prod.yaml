@@ -153,7 +153,7 @@ integrations:
   github:
     - host: github.com
       apps:
-        - $include: '/etc/trv-shared-admin/key.json'
+        - $include: '/etc/github-admin/key.json'
   githubOrg:
     - host: https://github.com
       token:
