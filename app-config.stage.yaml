@@ -77,7 +77,9 @@ techdocs:
   generators:
     techdocs: 'local'
   publisher:
-    type: 'local'
+    type: 'googleGcs'
+    googleGcs:
+      bucketName: 'trv-frontdesk-techdocs-stage'
 
 sentry:
   organization: trivago
@@ -152,7 +154,7 @@ integrations:
   github:
     - host: github.com
       apps:
-        - $include: '/etc/trv-shared-admin/frontdesk-stage.yaml'
+        - $include: '/etc/trv-shared-admin/key.json'
   githubOrg:
     - host: https://github.com
       token:

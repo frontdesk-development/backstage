@@ -78,7 +78,9 @@ techdocs:
   generators:
     techdocs: 'local'
   publisher:
-    type: 'local'
+    type: 'googleGcs'
+    googleGcs:
+      bucketName: 'trv-frontdesk-techdocs-stage'
 
 sentry:
   organization: trivago
@@ -122,7 +124,16 @@ auth:
 
 catalog:
   rules:
-    - allow: [Component, API, Group, User, Template, Location]
+    - allow:
+        - Component
+        - API
+        - Resource
+        - Group
+        - User
+        - Template
+        - System
+        - Domain
+        - Location
   locations:
     # Backstage Example Templates
     - type: url
@@ -141,8 +152,8 @@ catalog:
 integrations:
   github:
     - host: github.com
-      token:
-        $env: GITHUB_TOKEN
+      apps:
+        - $include: '/etc/trv-shared-admin/key.json'
   githubOrg:
     - host: https://github.com
       token:
@@ -167,13 +178,6 @@ kubernetes:
     - 'config'
   clusters: []
 
-homepage:
-  clocks:
-    - label: UTC
-      timezone: UTC
-    - label: DUS
-      timezone: 'Europe/Berlin'
-
 costInsights:
   engineerCost: 200000
   products:
@@ -183,6 +187,20 @@ costInsights:
   metrics:
   gcpConfig:
     projectId: 'trv-shared-billing'
-    keyFilename: '/etc/trv-shared-admin/trv-shared-admin'
+    keyFilename: '/etc/trv-shared-admin/key.json'
     billingTable:
       $env: BILLING_TABLE
+
+homepage:
+  clocks:
+    - label: UTC
+      timezone: UTC
+    - label: NYC
+      timezone: 'America/New_York'
+    - label: STO
+      timezone: 'Europe/Stockholm'
+    - label: TYO
+      timezone: 'Asia/Tokyo'
+
+pagerduty:
+  eventsBaseUrl: 'https://events.pagerduty.com/v2'
