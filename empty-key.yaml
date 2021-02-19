@@ -1,0 +1,6 @@
+appId: 123456 
+clientId: pepe 
+clientSecret: pepe 
+webhookSecret: pepepepe 
+privateKey: |
+  -----BEGIN RSA PRIVATE KEY-----
