@@ -144,7 +144,7 @@ integrations:
   github:
     - host: github.com
       apps:
-        - $include: '/etc/github-admin/stage-key.yaml'
+        - $include: '/etc/github-admin/key.yaml'
   githubOrg:
     - host: https://github.com
       token:
