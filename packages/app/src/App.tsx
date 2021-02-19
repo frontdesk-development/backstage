@@ -32,7 +32,6 @@ import { ExplorePage } from '@backstage/plugin-explore';
 import { Router as LighthouseRouter } from '@backstage/plugin-lighthouse';
 import { Router as RegisterComponentRouter } from '@backstage/plugin-register-component';
 import { ScaffolderPage, scaffolderPlugin } from '@backstage/plugin-scaffolder';
-import { Router as TechRadarRouter } from '@backstage/plugin-tech-radar';
 import { Router as DocsRouter } from '@backstage/plugin-techdocs';
 import { Router as SettingsRouter } from '@backstage/plugin-user-settings';
 import React from 'react';
