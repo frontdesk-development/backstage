@@ -19,8 +19,9 @@ import Router from 'express-promise-router';
 import { Logger } from 'winston';
 import { Config } from '@backstage/config';
 import { loadBackendConfig } from '@backstage/backend-common';
+import { BigQueryClass } from './BigQueryClient';
 
-const { BigQueryClass } = require('./BigQueryClient');
+// const { BigQueryClass } = require('./BigQueryClient');
 
 import { GcpConfig } from '../types';
 

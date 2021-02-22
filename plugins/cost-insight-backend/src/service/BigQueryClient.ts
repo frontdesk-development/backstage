@@ -16,13 +16,15 @@
 /* eslint-disable no-restricted-imports */
 
 import moize from 'moize';
-import { BigQuery } from '@google-cloud/bigquery';
+// import { BigQuery } from '@google-cloud/bigquery';
 import { GcpConfig } from '../types';
 import { Label } from '../types/Label';
 
+const { BigQuery } = require('@google-cloud/bigquery');
+
 const MAX_AGE = 1000 * 60 * 60 * 24; // 24 hours
 export class BigQueryClass {
-  client: BigQuery;
+  client: any;
   memoizedQuery: any;
   memoizedLabelQuery: any;
   memoizedProjectsQuery: any;
@@ -248,7 +250,7 @@ export class BigQueryClass {
       amount: number;
       date: string;
       projectName: string;
-    }[] = rows.map(entry => ({
+    }[] = rows.map((entry: { date: any; amount: any; projectName: any }) => ({
       date: entry.date,
       amount: entry.amount,
       projectName: entry.projectName,
@@ -275,7 +277,7 @@ export class BigQueryClass {
       amount: number;
       date: string;
       description: string;
-    }[] = rows.map(entry => ({
+    }[] = rows.map((entry: { date: any; amount: any; description: any }) => ({
       date: entry.date,
       amount: entry.amount,
       description: entry.description,
