@@ -1,0 +1,26 @@
+FROM node:14
+
+WORKDIR /usr/src/app
+
+RUN apt update && apt install -y git build-essential zlib1g-dev libncurses5-dev libgdbm-dev libnss3-dev libssl-dev libsqlite3-dev libreadline-dev libffi-dev curl libbz2-dev curl
+
+RUN cd /tmp && curl -O https://www.python.org/ftp/python/3.8.2/Python-3.8.2.tar.xz && \
+    tar -xvf Python-3.8.2.tar.xz && \
+    cd Python-3.8.2 && \
+    ./configure --enable-optimizations && \
+    make -j 4 && \
+    make altinstall 
+
+RUN apt install -y mkdocs 
+
+RUN pip3.8 install mkdocs-techdocs-core
+
+RUN pip3.8 install cookiecutter && \
+    apt remove -y build-essential zlib1g-dev libncurses5-dev libgdbm-dev libnss3-dev libssl-dev libsqlite3-dev libreadline-dev libffi-dev libbz2-dev g++ python-pip python-dev && \
+    rm -rf /var/cache/apt/* /tmp/Python-3.8.2 /tmp/Python-3.8.2.tar.xz
+
+RUN curl -L http://sourceforge.net/projects/plantuml/files/plantuml.1.2020.16.jar/download > /opt/plantuml.jar
+
+# Create script to call plantuml.jar from a location in path
+RUN echo '#!/bin/sh\n\njava -jar '/opt/plantuml.jar' ${@}' >> /usr/local/bin/plantuml
+RUN chmod 755 /usr/local/bin/plantuml

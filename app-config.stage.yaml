@@ -76,6 +76,8 @@ techdocs:
     type: 'googleGcs'
     googleGcs:
       bucketName: 'trv-frontdesk-techdocs-stage'
+      credentials: 
+        $file: '/etc/trv-shared-admin/key.json'
 
 sentry:
   organization: trivago
