@@ -9,7 +9,7 @@
 #
 # Once the commands have been run, you can build the image using `yarn build-image`
 
-FROM node:14-buster-slim
+FROM gcr.io/trv-io-frontdesk-stage/frontdesk-backend-base:latest
 
 WORKDIR /app
 

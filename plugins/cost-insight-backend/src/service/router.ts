@@ -20,7 +20,7 @@ import { Logger } from 'winston';
 import { Config } from '@backstage/config';
 import { loadBackendConfig } from '@backstage/backend-common';
 
-const BigQueryClass = require('./BigQueryClient');
+const { BigQueryClass } = require('./BigQueryClient');
 
 import { GcpConfig } from '../types';
 
