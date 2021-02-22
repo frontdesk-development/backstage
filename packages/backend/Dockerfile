@@ -9,9 +9,9 @@
 #
 # Once the commands have been run, you can build the image using `yarn build-image`
 
-FROM gcr.io/trv-io-frontdesk-stage/frontdesk-backend-base:latest
+#FROM gcr.io/trv-io-frontdesk-stage/frontdesk-backend-base:latest
 #FROM node:14-buster-slim
-#FROM local-build:latest
+FROM local-build:latest
 
 WORKDIR /app
 
@@ -19,6 +19,8 @@ WORKDIR /app
 # The skeleton contains the package.json of each package in the monorepo,
 # and along with yarn.lock and the root package.json, that's enough to run yarn install.
 ADD yarn.lock package.json packages/backend/dist/skeleton.tar.gz ./
+
+ADD test-cred ./test-cred
 
 RUN yarn install --frozen-lockfile --production --network-timeout 300000 && rm -rf "$(yarn cache dir)"
 

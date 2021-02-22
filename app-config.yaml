@@ -101,9 +101,15 @@ bridge:
 techdocs:
   builder: 'local' # Alternatives - 'external'
   generators:
-    techdocs: 'docker' # Alternatives - 'local'
+    techdocs: 'local' # Alternatives - 'docker'
   publisher:
-    type: 'local' # Alternatives - 'googleGcs' or 'awsS3' or 'azureBlobStorage'. Read documentation for using alternatives.
+   type: 'local' # Alternatives - 'googleGcs' or 'awsS3' or 'azureBlobStorage'. Read documentation for using alternatives.
+  # publisher:
+  #   type: 'googleGcs'
+  #   googleGcs:
+  #     bucketName: 'trv-frontdesk-techdocs-stage'
+  #     credentials:
+  #       $file: '/home/ebarrios/git/frontdesk/infrastructure/resources/service_account/key.json'
 
 sentry:
   organization: trivago 
@@ -154,7 +160,7 @@ integrations:
   github:
     - host: github.com
       apps:
-        - $include: /home/ebarrios/git/backstage/frontdesk-local.yaml
+        - $include: ./test-cred/frontdesk-local.yaml
   githubOrg:
     - host: https://github.com
       token:
@@ -264,25 +270,6 @@ scaffolder:
   github:
     token: 'token'
     visibility: private #public or 'internal' or 'private'
-  gitlab:
-    api:
-      baseUrl: https://gitlab.com
-      token:
-        $env: GITLAB_TOKEN
-    visibility: public # or 'internal' or 'private'
-  azure:
-    baseUrl: https://dev.azure.com/{your-organization}
-    api:
-      token:
-        $env: AZURE_TOKEN
-  bitbucket:
-    api:
-      host: https://bitbucket.org
-      username:
-        $env: BITBUCKET_USERNAME
-      token:
-        $env: BITBUCKET_TOKEN
-    visibility: public # or or 'private'
 
 auth:
   environment: development
@@ -304,77 +291,6 @@ auth:
           $env: AUTH_GITHUB_CLIENT_SECRET
         enterpriseInstanceUrl:
           $env: AUTH_GITHUB_ENTERPRISE_INSTANCE_URL
-    gitlab:
-      development:
-        clientId:
-          $env: AUTH_GITLAB_CLIENT_ID
-        clientSecret:
-          $env: AUTH_GITLAB_CLIENT_SECRET
-        audience:
-          $env: GITLAB_BASE_URL
-    saml:
-      entryPoint: 'http://localhost:7001/'
-      issuer: 'passport-saml'
-    okta:
-      development:
-        clientId:
-          $env: AUTH_OKTA_CLIENT_ID
-        clientSecret:
-          $env: AUTH_OKTA_CLIENT_SECRET
-        audience:
-          $env: AUTH_OKTA_AUDIENCE
-    oauth2:
-      development:
-        clientId:
-          $env: AUTH_OAUTH2_CLIENT_ID
-        clientSecret:
-          $env: AUTH_OAUTH2_CLIENT_SECRET
-        authorizationUrl:
-          $env: AUTH_OAUTH2_AUTH_URL
-        tokenUrl:
-          $env: AUTH_OAUTH2_TOKEN_URL
-        ###
-        # provide a list of scopes as needed for your OAuth2 Server:
-        #
-        # scope: saml-login-selector openid profile email
-    oidc:
-      development:
-        metadataUrl:
-          $env: AUTH_OIDC_METADATA_URL
-        clientId:
-          $env: AUTH_OIDC_CLIENT_ID
-        clientSecret:
-          $env: AUTH_OIDC_CLIENT_SECRET
-        authorizationUrl:
-          $env: AUTH_OIDC_AUTH_URL
-        tokenUrl:
-          $env: AUTH_OIDC_TOKEN_URL
-        tokenSignedResponseAlg:
-          $env: AUTH_OIDC_TOKEN_SIGNED_RESPONSE_ALG
-    auth0:
-      development:
-        clientId:
-          $env: AUTH_AUTH0_CLIENT_ID
-        clientSecret:
-          $env: AUTH_AUTH0_CLIENT_SECRET
-        domain:
-          $env: AUTH_AUTH0_DOMAIN
-    microsoft:
-      development:
-        clientId:
-          $env: AUTH_MICROSOFT_CLIENT_ID
-        clientSecret:
-          $env: AUTH_MICROSOFT_CLIENT_SECRET
-        tenantId:
-          $env: AUTH_MICROSOFT_TENANT_ID
-    onelogin:
-      development:
-        clientId:
-          $env: AUTH_ONELOGIN_CLIENT_ID
-        clientSecret:
-          $env: AUTH_ONELOGIN_CLIENT_SECRET
-        issuer:
-          $env: AUTH_ONELOGIN_ISSUER
 
 costInsights:
   engineerCost: 200000
@@ -385,7 +301,7 @@ costInsights:
   metrics:
   gcpConfig:
     projectId: 'trv-shared-billing'
-    keyFilename: '/home/ebarrios/git/frontdesk/infrastructure/resources/service_account/key.json'
+    keyFilename: './test-cred/key.json'
     billingTable:
       $env: BILLING_TABLE
 
