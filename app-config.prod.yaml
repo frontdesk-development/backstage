@@ -60,12 +60,12 @@ jira:
 bridge:
   url: https://trivago.bridgeapp.com
 
+organization:
+  name: trivago
+
 gcpProjects:
   owner: trivago 
   repo: gcp-shared-config
-
-organization:
-  name: trivago
 
 techdocs:
   storageUrl: http://frontdesk.trivago.cloud/api/techdocs/static/docs
@@ -76,7 +76,9 @@ techdocs:
   publisher:
     type: 'googleGcs'
     googleGcs:
-      bucketName: 'trv-frontdesk-techdocs-stage'
+      bucketName: 'trv-frontdesk-techdocs-prod'
+      credentials: 
+        $file: '/etc/trv-shared-admin/key.json'
 
 sentry:
   organization: trivago
@@ -193,3 +195,14 @@ homepage:
 
 pagerduty:
   eventsBaseUrl: 'https://events.pagerduty.com/v2'
+
+kafka:
+  clientId: frontdesk
+  clusters:
+    - name: europe-west4
+      brokers:
+        - 10.246.0.20:9092
+        - 10.246.0.21:9092
+        - 10.246.0.22:9092
+        - 10.246.0.23:9092
+        - 10.246.0.24:9092
