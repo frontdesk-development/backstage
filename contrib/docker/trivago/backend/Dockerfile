@@ -12,24 +12,23 @@ RUN yarn tsc
 RUN echo "Building Backend..."
 RUN yarn workspace example-backend build --build-dependencies
 
-
-# Contruct frontdesk-backend image
+# Stage 2 - Build the actual backend image and install production dependencies
 FROM gcr.io/trv-io-frontdesk-stage/frontdesk-backend-base:latest
 
-RUN mkdir /app
+WORKDIR /app
 RUN mkdir -p /etc/github-admin && touch /etc/github-admin/key.yaml
 RUN mkdir -p /etc/trv-shared-admin && touch /etc/trv-shared-admin/key.json
-WORKDIR /app
+RUN mkdir /app/test-cred
 
-# Copy repo skeleton first, to avoid unnecessary docker cache invalidation.
-# The skeleton contains the package.json of each package in the monorepo,
-# and along with yarn.lock and the root package.json, that's enough to run yarn install.
-COPY --from=build /app/yarn.lock /app/package.json /app/packages/backend/dist/skeleton.tar.gz /app/packages/backend/dist/bundle.tar.gz /app/app-config.yaml /app/test-cred ./
+# Copy the install dependencies from the build stage and context
+COPY --from=build /app/yarn.lock /app/package.json /app/packages/backend/dist/skeleton.tar.gz /app/app-config.yaml ./
+# COPY --from=build /app/test-cred ./test-cred/ -> DEV credentials
+RUN tar xzf skeleton.tar.gz && rm skeleton.tar.gz
 
-RUN tar -zxvf bundle.tar.gz
+# Copy the built packages from the build stage
+COPY --from=build /app/packages/backend/dist/bundle.tar.gz .
+RUN tar xzf bundle.tar.gz && rm bundle.tar.gz
+
 RUN yarn install --frozen-lockfile --production --network-timeout 300000 && rm -rf "$(yarn cache dir)"
-
-# Then copy the rest of the backend bundle, along with any other files we might want.
-#ADD packages/backend/dist/bundle.tar.gz app-config.yaml ./
 
 CMD ["node", "packages/backend", "--config", "app-config.yaml"]
