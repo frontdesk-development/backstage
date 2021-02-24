@@ -1,16 +1,14 @@
 # This dockerfile builds an image for the backend package.
 # It should be executed with the root of the repo as docker context.
 
-FROM node:14-buster-slim AS build
+FROM node:12-buster AS build
 
 RUN mkdir /app
 COPY . /app
-RUN mkdir -p /etc/github-admin && touch /etc/github-admin/key.yaml
-RUN mkdir -p /etc/trv-shared-admin && touch /etc/trv-shared-admin/key.json
 WORKDIR /app
+RUN mkdir -p /etc/github-admin && touch /etc/github-admin/key.yaml && mkdir -p /etc/trv-shared-admin && touch /etc/trv-shared-admin/key.json
 
 RUN yarn install
-RUN echo "Building Frontend..." 
 RUN yarn workspace example-app build
 
 # Contruct frontdesk-frontend image

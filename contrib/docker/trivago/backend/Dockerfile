@@ -6,18 +6,17 @@ FROM node:12-buster AS build
 RUN mkdir /app
 COPY . /app
 WORKDIR /app
+RUN mkdir -p /etc/github-admin && touch /etc/github-admin/key.yaml && mkdir -p /etc/trv-shared-admin && touch /etc/trv-shared-admin/key.json
 
 RUN yarn install
 RUN yarn tsc
-RUN echo "Building Backend..."
 RUN yarn workspace example-backend build --build-dependencies
 
 # Stage 2 - Build the actual backend image and install production dependencies
 FROM gcr.io/trv-io-frontdesk-stage/frontdesk-backend-base:latest
 
 WORKDIR /app
-RUN mkdir -p /etc/github-admin && touch /etc/github-admin/key.yaml
-RUN mkdir -p /etc/trv-shared-admin && touch /etc/trv-shared-admin/key.json
+RUN mkdir -p /etc/github-admin && touch /etc/github-admin/key.yaml && mkdir -p /etc/trv-shared-admin && touch /etc/trv-shared-admin/key.json
 # RUN mkdir /app/test-cred
 
 # Copy the install dependencies from the build stage and context
