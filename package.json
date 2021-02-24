@@ -46,6 +46,7 @@
     "@octokit/openapi-types": "^2.2.0",
     "@spotify/eslint-config-oss": "^1.0.1",
     "@spotify/prettier-config": "^9.0.0",
+    "@backstage/catalog-model": "^0.7.1",
     "command-exists": "^1.2.9",
     "concurrently": "^5.2.0",
     "fs-extra": "^9.0.0",
