@@ -5,6 +5,8 @@ FROM node:14-buster-slim AS build
 
 RUN mkdir /app
 COPY . /app
+RUN mkdir -p /etc/github-admin && touch /etc/github-admin/key.yaml
+RUN mkdir -p /etc/trv-shared-admin && touch /etc/trv-shared-admin/key.json
 WORKDIR /app
 
 RUN yarn install

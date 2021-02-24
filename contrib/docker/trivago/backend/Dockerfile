@@ -18,7 +18,7 @@ FROM gcr.io/trv-io-frontdesk-stage/frontdesk-backend-base:latest
 WORKDIR /app
 RUN mkdir -p /etc/github-admin && touch /etc/github-admin/key.yaml
 RUN mkdir -p /etc/trv-shared-admin && touch /etc/trv-shared-admin/key.json
-RUN mkdir /app/test-cred
+# RUN mkdir /app/test-cred
 
 # Copy the install dependencies from the build stage and context
 COPY --from=build /app/yarn.lock /app/package.json /app/packages/backend/dist/skeleton.tar.gz /app/app-config.yaml ./
