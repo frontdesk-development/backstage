@@ -17,7 +17,6 @@
 import {
   AlertDisplay,
   createApp,
-  createRouteRef,
   FlatRoutes,
   OAuthRequestDialog,
   SignInPage,
@@ -29,11 +28,10 @@ import {
 } from '@backstage/plugin-catalog';
 import { CatalogImportPage } from '@backstage/plugin-catalog-import';
 import { ExplorePage } from '@backstage/plugin-explore';
-import { Router as LighthouseRouter } from '@backstage/plugin-lighthouse';
-import { Router as RegisterComponentRouter } from '@backstage/plugin-register-component';
+import { LighthousePage } from '@backstage/plugin-lighthouse';
 import { ScaffolderPage, scaffolderPlugin } from '@backstage/plugin-scaffolder';
-import { Router as DocsRouter } from '@backstage/plugin-techdocs';
-import { Router as SettingsRouter } from '@backstage/plugin-user-settings';
+import { TechdocsPage } from '@backstage/plugin-techdocs';
+import { UserSettingsPage } from '@backstage/plugin-user-settings';
 import React from 'react';
 import { hot } from 'react-hot-loader/root';
 import { Navigate, Route } from 'react-router';
@@ -43,6 +41,10 @@ import Root from './components/Root';
 import { providers } from './identityProviders';
 import * as plugins from './plugins';
 import AlarmIcon from '@material-ui/icons/Alarm';
+import { ApiExplorerPage } from '@backstage/plugin-api-docs';
+import { GcpProjectsPage } from '@backstage/plugin-gcp-projects';
+import { SearchPage } from '@backstage/plugin-search';
+import { CostInsightsPage } from '@backstage/plugin-cost-insights';
 
 const app = createApp({
   apis,
@@ -72,12 +74,6 @@ const app = createApp({
 
 const AppProvider = app.getProvider();
 const AppRouter = app.getRouter();
-const deprecatedAppRoutes = app.getRoutes();
-
-const catalogRouteRef = createRouteRef({
-  path: '/catalog',
-  title: 'Service Catalog',
-});
 
 const routes = (
   <FlatRoutes>
@@ -90,16 +86,15 @@ const routes = (
       <EntityPage />
     </Route>
     <Route path="/catalog-import" element={<CatalogImportPage />} />
-    <Route path="/docs" element={<DocsRouter />} />
+    <Route path="/docs" element={<TechdocsPage />} />
     <Route path="/create" element={<ScaffolderPage />} />
     <Route path="/explore" element={<ExplorePage />} />
-    <Route path="/lighthouse" element={<LighthouseRouter />} />
-    <Route
-      path="/register-component"
-      element={<RegisterComponentRouter catalogRouteRef={catalogRouteRef} />}
-    />
-    <Route path="/settings" element={<SettingsRouter />} />
-    {...deprecatedAppRoutes}
+    <Route path="/lighthouse" element={<LighthousePage />} />
+    <Route path="/api-docs" element={<ApiExplorerPage />} />
+    <Route path="/gcp-projects" element={<GcpProjectsPage />} />
+    <Route path="/search" element={<SearchPage />} />
+    <Route path="/cost-insights" element={<CostInsightsPage />} />
+    <Route path="/settings" element={<UserSettingsPage />} />
   </FlatRoutes>
 );
 
