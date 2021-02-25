@@ -43,6 +43,7 @@
     "@backstage/plugin-scaffolder-backend": "^0.8.0",
     "@backstage/plugin-techdocs-backend": "^0.6.2",
     "@gitbeaker/node": "^28.0.2",
+    "@google-cloud/bigquery": "^5.5.0",
     "@octokit/rest": "^18.0.12",
     "azure-devops-node-api": "^10.1.1",
     "dockerode": "^3.2.1",
