@@ -211,9 +211,10 @@ export class BigQueryClass {
       WHERE TIMESTAMP(day) > TIMESTAMP(DATE "${startDate}") 
         AND TIMESTAMP(day) < TIMESTAMP(DATE "${endDate}")
         ${whereClouse}
-      GROUP BY description, date
-      ORDER BY description, date`;
+        GROUP BY date, description
+        ORDER BY date, description`;
 
+    console.log('######### query:', query);
     if (projectName) {
       query = `SELECT
         day as date

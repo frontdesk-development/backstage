@@ -173,7 +173,7 @@ integrations:
   github:
     - host: github.com
       apps:
-        - $include: ./test-cred/frontdesk-local.yaml
+        - $include: /home/ebarrios/git/frontdesk-dev/test-cred/frontdesk-local.yaml
   githubOrg:
     - host: https://github.com
       token:
@@ -314,7 +314,7 @@ costInsights:
   metrics:
   gcpConfig:
     projectId: 'trv-shared-billing'
-    keyFilename: './test-cred/key.json'
+    keyFilename: '/home/ebarrios/git/frontdesk-dev/test-cred/key.json'
     billingTable:
       $env: BILLING_TABLE
 

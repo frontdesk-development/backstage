@@ -412,12 +412,12 @@ export class CostInsightsClient implements CostInsightsApi {
     projectName: string | undefined,
     whereStatement: string | undefined,
   ): Promise<{ amount: number; date: string; description: string }[]> {
-    const { endDate, startDate } = this.parseIntervals(intervals);
+    // const { endDate, startDate } = this.parseIntervals(intervals);
 
-    const arr = this.getEmptyAmountAllArray(
-      new Date(startDate),
-      new Date(endDate),
-    );
+    // const arr = this.getEmptyAmountAllArray(
+    //   new Date(startDate),
+    //   new Date(endDate),
+    // );
 
     const response = await fetch(`${this.backendUrl}/getComponent`, {
       headers: {
@@ -444,7 +444,7 @@ export class CostInsightsClient implements CostInsightsApi {
       description: string;
     }[];
 
-    groupedCosts.push(...arr);
+    // groupedCosts.push(...arr);
 
     return groupedCosts;
   }
